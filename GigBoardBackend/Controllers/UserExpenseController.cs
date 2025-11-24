@@ -258,7 +258,7 @@ namespace GigBoardBackend.Controllers
                 };
 
                 var expenseStats = await _statsService.CalculateExpenseStatistics(userId);
-                await _hub.Clients.Users(userId.ToString()).SendAsync("ExpenseStatisticsUpdated", expenseStats);
+                await _hub.Clients.User(userId.ToString()).SendAsync("ExpenseStatisticsUpdated", expenseStats);
 
                 return Ok(responseExpense);
             }

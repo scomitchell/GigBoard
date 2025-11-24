@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using GigBoardBackend.Controllers;
 using GigBoardBackend.Models;
 using GigBoardBackend.Data;
+using Moq;
+using Microsoft.AspNetCore.SignalR;
+using GigBoard.Hubs;
+using GigBoardBackend.Services;
 
 namespace GigBoard.Tests.Controllers 
 {
@@ -23,7 +27,21 @@ namespace GigBoard.Tests.Controllers
 
             SeedDatabase();
 
-            _controller = new UserDeliveryController(_context);
+            // Mock SignalR setup
+            var mockHubClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+
+            mockHubClients.Setup(clients => clients.User(It.IsAny<string>())).Returns(mockClientProxy.Object);
+
+            var mockHubContext = new Mock<IHubContext<StatisticsHub>>();
+            mockHubContext
+                .Setup(h => h.Clients)
+                .Returns(mockHubClients.Object);
+
+            var mockStatsService = new Mock<StatisticsService>(_context);
+
+            // Controller
+            _controller = new UserDeliveryController(_context, mockHubContext.Object, mockStatsService.Object);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] 
             {

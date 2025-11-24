@@ -369,7 +369,7 @@ namespace GigBoard.Tests.Controllers
             Assert.NotNull(value);
             var dict = value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(value));
 
-            Assert.Equal("Love Art Sushi", dict["restaurant"] as string);
+            Assert.Equal("Love Art Sushi", dict["restaurantWithMost"] as string);
             Assert.Equal(2, dict["orderCount"]);
         }
 
@@ -693,11 +693,11 @@ namespace GigBoard.Tests.Controllers
             Assert.NotNull(value);
 
             var dict = value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(value));
-            Assert.True(dict.ContainsKey("apps"));
-            Assert.True(dict.ContainsKey("tipPays"));
+            Assert.True(dict.ContainsKey("tipApps"));
+            Assert.True(dict.ContainsKey("appTipPays"));
 
-            var apps = Assert.IsAssignableFrom<List<string>>(dict["apps"]);
-            var tipPays = Assert.IsAssignableFrom<List<double>>(dict["tipPays"]);
+            var apps = Assert.IsAssignableFrom<List<string>>(dict["tipApps"]);
+            var tipPays = Assert.IsAssignableFrom<List<double>>(dict["appTipPays"]);
             Assert.NotEmpty(apps);
             Assert.NotEmpty(tipPays);
 
