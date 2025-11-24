@@ -13,14 +13,14 @@ namespace GigBoardBackend.Services
             _context = context;
         }
 
-        public async Task<object> CalculateStatistics(int userId)
+        public async Task<object> CalculateDeliveryStatistics(int userId)
         {
             var deliveries = await _context.UserDeliveries
                 .Where(ud => ud.UserId == userId && ud.Delivery != null)
                 .Select(ud => ud.Delivery)
                 .ToListAsync();
 
-            // If no deliveries default to 0, empty list, or ""
+            // If no deliveries default to 0, empty list, or "N/A"
             if (!deliveries.Any())
             {
                 return new
