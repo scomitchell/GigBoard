@@ -10,10 +10,13 @@ type SignalRProps = {
 type SignalRContextType = {
     connection: signalR.HubConnection | null,
     stats: StatsType | null,
-    clearStats: () => void
+    shiftStats: ShiftStatsType | null,
+    clearStats: () => void,
+    setDeliveryStats: (stats: StatsType) => void,
+    setShiftsStats: (stats: ShiftStatsType) => void
 };
 
-type StatsType = {
+export type StatsType = {
     avgPay: number,
     avgBase: number,
     avgTip: number,
@@ -21,10 +24,16 @@ type StatsType = {
     highestPayingRestaurant: {restaurant: string, avgTotalPay: number},
     restaurantWithMost: {restaurantWithMost: string, orderCount: number},
     tipPerMile: number,
-    plotlyEarningsData: {dates: string[], earnings: number[]},
-    plotlyNeighborhoodsData: {neighborhoods: string[], tipPays: number[]},
-    appsByBaseData: {apps: string[], basePays: number[]},
-    tipsByAppData: {tipApps: string[], appTipPays: number[]}
+    plotlyEarningsData: {dates: string[], earnings: number[]} | null,
+    plotlyNeighborhoodsData: {neighborhoods: string[], tipPays: number[]} | null,
+    appsByBaseData: {apps: string[], basePays: number[]} | null,
+    tipsByAppData: {tipApps: string[], appTipPays: number[]} | null
+};
+
+export type ShiftStatsType = {
+    averageShiftLength: number,
+    appWithMostShifts: string,
+    averageDeliveriesForShift: number
 };
 
 const SignalRContext = createContext<SignalRContextType | null>(null);
@@ -32,6 +41,7 @@ const SignalRContext = createContext<SignalRContextType | null>(null);
 export const SignalRProvider = ({ children, token }: SignalRProps) => {
     const [connection, setConnection] = useState<signalR.HubConnection | null>(null)
     const [stats, setStats] = useState<StatsType | null>(null);
+    const [shiftStats, setShiftStats] = useState<ShiftStatsType | null>(null);
     const [initialized, setInitialized] = useState(false);
     const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
 
@@ -42,6 +52,7 @@ export const SignalRProvider = ({ children, token }: SignalRProps) => {
                 console.log("Connection Stopped");
                 setConnection(null);
                 setStats(null);
+                setShiftStats(null);
             }
             return;
         }
@@ -59,7 +70,11 @@ export const SignalRProvider = ({ children, token }: SignalRProps) => {
 
         conn.on("StatisticsUpdated", (updatedStats) => {
             setStats(updatedStats);
-        })
+        });
+
+        conn.on("ShiftStatisticsUpdated", (updatedShiftStats) => {
+            setShiftStats(updatedShiftStats);
+        });
 
         setConnection(conn);
 
@@ -71,15 +86,27 @@ export const SignalRProvider = ({ children, token }: SignalRProps) => {
     useEffect(() => {
         if (initialized) {
             setStats(null);
+            setShiftStats(null);
         } else {
             setInitialized(true);
         }
     }, [token]);
 
-    const clearStats = () => setStats(null);
+    const clearStats = () => {
+        setStats(null);
+        setShiftStats(null);
+    };
+
+    const setDeliveryStats = (stats: StatsType) => {
+        setStats(stats);
+    }
+
+    const setShiftsStats = (stats: ShiftStatsType) => {
+        setShiftStats(stats);
+    }
 
     return (
-        <SignalRContext.Provider value={{connection, stats, clearStats}}>
+        <SignalRContext.Provider value={{connection, stats, shiftStats, setDeliveryStats, setShiftsStats, clearStats}}>
             {children}
         </SignalRContext.Provider>
     );

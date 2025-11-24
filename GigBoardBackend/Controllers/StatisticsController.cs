@@ -516,18 +516,33 @@ namespace GigBoardBackend.Controllers
 
             if (int.TryParse(userIdClaim, out int userId))
             {
-                var shiftDeliveryCounts = await _context.ShiftDeliveries
-                .Where(sd => sd.UserId == userId)
-                .GroupBy(sd => sd.ShiftId)
-                .Select(g => g.Count())
+                var userShiftIds = await _context.UserShifts
+                .Where(us => us.UserId == userId && us.Shift != null)
+                .Select(sd => sd.ShiftId)
                 .ToListAsync();
 
-                if (!shiftDeliveryCounts.Any())
+                var shiftDeliveries = await _context.ShiftDeliveries
+                .Where(sd => sd.UserId == userId)
+                .GroupBy(sd => sd.ShiftId)
+                .Select(g => new
+                {
+                    ShiftId = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+                if (!userShiftIds.Any())
                 {
                     return Ok(0);
                 }
 
-                var average = shiftDeliveryCounts.Average();
+                var deliveriesDict = shiftDeliveries.ToDictionary(d => d.ShiftId, d => d.Count);
+
+                var deliveryCountsIncludingZeros = userShiftIds
+                    .Select(shiftId => deliveriesDict.ContainsKey(shiftId) ? deliveriesDict[shiftId] : 0)
+                    .ToList();
+
+                var average = deliveryCountsIncludingZeros.Average();
 
                 return Ok(average);
             }

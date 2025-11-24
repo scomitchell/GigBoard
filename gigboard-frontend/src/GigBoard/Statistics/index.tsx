@@ -15,6 +15,7 @@ import type { TipNeighborhoodsProps } from "./TipsByNeighborhoodChart";
 import type { BaseByAppProps } from "./BaseByAppsChart";
 import type { EarningsDonutProps } from "./EarningsDonutChart";
 import type { TipsByAppProps } from "./TipsByAppChart";
+import type { StatsType, ShiftStatsType } from "../SignalRContext";
 import { useSignalR } from "../SignalRContext";
 import "../../index.css";
 
@@ -59,11 +60,12 @@ export default function Statistics() {
     const [page, setPage] = useState("stats");
 
     // Remote server
-    const { stats } = useSignalR();
+    const { stats, shiftStats, setDeliveryStats, setShiftsStats } = useSignalR();
 
-
+    // Fetch Statistics
     const fetchStatistics = async () => {
-        // Fetch statistics
+        // Delivery Statistics
+        // If stats does not exist, fetch from API and set, else pull its values
         if (!stats) {
             try {
                 const avgPay = await client.findAvgDeliveryPay();
@@ -72,6 +74,28 @@ export default function Statistics() {
                 const dollarPerMile = await client.findDollarPerMile();
                 const bestRestaurant = await client.findHighestPayingRestaurant();
                 const tipPerMile = await client.findAverageTipPerMile();
+                const restaurantWithMostOrders = await client.findRestaurantWithMostDeliveries();
+
+                const userPlotlyEarningsData = await client.findPlotlyEarningsData();
+                const userTipNeighborhoodsData = await client.findPlotlyTipNeighborhoodData();
+                const userBaseByAppData = await client.findPlotlyBaseByApp();
+                const userTipsByAppData = await client.findTipsByAppData();
+
+                const initialDeliveryStats: StatsType = {
+                    avgPay: avgPay,
+                    avgBase: avgBase,
+                    avgTip: avgTip,
+                    dollarPerMile: dollarPerMile,
+                    highestPayingRestaurant: bestRestaurant,
+                    restaurantWithMost: restaurantWithMostOrders,
+                    tipPerMile: tipPerMile,
+                    plotlyEarningsData: userPlotlyEarningsData,
+                    plotlyNeighborhoodsData: userTipNeighborhoodsData,
+                    appsByBaseData: userBaseByAppData,
+                    tipsByAppData: userTipsByAppData
+                };
+
+                setDeliveryStats(initialDeliveryStats);
 
                 setAveragePay(avgPay ?? 0);
                 setAverageBase(avgBase ?? 0);
@@ -79,6 +103,11 @@ export default function Statistics() {
                 setAvgDollarPerMile(dollarPerMile ?? 0);
                 setAvgTipPerMile(tipPerMile ?? 0);
                 setRestaurant(bestRestaurant ?? { restaurant: "N/A", avgTotalPay: 0 });
+                setRestaurantWithMost(restaurantWithMostOrders ?? { restaurantWithMost: "N/A", orderCount: 0 });
+                setPlotlyEarningsData(userPlotlyEarningsData);
+                setPlotlyTipNeighborhoodsData(userTipNeighborhoodsData);
+                setPlotlyBaseByAppData(userBaseByAppData);
+                setTipsByAppData(userTipsByAppData);
             } catch {
                 setAveragePay(0)
                 setAverageBase(0)
@@ -86,26 +115,7 @@ export default function Statistics() {
                 setAvgDollarPerMile(0);
                 setAvgTipPerMile(0);
                 setRestaurant({ restaurant: "N/A", avgTotalPay: 0 });
-            }
-
-            try {
-                const restaurantWithMostOrders = await client.findRestaurantWithMostDeliveries();
-                setRestaurantWithMost(restaurantWithMostOrders ?? { restaurantWithMost: "N/A", orderCount: 0 });
-            } catch {
                 setRestaurantWithMost({ restaurantWithMost: "N/A", orderCount: 0 });
-            }
-
-            try {
-                const userPlotlyEarningsData = await client.findPlotlyEarningsData();
-                const userTipNeighborhoodsData = await client.findPlotlyTipNeighborhoodData();
-                const userBaseByAppData = await client.findPlotlyBaseByApp();
-                const userTipsByAppData = await client.findTipsByAppData();
-
-                setPlotlyEarningsData(userPlotlyEarningsData);
-                setPlotlyTipNeighborhoodsData(userTipNeighborhoodsData);
-                setPlotlyBaseByAppData(userBaseByAppData);
-                setTipsByAppData(userTipsByAppData);
-            } catch {
                 setPlotlyEarningsData(null);
                 setPlotlyTipNeighborhoodsData(null);
                 setPlotlyBaseByAppData(null);
@@ -125,6 +135,36 @@ export default function Statistics() {
             setTipsByAppData(stats.tipsByAppData);
         }
 
+        // Shift Statistics
+        // If shiftStats does not exist, fetch from API and set, else pull its values
+        if (!shiftStats) {
+            try {
+                const averageUserShiftLength = await client.findAverageShiftLength();
+                const appWithMostUserShifts = await client.findAppWithMostShifts();
+                const avgOrdersPerShift = await client.findAverageDeliveriesPerShift();
+
+                const initialShiftStats: ShiftStatsType = {
+                    averageShiftLength: averageUserShiftLength,
+                    appWithMostShifts: appWithMostUserShifts,
+                    averageDeliveriesForShift: avgOrdersPerShift
+                };
+
+                setShiftsStats(initialShiftStats);
+
+                setAverageShiftLength(averageUserShiftLength);
+                setAppWithMostShifts(appWithMostUserShifts);
+                setAvgDeliveriesPerShift(avgOrdersPerShift);
+            } catch {
+                setAverageShiftLength(0);
+                setAppWithMostShifts("N/A");
+                setAvgDeliveriesPerShift(0);
+            }
+        } else {
+            setAverageShiftLength(shiftStats.averageShiftLength);
+            setAppWithMostShifts(shiftStats.appWithMostShifts);
+            setAvgDeliveriesPerShift(shiftStats.averageDeliveriesForShift);
+        }
+
         try {
             const averageMonthlyExpenses = await client.findAverageMonthlySpending();
             const avgMonthlySpendingByType = await client.findMonthlySpendingByType();
@@ -134,20 +174,6 @@ export default function Statistics() {
         } catch {
             setMonthlySpending(0);
             setMonthlySpendingByType([]);
-        }
-
-        try {
-            const averageUserShiftLength = await client.findAverageShiftLength();
-            const appWithMostUserShifts = await client.findAppWithMostShifts();
-            const avgOrdersPerShift = await client.findAverageDeliveriesPerShift();
-
-            setAverageShiftLength(averageUserShiftLength);
-            setAppWithMostShifts(appWithMostUserShifts);
-            setAvgDeliveriesPerShift(avgOrdersPerShift);
-        } catch {
-            setAverageShiftLength(0);
-            setAppWithMostShifts("N/A");
-            setAvgDeliveriesPerShift(0);
         }
 
         try {

@@ -4,6 +4,9 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using GigBoardBackend.Data;
 using GigBoardBackend.Models;
+using Microsoft.AspNetCore.SignalR;
+using GigBoard.Hubs;
+using GigBoardBackend.Services;
 
 namespace GigBoardBackend.Controllers
 {
@@ -13,10 +16,15 @@ namespace GigBoardBackend.Controllers
     public class UserShiftController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<StatisticsHub> _hub;
+        private readonly StatisticsService _statsService;
 
-        public UserShiftController(ApplicationDbContext context)
+        public UserShiftController(ApplicationDbContext context, 
+            IHubContext<StatisticsHub> hub, StatisticsService statsService)
         {
             _context = context;
+            _hub = hub;
+            _statsService = statsService;
         }
 
         [HttpPost]
@@ -73,6 +81,9 @@ namespace GigBoardBackend.Controllers
                 }
 
                 await _context.SaveChangesAsync();
+
+                var shiftStats = await _statsService.CalculateShiftStatistics(userId);
+                await _hub.Clients.User(userId.ToString()).SendAsync("ShiftStatisticsUpdated", shiftStats);
 
                 return Ok(new
                 {

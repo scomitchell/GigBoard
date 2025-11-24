@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net.Sockets;
 using GigBoardBackend.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -148,6 +149,63 @@ namespace GigBoardBackend.Services
                 plotlyNeighborhoodsData,
                 appsByBaseData,
                 tipsByAppData
+            };
+        }
+
+        public async Task<object> CalculateShiftStatistics(int userId)
+        {
+            var shifts = await _context.UserShifts
+                .Where(us => us.UserId == userId && us.Shift != null)
+                .Select(us => us.Shift)
+                .ToListAsync();
+
+            var shiftDeliveries = await _context.ShiftDeliveries
+                .Where(sd => sd.UserId == userId && sd.Delivery != null && sd.Shift != null)
+                .Select(sd => new
+                {
+                    sd.Shift,
+                    sd.Delivery
+                })
+                .ToListAsync();
+
+            if (!shifts.Any())
+            {
+                return new
+                {
+                    averageShiftLength = 0,
+                    appWithMostShifts = "N/A",
+                    averageDeliveriesForShift = 0
+                };
+            }
+
+            // Average shift length in minutes
+            var durations = shifts
+            .Select(s => s!.EndTime - s!.StartTime)
+            .ToList();
+
+            var averageShiftLength = durations.Average(x => x.TotalMinutes);
+
+            // App with most shifts
+            var appWithMost = shifts
+            .GroupBy(s => s!.App)
+            .Select(g => new
+            {
+                App = g.Key,
+                ShiftCount = g.Count()
+            })
+            .OrderByDescending(g => g.ShiftCount)
+            .FirstOrDefault();
+
+            var appWithMostShifts = appWithMost == null ? "N/A" : appWithMost.App.ToString();
+
+            // Average deliveries per shift
+            var averageDeliveriesForShift = shifts.Count == 0 ? 0 : (double)shiftDeliveries.Count / shifts.Count;
+
+            return new
+            {
+                averageShiftLength,
+                appWithMostShifts,
+                averageDeliveriesForShift
             };
         }
     }
