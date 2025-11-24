@@ -468,7 +468,7 @@ namespace GigBoardBackend.Controllers
 
                 return Ok(new
                 {
-                    restaurant = result.Restaurant,
+                    restaurantWithMost = result.Restaurant,
                     orderCount = result.OrderCount
                 });
             }
@@ -684,13 +684,13 @@ namespace GigBoardBackend.Controllers
                     return NotFound("No deliveries found for this user");
                 }
 
-                var apps = deliveries.Select(d => d.App.ToString()).ToList();
-                var tipPays = deliveries.Select(d => (double)d.TipPay).ToList();
+                var tipApps = deliveries.Select(d => d.App.ToString()).ToList();
+                var appTipPays = deliveries.Select(d => (double)d.TipPay).ToList();
 
                 return Ok(new
                 {
-                    apps,
-                    tipPays
+                    tipApps,
+                    appTipPays
                 });
             } 
             else

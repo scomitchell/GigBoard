@@ -2,16 +2,16 @@ import Plot from "react-plotly.js";
 
 export type TipsByAppProps = {
     data: {
-        apps: string[],
-        tipPays: number[]
+        tipApps: string[],
+        appTipPays: number[]
     }
 };
 
 export default function TipsByAppChart({data}: TipsByAppProps) {
     const chartData = [
         {
-            x: data.apps,
-            y: data.tipPays,
+            x: data.tipApps,
+            y: data.appTipPays,
             type: "bar",
             marker: { color: "royalblue" },
             name: "Tips by app",

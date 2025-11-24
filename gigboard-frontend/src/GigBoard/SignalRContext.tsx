@@ -19,8 +19,12 @@ type StatsType = {
     avgTip: number,
     dollarPerMile: number,
     highestPayingRestaurant: {restaurant: string, avgTotalPay: number},
+    restaurantWithMost: {restaurantWithMost: string, orderCount: number},
     tipPerMile: number,
-    plotlyEarningsData: {dates: string[], earnings: number[]}
+    plotlyEarningsData: {dates: string[], earnings: number[]},
+    plotlyNeighborhoodsData: {neighborhoods: string[], tipPays: number[]},
+    appsByBaseData: {apps: string[], basePays: number[]},
+    tipsByAppData: {tipApps: string[], appTipPays: number[]}
 };
 
 const SignalRContext = createContext<SignalRContextType | null>(null);

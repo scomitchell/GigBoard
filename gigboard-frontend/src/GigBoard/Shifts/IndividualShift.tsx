@@ -183,7 +183,7 @@ export default function IndividualShift() {
             </div>
 
             {shiftDeliveries.map((delivery: any) => 
-                <Col sm={6} key={delivery.Id}>
+                <Col sm={6} key={delivery.id}>
                     <Card sx={{
                         mb: 3,
                         textAlign: "start",

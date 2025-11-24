@@ -33,7 +33,7 @@ export default function Statistics() {
 
     // Location Statistics
     const [restaurant, setRestaurant] = useState({ restaurant: "", avgTotalPay: 0 });
-    const [restaurantWithMost, setRestaurantWithMost] = useState({ restaurant: "", orderCount: 0 });
+    const [restaurantWithMost, setRestaurantWithMost] = useState({ restaurantWithMost: "", orderCount: 0 });
 
     // Expense statistics
     const [monthlySpending, setMonthlySpending] = useState(0);
@@ -90,16 +90,26 @@ export default function Statistics() {
 
             try {
                 const restaurantWithMostOrders = await client.findRestaurantWithMostDeliveries();
-                setRestaurantWithMost(restaurantWithMostOrders ?? { restaurant: "N/A", orderCount: 0 });
+                setRestaurantWithMost(restaurantWithMostOrders ?? { restaurantWithMost: "N/A", orderCount: 0 });
             } catch {
-                setRestaurantWithMost({ restaurant: "N/A", orderCount: 0 });
+                setRestaurantWithMost({ restaurantWithMost: "N/A", orderCount: 0 });
             }
 
             try {
                 const userPlotlyEarningsData = await client.findPlotlyEarningsData();
+                const userTipNeighborhoodsData = await client.findPlotlyTipNeighborhoodData();
+                const userBaseByAppData = await client.findPlotlyBaseByApp();
+                const userTipsByAppData = await client.findTipsByAppData();
+
                 setPlotlyEarningsData(userPlotlyEarningsData);
+                setPlotlyTipNeighborhoodsData(userTipNeighborhoodsData);
+                setPlotlyBaseByAppData(userBaseByAppData);
+                setTipsByAppData(userTipsByAppData);
             } catch {
                 setPlotlyEarningsData(null);
+                setPlotlyTipNeighborhoodsData(null);
+                setPlotlyBaseByAppData(null);
+                setTipsByAppData(null);
             }
         } else {
             setAveragePay(stats.avgPay);
@@ -107,8 +117,12 @@ export default function Statistics() {
             setAverageTip(stats.avgTip);
             setAvgDollarPerMile(stats.dollarPerMile);
             setRestaurant(stats.highestPayingRestaurant);
+            setRestaurantWithMost(stats.restaurantWithMost);
             setAvgTipPerMile(stats.tipPerMile);
             setPlotlyEarningsData(stats.plotlyEarningsData);
+            setPlotlyTipNeighborhoodsData(stats.plotlyNeighborhoodsData);
+            setPlotlyBaseByAppData(stats.appsByBaseData);
+            setTipsByAppData(stats.tipsByAppData);
         }
 
         try {
@@ -145,20 +159,11 @@ export default function Statistics() {
         }
 
         try {
-            const userTipNeighborhoodsData = await client.findPlotlyTipNeighborhoodData();
-            const userBaseByAppData = await client.findPlotlyBaseByApp();
             const userEarningsDonutData = await client.findDonutChartData();
-            const userTipsByAppData = await client.findTipsByAppData();
 
-            setPlotlyTipNeighborhoodsData(userTipNeighborhoodsData);
-            setPlotlyBaseByAppData(userBaseByAppData);
             setDonutChartData(userEarningsDonutData);
-            setTipsByAppData(userTipsByAppData);
         } catch {
-            setPlotlyTipNeighborhoodsData(null);
-            setPlotlyBaseByAppData(null);
             setDonutChartData(null);
-            setTipsByAppData(null);
         }
 
         setLoading(false);
@@ -302,7 +307,7 @@ export default function Statistics() {
                                                 <span style={{ marginLeft: "1rem" }}>
                                                     <strong>- Average Total:</strong> ${restaurant.avgTotalPay.toFixed(2)} <br />
                                                 </span>
-                                                <strong>Restaurant with most orders:</strong> {restaurantWithMost.restaurant} <br />
+                                                <strong>Restaurant with most orders:</strong> {restaurantWithMost.restaurantWithMost} <br />
                                                 <span style={{ marginLeft: "1rem" }}>
                                                     <strong>- Number of Orders:</strong> {restaurantWithMost.orderCount}
                                                 </span>
