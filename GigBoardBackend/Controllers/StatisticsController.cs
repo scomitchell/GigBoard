@@ -319,10 +319,10 @@ namespace GigBoardBackend.Controllers
                     .Select(g => g.Sum(ue => ue.Expense!.Amount))
                     .ToListAsync();
 
-                // If none, return NotFound
+                // If none, return 0
                 if (!monthlyTotals.Any())
                 {
-                    return NotFound("No expenses found");
+                    return Ok(0);
                 }
 
                 // Average totals
