@@ -25,10 +25,12 @@ export default function IndividualShift() {
     }
 
     const addDeliveryToShift = async () => {
-        if (delivery.deliveryTime < shift.startTime 
-            || delivery.deliveryTime > shift.endTime
+        if (delivery.deliveryTime < shift.startTime
+            || delivery.deliveryTIme > shift.startTime
             || delivery.app != shift.app) {
             alert("Date and app must match shift");
+            console.log(delivery.deliveryTime);
+            console.log(shift.startTime);
             return;
         }
 
@@ -67,7 +69,7 @@ export default function IndividualShift() {
                     onClick={() => {
                         setDelivery({
                             app: shift.app, // this ensures app is pre-populated
-                            deliveryTime: "",
+                            deliveryTime: shift.startTime,
                             basePay: "",
                             tipPay: "",
                             mileage: "",
