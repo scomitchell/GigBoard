@@ -37,16 +37,12 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
 
             const expenses = await client.findFilteredExpenses(filters);
 
-            // Newest expenses first
-            expenses.sort((a: any, b: any) => new Date(b.date).getDate() - new Date(a.date).getDate());
-
             setMyExpenses(expenses);
             setShowForm(false);
             return;
         }
 
         const expenses = await client.findMyExpenses();
-        expenses.sort((a: any, b: any) => new Date(b.date).getDate() - new Date(a.date).getDate());
         setMyExpenses(expenses);
     }
 

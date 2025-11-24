@@ -100,6 +100,7 @@ namespace GigBoardBackend.Controllers {
                     CustomerNeighborhood = sd.Delivery.CustomerNeighborhood,
                     Notes = sd.Delivery.Notes
                 })
+                .OrderBy(x => x.DeliveryTime)
                 .ToListAsync();
 
                 return Ok(shiftDeliveries);

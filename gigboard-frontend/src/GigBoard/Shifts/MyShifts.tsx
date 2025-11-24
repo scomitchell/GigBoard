@@ -38,16 +38,12 @@ export default function MyShifts({ myShifts, setMyShifts }: {
 
             const shifts = await client.getFilteredShifts(filters);
 
-            // Sort shifts by date
-            shifts.sort((a: any, b: any) => new Date(b.endTime).getTime() - new Date(a.endTime).getTime());
-
             setMyShifts(shifts);
             setShowForm(false);
             return;
         }
 
         const shifts = await client.findUserShifts();
-        shifts.sort((a: any, b: any) => new Date(b.endTime).getTime() - new Date(a.endTime).getTime());
         setMyShifts(shifts);
         setShowForm(false);
         return;

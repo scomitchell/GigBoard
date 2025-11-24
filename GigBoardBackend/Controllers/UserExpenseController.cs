@@ -72,6 +72,7 @@ namespace GigBoardBackend.Controllers
                     Type = ue.Expense.Type,
                     Notes = ue.Expense.Notes
                 })
+                .OrderByDescending(x => x.Date)
                 .ToListAsync();
 
                 return Ok(userExpenses);

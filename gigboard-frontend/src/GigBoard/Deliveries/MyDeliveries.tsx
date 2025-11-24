@@ -45,7 +45,6 @@ export default function MyDeliveries({ myDeliveries, setMyDeliveries }: {
             }
 
             const deliveries = await client.getFilteredDeliveries(filters);
-            deliveries.sort((a: any, b: any) => new Date(b.deliveryTime).getTime() - new Date(a.deliveryTime).getTime());
             setMyDeliveries(deliveries);
             setShowForm(false);
             return;
@@ -53,7 +52,6 @@ export default function MyDeliveries({ myDeliveries, setMyDeliveries }: {
 
         // If no filters retrieve all deliveries, sort by date
         const deliveries = await client.findUserDeliveries();
-        deliveries.sort((a: any, b: any) => new Date(b.deliveryTime).getTime() - new Date(a.deliveryTime).getTime());
         setMyDeliveries(deliveries);
     }
 
