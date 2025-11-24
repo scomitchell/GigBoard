@@ -208,5 +208,49 @@ namespace GigBoardBackend.Services
                 averageDeliveriesForShift
             };
         }
+
+        public async Task<object> CalculateExpenseStatistics(int userId)
+        {
+            var expenses = await _context.UserExpenses
+                .Where(ue => ue.UserId == userId && ue.Expense != null)
+                .Select(ue => ue.Expense)
+                .ToListAsync();
+
+            if (!expenses.Any())
+            {
+                return new
+                {
+                    averageMonthlySpending = 0,
+                    averageSpendingByType = new List<object>()
+                };
+            }
+
+            // Average Monthly Spending
+            var averageMonthlySpending = expenses
+            .GroupBy(e => new {e!.Date.Year, e!.Date.Month})
+            .Select(g => g.Sum(e => e!.Amount))
+            .Average();
+
+            // Average Monthly Spending By Type
+            var totalMonths = expenses
+            .Select(e => new {e!.Date.Year, e!.Date.Month})
+            .Distinct()
+            .Count();
+
+            var averageSpendingByType = expenses
+            .GroupBy(e => e!.Type)
+            .Select(g => new
+            {
+                Type = g.Key,
+                AvgExpense = totalMonths > 0 ? g.Sum(x => x!.Amount) / totalMonths : 0
+            })
+            .ToList();
+
+            return new
+            {
+                averageMonthlySpending,
+                averageSpendingByType
+            };
+        }
     }
 }

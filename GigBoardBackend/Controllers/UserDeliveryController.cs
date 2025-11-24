@@ -79,7 +79,6 @@ namespace GigBoardBackend.Controllers
 
                 // Recalculate statistics
                 var stats = await _statsService.CalculateDeliveryStatistics(userId);
-
                 await _hub.Clients.User(userId.ToString()).SendAsync("StatisticsUpdated", stats);
 
                 return Ok(new DeliveryDto

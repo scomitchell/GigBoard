@@ -4,6 +4,9 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using GigBoardBackend.Data;
 using GigBoardBackend.Models;
+using Microsoft.AspNetCore.SignalR;
+using GigBoard.Hubs;
+using GigBoardBackend.Services;
 
 namespace GigBoardBackend.Controllers
 {
@@ -13,10 +16,15 @@ namespace GigBoardBackend.Controllers
     public class UserExpenseController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<StatisticsHub> _hub;
+        private readonly StatisticsService _statsService;
 
-        public UserExpenseController(ApplicationDbContext context)
+        public UserExpenseController(ApplicationDbContext context,
+            IHubContext<StatisticsHub> hub, StatisticsService statsService)
         {
             _context = context;
+            _hub = hub;
+            _statsService = statsService;
         }
 
         [HttpPost]
@@ -38,6 +46,9 @@ namespace GigBoardBackend.Controllers
 
                 _context.UserExpenses.Add(userExpense);
                 await _context.SaveChangesAsync();
+
+                var expenseStats = await _statsService.CalculateExpenseStatistics(userId);
+                await _hub.Clients.User(userId.ToString()).SendAsync("ExpenseStatisticsUpdated", expenseStats);
 
                 return Ok(new ExpenseDto
                 {
@@ -198,6 +209,9 @@ namespace GigBoardBackend.Controllers
                     await _context.SaveChangesAsync();
                 }
 
+                var expenseStats = await _statsService.CalculateExpenseStatistics(userId);
+                await _hub.Clients.User(userId.ToString()).SendAsync("ExpenseStatisticsUpdated", expenseStats);
+
                 return Ok("Expense Deleted");
             }
             else
@@ -241,6 +255,9 @@ namespace GigBoardBackend.Controllers
                     Type = targetExpense.Type,
                     Notes = targetExpense.Notes
                 };
+
+                var expenseStats = await _statsService.CalculateExpenseStatistics(userId);
+                await _hub.Clients.Users(userId.ToString()).SendAsync("ExpenseStatisticsUpdated", expenseStats);
 
                 return Ok(responseExpense);
             }

@@ -15,11 +15,11 @@ import type { TipNeighborhoodsProps } from "./TipsByNeighborhoodChart";
 import type { BaseByAppProps } from "./BaseByAppsChart";
 import type { EarningsDonutProps } from "./EarningsDonutChart";
 import type { TipsByAppProps } from "./TipsByAppChart";
-import type { StatsType, ShiftStatsType } from "../SignalRContext";
+import type { StatsType, ShiftStatsType, ExpenseStatsType } from "../SignalRContext";
 import { useSignalR } from "../SignalRContext";
 import "../../index.css";
 
-type MonthlySpendingType = {
+export type MonthlySpendingType = {
     type: string;
     avgExpense: number;
 };
@@ -60,7 +60,8 @@ export default function Statistics() {
     const [page, setPage] = useState("stats");
 
     // Remote server
-    const { stats, shiftStats, setDeliveryStats, setShiftsStats } = useSignalR();
+    const { stats, shiftStats, expenseStats, 
+        setDeliveryStats, setShiftsStats, setExpensesStats } = useSignalR();
 
     // Fetch Statistics
     const fetchStatistics = async () => {
@@ -165,15 +166,27 @@ export default function Statistics() {
             setAvgDeliveriesPerShift(shiftStats.averageDeliveriesForShift);
         }
 
-        try {
-            const averageMonthlyExpenses = await client.findAverageMonthlySpending();
-            const avgMonthlySpendingByType = await client.findMonthlySpendingByType();
+        if (!expenseStats) {
+            try {
+                const averageMonthlyExpenses = await client.findAverageMonthlySpending();
+                const avgMonthlySpendingByType = await client.findMonthlySpendingByType();
 
-            setMonthlySpending(averageMonthlyExpenses ?? 0);
-            setMonthlySpendingByType(avgMonthlySpendingByType ?? []);
-        } catch {
-            setMonthlySpending(0);
-            setMonthlySpendingByType([]);
+                const initialExpenseStats: ExpenseStatsType = {
+                    averageMonthlySpending: averageMonthlyExpenses,
+                    averageSpendingByType: avgMonthlySpendingByType
+                };
+
+                setExpensesStats(initialExpenseStats);
+
+                setMonthlySpending(averageMonthlyExpenses ?? 0);
+                setMonthlySpendingByType(avgMonthlySpendingByType ?? []);
+            } catch {
+                setMonthlySpending(0);
+                setMonthlySpendingByType([]);
+            }
+        } else {
+            setMonthlySpending(expenseStats.averageMonthlySpending);
+            setMonthlySpendingByType(expenseStats.averageSpendingByType);
         }
 
         try {
