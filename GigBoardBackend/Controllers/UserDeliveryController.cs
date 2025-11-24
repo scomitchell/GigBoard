@@ -236,6 +236,7 @@ namespace GigBoardBackend.Controllers
                         Mileage = ud.Delivery.Mileage,
                         Notes = ud.Delivery.Notes
                     })
+                    .OrderByDescending(x => x.DeliveryTime)
                     .ToListAsync();
 
                 return Ok(userDeliveries);

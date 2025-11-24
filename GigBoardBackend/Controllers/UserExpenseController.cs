@@ -131,6 +131,7 @@ namespace GigBoardBackend.Controllers
                         Date = ue.Expense.Date,
                         Type = ue.Expense.Type
                     })
+                    .OrderByDescending(x => x.Date)
                     .ToListAsync();
 
                 return Ok(userExpenses);

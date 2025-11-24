@@ -185,6 +185,7 @@ namespace GigBoardBackend.Controllers
                         EndTime = us.Shift.EndTime,
                         App = us.Shift.App
                     })
+                    .OrderByDescending(x => x.EndTime)
                     .ToListAsync();
 
                 return Ok(userShifts);
