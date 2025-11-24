@@ -158,7 +158,7 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
                                     className="form-control mb-2" id="da-app">
                                     <option value=""></option>
                                     {types.map((type: any) =>
-                                        <option value={type}>{type}</option>
+                                        <option value={type} key={type}>{type}</option>
                                     )}
                                 </select>
                             </Col>

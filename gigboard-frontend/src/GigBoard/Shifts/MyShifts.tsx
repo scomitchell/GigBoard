@@ -158,7 +158,7 @@ export default function MyShifts({ myShifts, setMyShifts }: {
                                     className="form-control mb-2" id="da-app">
                                     <option value=""></option>
                                     {userApps.map((app: any) =>
-                                        <option value={app}>{app}</option>
+                                        <option value={app} key={app}>{app}</option>
                                     )}
                                 </select>
                             </Col>

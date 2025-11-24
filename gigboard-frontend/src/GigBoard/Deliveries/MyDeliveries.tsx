@@ -208,7 +208,7 @@ export default function MyDeliveries({ myDeliveries, setMyDeliveries }: {
                                     className="form-control mb-2" id="da-app">
                                     <option value=""></option>
                                     {neighborhoods.map((neighborhood: any) => 
-                                        <option value={neighborhood}>{neighborhood}</option>
+                                        <option value={neighborhood} key={neighborhood}>{neighborhood}</option>
                                     )}
                                 </select>
                             </Col>
@@ -220,7 +220,7 @@ export default function MyDeliveries({ myDeliveries, setMyDeliveries }: {
                                     className="form-control mb-2" id="da-app">
                                     <option value=""></option>
                                     {apps.map((app: any) =>
-                                        <option value={app}>{app}</option>
+                                        <option value={app} key={app}>{app}</option>
                                     )}
                                 </select>
                             </Col>
