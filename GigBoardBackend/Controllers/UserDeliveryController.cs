@@ -80,8 +80,7 @@ namespace GigBoardBackend.Controllers
                 // Recalculate statistics
                 var stats = await _statsService.CalculateDeliveryStatistics(userId);
 
-                await _hub.Clients.User(userId.ToString())
-                    .SendAsync("StatisticsUpdated", stats);
+                await _hub.Clients.User(userId.ToString()).SendAsync("StatisticsUpdated", stats);
 
                 return Ok(new DeliveryDto
                 {
@@ -390,6 +389,10 @@ namespace GigBoardBackend.Controllers
 
                 _context.Deliveries.Update(targetDelivery);
                 await _context.SaveChangesAsync();
+
+                var stats = await _statsService.CalculateDeliveryStatistics(userId);
+
+                await _hub.Clients.User(userId.ToString()).SendAsync("StatisticsUpdated", stats);
 
                 var responseDelivery = new DeliveryDto
                 {
