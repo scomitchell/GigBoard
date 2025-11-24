@@ -351,6 +351,9 @@ namespace GigBoardBackend.Controllers
                     await _context.SaveChangesAsync();
                 }
 
+                var stats = await _statsService.CalculateDeliveryStatistics(userId);
+                await _hub.Clients.User(userId.ToString()).SendAsync("StatisticsUpdated", stats);
+
                 return Ok("Delivery removed");
             }
             else
@@ -391,7 +394,6 @@ namespace GigBoardBackend.Controllers
                 await _context.SaveChangesAsync();
 
                 var stats = await _statsService.CalculateDeliveryStatistics(userId);
-
                 await _hub.Clients.User(userId.ToString()).SendAsync("StatisticsUpdated", stats);
 
                 var responseDelivery = new DeliveryDto

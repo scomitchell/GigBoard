@@ -252,6 +252,9 @@ namespace GigBoardBackend.Controllers
                     await _context.SaveChangesAsync();
                 }
 
+                var shiftStats = await _statsService.CalculateShiftStatistics(userId);
+                await _hub.Clients.User(userId.ToString()).SendAsync("ShiftStatisticsUpdated", shiftStats);
+
                 return Ok("Shift Deleted");
             }
             else
@@ -329,6 +332,8 @@ namespace GigBoardBackend.Controllers
                 _context.ShiftDeliveries.AddRange(newShiftDeliveries);
                 await _context.SaveChangesAsync();
 
+                var shiftStats = await _statsService.CalculateShiftStatistics(userId);
+                await _hub.Clients.User(userId.ToString()).SendAsync("ShiftStatisticsUpdated", shiftStats);
 
                 // Response
                 var responseShift = new ShiftDto
