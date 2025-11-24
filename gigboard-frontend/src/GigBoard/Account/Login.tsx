@@ -30,7 +30,6 @@ export default function Login() {
 
             dispatch(setCurrentUser(response.user));
             window.dispatchEvent(new Event("login"));
-            console.log(response.user);
             navigate("/");
         } catch (err: any) {
             setError(err.response.data);

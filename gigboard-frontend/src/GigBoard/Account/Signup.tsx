@@ -31,6 +31,7 @@ export default function Signup() {
             scheduleAutoLogout();
 
             dispatch(setCurrentUser(response.user));
+            window.dispatchEvent(new Event("login"));
             navigate("/");
         } catch (err: any) {
             setError(err.response.data);
