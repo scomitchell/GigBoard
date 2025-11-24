@@ -381,7 +381,7 @@ namespace GigBoardBackend.Controllers
                 var targetDelivery = existingDelivery.Delivery;
 
                 targetDelivery!.App = delivery.App;
-                targetDelivery.TotalPay = delivery.TotalPay;
+                targetDelivery.TotalPay = delivery.BasePay + delivery.TipPay;
                 targetDelivery.TipPay = delivery.TipPay;
                 targetDelivery.BasePay = delivery.BasePay;
                 targetDelivery.Mileage = delivery.Mileage;

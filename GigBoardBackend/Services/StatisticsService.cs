@@ -36,7 +36,9 @@ namespace GigBoardBackend.Services
                     plotlyEarningsData = new {dates = new List<string>(), earnings = new List<double>()},
                     plotlyNeighborhoodsDaata = new {neighborhoods = new List<string>(), tipPays = new List<double>()},
                     appsByBaseData = new {apps = new List<string>(), basePays = new List<double>()},
-                    tipsByAppData = new {tipApps = new List<string>(), tipPays = new List<double>()}
+                    tipsByAppData = new {tipApps = new List<string>(), tipPays = new List<double>()},
+                    hourlyEarningsData = new {hours = new List<string>(), earnings = new List<string>()},
+                    donutChartData = new {totalPay = 0, totalBasePay = 0, totalTipPay = 0}
                 };
             }
             
@@ -134,7 +136,56 @@ namespace GigBoardBackend.Services
             var appTipPays = tipsByApp.Select(d => (double)d.AverageTipPay).ToList();
 
             var tipsByAppData = new {tipApps, appTipPays};
-            
+
+            // Hourly earnings data
+            var oneWeekAgo = DateTime.Now.AddDays(-7);
+
+            var hourlyEarnings = deliveries
+            .Where(d => d!.DeliveryTime >= oneWeekAgo)
+            .Select(d => new
+            {
+                d!.DeliveryTime.Hour,
+                Earnings = d.TotalPay
+            })
+            .GroupBy(x => x.Hour)
+            .Select(g => new
+            {
+                Hour = g.Key,
+                AverageEarnings = g.Average(x => x.Earnings)
+            })
+            .OrderBy(x => x.Hour)
+            .ToList();
+
+            var allHours = Enumerable.Range(0, 24);
+
+            var earningsByHour = allHours
+            .Select(h => new
+            {
+                Hour = h,
+                AverageEarnings = hourlyEarnings.FirstOrDefault(x => x.Hour == h)?.AverageEarnings ?? 0
+            })
+            .ToList();
+
+            var hoursStrings = earningsByHour.Select(x => x.Hour.ToString("D2")).ToList();
+            var hourlyEarningsAll = earningsByHour.Select(x => x.AverageEarnings).ToList();
+
+            var hourlyEarningsData = new {hours = hoursStrings, earnings = hourlyEarningsAll};
+
+            // Donut chart data
+            var totalPay = deliveries
+            .Select(d => d!.TotalPay)
+            .Sum();
+
+            var totalBasePay = deliveries
+            .Select(d => d!.BasePay)
+            .Sum();
+
+            var totalTipPay = deliveries
+            .Select(d => d!.TipPay)
+            .Sum();
+
+            var donutChartData = new {totalPay, totalBasePay, totalTipPay};
+
             // Return all stats
             return new
             {
@@ -148,7 +199,9 @@ namespace GigBoardBackend.Services
                 plotlyEarningsData,
                 plotlyNeighborhoodsData,
                 appsByBaseData,
-                tipsByAppData
+                tipsByAppData,
+                hourlyEarningsData,
+                donutChartData
             };
         }
 

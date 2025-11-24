@@ -30,7 +30,9 @@ export type StatsType = {
     plotlyEarningsData: {dates: string[], earnings: number[]} | null,
     plotlyNeighborhoodsData: {neighborhoods: string[], tipPays: number[]} | null,
     appsByBaseData: {apps: string[], basePays: number[]} | null,
-    tipsByAppData: {tipApps: string[], appTipPays: number[]} | null
+    tipsByAppData: {tipApps: string[], appTipPays: number[]} | null,
+    hourlyEarningsData: {hours: string[], earnings: number[]} | null,
+    donutChartData: {totalPay: number, totalBasePay: number, totalTipPay: number} | null
 };
 
 export type ShiftStatsType = {

@@ -81,6 +81,8 @@ export default function Statistics() {
                 const userTipNeighborhoodsData = await client.findPlotlyTipNeighborhoodData();
                 const userBaseByAppData = await client.findPlotlyBaseByApp();
                 const userTipsByAppData = await client.findTipsByAppData();
+                const userHourlyEarningsData = await client.findHourlyPayData();
+                const userEarningsDonutData = await client.findDonutChartData();
 
                 const initialDeliveryStats: StatsType = {
                     avgPay: avgPay,
@@ -93,7 +95,9 @@ export default function Statistics() {
                     plotlyEarningsData: userPlotlyEarningsData,
                     plotlyNeighborhoodsData: userTipNeighborhoodsData,
                     appsByBaseData: userBaseByAppData,
-                    tipsByAppData: userTipsByAppData
+                    tipsByAppData: userTipsByAppData,
+                    hourlyEarningsData: userHourlyEarningsData,
+                    donutChartData: userEarningsDonutData
                 };
 
                 setDeliveryStats(initialDeliveryStats);
@@ -109,6 +113,8 @@ export default function Statistics() {
                 setPlotlyTipNeighborhoodsData(userTipNeighborhoodsData);
                 setPlotlyBaseByAppData(userBaseByAppData);
                 setTipsByAppData(userTipsByAppData);
+                setHourlyEarningsData(userHourlyEarningsData);
+                setDonutChartData(userEarningsDonutData);
             } catch {
                 setAveragePay(0)
                 setAverageBase(0)
@@ -121,6 +127,8 @@ export default function Statistics() {
                 setPlotlyTipNeighborhoodsData(null);
                 setPlotlyBaseByAppData(null);
                 setTipsByAppData(null);
+                setHourlyEarningsData(null);
+                setDonutChartData(null);
             }
         } else {
             setAveragePay(stats.avgPay);
@@ -134,6 +142,8 @@ export default function Statistics() {
             setPlotlyTipNeighborhoodsData(stats.plotlyNeighborhoodsData);
             setPlotlyBaseByAppData(stats.appsByBaseData);
             setTipsByAppData(stats.tipsByAppData);
+            setHourlyEarningsData(stats.hourlyEarningsData);
+            setDonutChartData(stats.donutChartData);
         }
 
         // Shift Statistics
@@ -187,22 +197,6 @@ export default function Statistics() {
         } else {
             setMonthlySpending(expenseStats.averageMonthlySpending);
             setMonthlySpendingByType(expenseStats.averageSpendingByType);
-        }
-
-        try {
-            const userHourlyEarningsData = await client.findHourlyPayData();
-
-            setHourlyEarningsData(userHourlyEarningsData);
-        } catch {
-            setHourlyEarningsData(null);
-        }
-
-        try {
-            const userEarningsDonutData = await client.findDonutChartData();
-
-            setDonutChartData(userEarningsDonutData);
-        } catch {
-            setDonutChartData(null);
         }
 
         setLoading(false);
