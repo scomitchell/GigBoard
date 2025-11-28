@@ -10,6 +10,7 @@ GigBoard is a Full-Stack web application that empowers gig delivery drivers (Doo
 - **Shift association** - Deliveries can be associated with specific shifts
 - **User profile management** - Users can update their profiles securely
 - **Analytics Endpoint** - Backend computes average total, base, and tip pays, dollar-per-mile, most used and highest paying apps, highest paying restaurant and neighborhood, and average monthly expenses both total and by type.
+- **Real-Time Statistics** - Backend automatically recalculates earnings, shift, and expense statistics on data changes and pushes to the frontend with SignalR.
 - **Charts and ML** -  Python predicts earnings for a particular shift based on input time, neighborhood, and app. Separately, the C# backend prepares data for Plotly chart generation on the frontend.
 
 ## Frontend Features Include
@@ -19,6 +20,7 @@ GigBoard is a Full-Stack web application that empowers gig delivery drivers (Doo
 - **Expense Tracker** - Log and categorize work-related expenses
 - **Dashboard** - Summary of performance statistics including charts and an earnings predictor.
 - **Search and Filters** - Quickly find deliveries, shifts, and expenses based on app, type, date, dollar amount, etc.
+- **Real-Time UI Updates** - React dynamically updates statistics dashboard as SignalR pushes new data, eliminating manual refreshes.
 - **Plotly Charts** - Interactive visualizations of delivery stats such as average base pay by app, tips by neighborhood, and other key metrics.
 
 ## Tech Stack
