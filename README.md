@@ -24,3 +24,13 @@ GigBoard is a Full-Stack web application that empowers gig delivery drivers (Doo
 ## Tech Stack
 - **Frontend** - TypeScript, React, HTML, CSS
 - **Backend** - C#, ASP.NET, Python, SQLite
+
+![Home Screenshot](./docs/images/GigBoard%20Screenshot%20Home.png)
+![Deliveries Screenshot](./docs/images/GigBoard%20Screenshot%20Deliveries.png)
+![Shifts Screenshot](./docs/images/GigBoard%20Screenshot%20Shifts.png)
+![Expenses Screenshot](./docs/images/GigBoard%20Screenshot%20Expenses.png)
+![Statistics Screenshot 1](./docs/images/GigBoard%20Screenshot%20Stats%201.png)
+![Statistics Screenshot 2](./docs/images/GigBoard%20Screenshot%20Stats%202.png)
+![Statistics Screenshot 3](./docs/images/GigBoard%20Screenshot%20Stats%203.png)
+![Statistics Screenshot 4](./docs/images/GigBoard%20Screenshot%20Stats%204.png)
+![Predict Earnings Screenshot](./docs/images/GigBoard%20Screenshot%20PredictEarnings.png)
