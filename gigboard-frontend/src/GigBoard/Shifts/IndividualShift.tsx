@@ -26,7 +26,7 @@ export default function IndividualShift() {
 
     const addDeliveryToShift = async () => {
         if (delivery.deliveryTime < shift.startTime
-            || delivery.deliveryTIme > shift.startTime
+            || delivery.deliveryTime > shift.endTime
             || delivery.app != shift.app) {
             alert("Date and app must match shift");
             console.log(delivery.deliveryTime);
