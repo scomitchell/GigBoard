@@ -26,6 +26,16 @@ export default function Shifts() {
                 return;
             }
 
+            if (shift.startTime >= shift.endTime) {
+                alert("Shift start time must come after end time");
+                return;
+            }
+
+            if (new Date(shift.startTime) > new Date()) {
+                alert("Shift start time cannot be in the future");
+                return;
+            }
+
             const newShift = await client.addShift(shift);
             setMyShifts(prev => [newShift, ...prev]);
             setShowForm(false);

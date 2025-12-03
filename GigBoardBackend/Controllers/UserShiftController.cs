@@ -30,6 +30,16 @@ namespace GigBoardBackend.Controllers
         [HttpPost]
         public async Task<IActionResult> AddShift([FromBody] Shift shift)
         {
+            if (shift.StartTime > DateTime.Now)
+            {
+                return BadRequest("Shift start time cannot be in the future");
+            }
+
+            if (shift.StartTime >= shift.EndTime)
+            {
+                return BadRequest("Shift end time must come after shift start time");
+            }
+
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (int.TryParse(userIdClaim, out int userId))
@@ -267,6 +277,16 @@ namespace GigBoardBackend.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateShift([FromBody] Shift shift)
         {
+            if (shift.StartTime > DateTime.Now)
+            {
+                return BadRequest("Shift start time cannot be in the future");
+            }
+
+            if (shift.StartTime >= shift.EndTime)
+            {
+                return BadRequest("Shift end time must come after shift start time");
+            }
+
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (int.TryParse(userIdClaim, out int userId))

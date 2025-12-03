@@ -28,6 +28,11 @@ export default function Deliveries() {
                 return;
             }
 
+            if (new Date(delivery.deliveryTime) > new Date()) {
+                alert("Delivery time cannot be in the future");
+                return;
+            }
+
             // parse delivery so pay gets passed as numerical value
             const parsedDelivery = {
                 ...delivery,

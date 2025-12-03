@@ -9,6 +9,7 @@ using Moq;
 using Microsoft.AspNetCore.SignalR;
 using GigBoard.Hubs;
 using GigBoardBackend.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace GigBoard.Tests.Controllers 
 {
@@ -138,6 +139,24 @@ namespace GigBoard.Tests.Controllers
                 .FirstOrDefaultAsync(ud => ud.UserId == 1 && ud.DeliveryId == delivery2.Id);
 
             Assert.NotNull(userDelivery);
+
+            var badDelivery = new Delivery
+            {
+                Id = 3,
+                App = DeliveryApp.UberEats,
+                DeliveryTime = DateTime.Now.AddHours(1),
+                BasePay = 3.0,
+                TipPay = 4.0,
+                Mileage = 1.3,
+                Restaurant = "Test Restaurant 1",
+                CustomerNeighborhood = "Allston",
+                Notes = "Test 3"
+            };
+
+            var response = await _controller.AddDelivery(badDelivery);
+
+            var badResult = Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal("Delivery time cannot be in the future", badResult.Value);
         }
 
         [Fact]
@@ -299,6 +318,25 @@ namespace GigBoard.Tests.Controllers
 
             Assert.Equal(5.0, delivery.BasePay);
             Assert.Equal(7.50, delivery.TotalPay);
+
+            var badDelivery1 = new Delivery
+            {
+                Id = 1,
+                App = DeliveryApp.UberEats,
+                DeliveryTime = DateTime.Now.AddHours(1),
+                BasePay = 5.0,
+                TipPay = 2.50,
+                TotalPay = 7.50,
+                Mileage = 1.2,
+                Restaurant = "Love Art Sushi",
+                CustomerNeighborhood = "Back Bay",
+                Notes = "test 1"
+            };
+
+            var response = await _controller.UpdateDelivery(badDelivery1);
+
+            var badResult = Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal("Delivery time cannot be in the future", badResult.Value);
         }
     }
 }

@@ -31,6 +31,11 @@ namespace GigBoardBackend.Controllers
         [HttpPost]
         public async Task<IActionResult> AddDelivery([FromBody] Delivery delivery)
         {
+            if (delivery.DeliveryTime > DateTime.Now)
+            {
+                return BadRequest("Delivery time cannot be in the future");
+            }
+            
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (int.TryParse(userIdClaim, out int userId))
@@ -368,6 +373,11 @@ namespace GigBoardBackend.Controllers
 
         [HttpPut]
         public async Task<IActionResult> UpdateDelivery([FromBody] Delivery delivery) {
+            if (delivery.DeliveryTime > DateTime.Now)
+            {
+                return BadRequest("Delivery time cannot be in the future");
+            }
+
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (int.TryParse(userIdClaim, out int userId))

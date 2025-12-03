@@ -167,6 +167,42 @@ namespace GigBoard.Tests.Controllers
                 .FirstOrDefaultAsync(us => us.UserId == 1 && us.ShiftId == shift3.Id);
 
             Assert.NotNull(userShift);
+
+            var startAfterEndShift = new Shift
+            {
+                Id = 4,
+                StartTime = new DateTime(2025, 1, 1, 3, 0, 0),
+                EndTime = new DateTime(2025, 1, 1, 0, 0, 0),
+                App = DeliveryApp.UberEats
+            };
+
+            var startAfterEndResult = await _controller.AddShift(startAfterEndShift);
+            var startAfterResult = Assert.IsType<BadRequestObjectResult>(startAfterEndResult);
+            Assert.Equal("Shift end time must come after shift start time", startAfterResult.Value);
+
+            var startEqualEndShift = new Shift
+            {
+                Id = 5,
+                StartTime = new DateTime(2025, 1, 1, 0, 0, 0),
+                EndTime = new DateTime(2025, 1, 1, 0, 0, 0),
+                App = DeliveryApp.Doordash
+            };
+
+            var startEqualEndResult = await _controller.AddShift(startEqualEndShift);
+            var startEqualResult = Assert.IsType<BadRequestObjectResult>(startEqualEndResult);
+            Assert.Equal("Shift end time must come after shift start time", startEqualResult.Value);
+
+            var futureStartShift = new Shift
+            {
+                Id = 6,
+                StartTime = DateTime.Now.AddHours(1),
+                EndTime = DateTime.Now.AddHours(2),
+                App = DeliveryApp.Grubhub
+            };
+
+            var futureStartShiftResult = await _controller.AddShift(futureStartShift);
+            var futureStartResult = Assert.IsType<BadRequestObjectResult>(futureStartShiftResult);
+            Assert.Equal("Shift start time cannot be in the future", futureStartResult.Value);
         }
 
         [Fact]
@@ -230,6 +266,42 @@ namespace GigBoard.Tests.Controllers
             var shift = Assert.IsAssignableFrom<ShiftDto>(okResult.Value);
 
             Assert.Equal(DeliveryApp.Doordash, shift.App);
+
+            var startAfterEndShift = new Shift
+            {
+                Id = 1,
+                StartTime = new DateTime(2025, 1, 1, 3, 0, 0),
+                EndTime = new DateTime(2025, 1, 1, 0, 0, 0),
+                App = DeliveryApp.UberEats
+            };
+
+            var startAfterEndResult = await _controller.UpdateShift(startAfterEndShift);
+            var startAfterResult = Assert.IsType<BadRequestObjectResult>(startAfterEndResult);
+            Assert.Equal("Shift end time must come after shift start time", startAfterResult.Value);
+
+            var startEqualEndShift = new Shift
+            {
+                Id = 1,
+                StartTime = new DateTime(2025, 1, 1, 0, 0, 0),
+                EndTime = new DateTime(2025, 1, 1, 0, 0, 0),
+                App = DeliveryApp.Doordash
+            };
+
+            var startEqualEndResult = await _controller.UpdateShift(startEqualEndShift);
+            var startEqualResult = Assert.IsType<BadRequestObjectResult>(startEqualEndResult);
+            Assert.Equal("Shift end time must come after shift start time", startEqualResult.Value);
+
+            var futureStartShift = new Shift
+            {
+                Id = 1,
+                StartTime = DateTime.Now.AddHours(1),
+                EndTime = DateTime.Now.AddHours(2),
+                App = DeliveryApp.Grubhub
+            };
+
+            var futureStartShiftResult = await _controller.UpdateShift(futureStartShift);
+            var futureStartResult = Assert.IsType<BadRequestObjectResult>(futureStartShiftResult);
+            Assert.Equal("Shift start time cannot be in the future", futureStartResult.Value);
         }
     }
 }
