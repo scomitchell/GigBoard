@@ -13,6 +13,8 @@ export default function Signup() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    const [loading, setLoading] = useState(true);
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -32,6 +34,7 @@ export default function Signup() {
 
             dispatch(setCurrentUser(response.user));
             window.dispatchEvent(new Event("login"));
+            setLoading(false);
             navigate("/");
         } catch (err: any) {
             setError(err.response.data);
@@ -70,6 +73,9 @@ export default function Signup() {
                     Sign Up
                 </Button>
                 {error.length > 0 ? <p>{error}</p> : null}
+                {loading ??
+                    <p>Loading, please allow up to 50s spinup time</p>
+                }
             </div>
         </div>
     );
