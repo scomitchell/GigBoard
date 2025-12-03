@@ -13,7 +13,7 @@ export default function Signup() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -27,6 +27,7 @@ export default function Signup() {
     }
 
     const signup = async () => {
+        setLoading(true);
         try {
             const response = await client.registerUser({ firstName, lastName, email, username, password });
             localStorage.setItem("token", response.token);
@@ -34,10 +35,12 @@ export default function Signup() {
 
             dispatch(setCurrentUser(response.user));
             window.dispatchEvent(new Event("login"));
-            setLoading(false);
             navigate("/");
+            setLoading(false);
         } catch (err: any) {
             setError(err.response.data);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -73,8 +76,10 @@ export default function Signup() {
                     Sign Up
                 </Button>
                 {error.length > 0 ? <p>{error}</p> : null}
-                {loading ??
+                {loading ?
                     <p>Loading, please allow up to 50s spinup time</p>
+                    :
+                    null
                 }
             </div>
         </div>
