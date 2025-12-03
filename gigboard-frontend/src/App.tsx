@@ -4,7 +4,6 @@ import Deliveries from "./GigBoard/Deliveries";
 import Shifts from "./GigBoard/Shifts";
 import Expenses from "./GigBoard/Expenses";
 import Account from "./GigBoard/Account";
-import Statistics from "./GigBoard/Statistics";
 import IndividualShift from "./GigBoard/Shifts/IndividualShift";
 import store from "./GigBoard/store";
 import { Provider, useDispatch } from "react-redux";
@@ -122,7 +121,6 @@ export default function App() {
                             <Route path="/GigBoard/Shifts/:shiftId" element={<IndividualShift />} />
                             <Route path="/GigBoard/Expenses/*" element={<Expenses />} />
                             <Route path="/GigBoard/Account/*" element={<Account />} />
-                            <Route path="/GigBoard/Statistics/*" element={<Statistics />} />
                         </Routes>
                     </div>
                 </Provider>

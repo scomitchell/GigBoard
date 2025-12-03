@@ -141,8 +141,7 @@ export default function MyDeliveries({ myDeliveries, setMyDeliveries }: {
             <Button onClick={resetFilters} 
                 variant="outlined" 
                 color="error"
-                className="mui-button"
-                sx={{mr: 1, mb: 2}}>
+                sx={{mr: 1,  mb: 2}}>
                 Reset Filters
             </Button>
 

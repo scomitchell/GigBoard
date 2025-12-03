@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using GigBoardBackend.Services;
 using GigBoardBackend.Models;
 using GigBoardBackend.Data;
+using System.Security.Claims;
 
 namespace GigBoardBackend.Controllers
 {
@@ -165,6 +166,33 @@ namespace GigBoardBackend.Controllers
                 Email = user.Email,
                 Username = user.Username
             });
+        }
+
+        [Authorize]
+        [HttpGet("has-data")]
+        public async Task<IActionResult> GetUserHasData()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (int.TryParse(userIdClaim, out int userId))
+            {
+                var deliveries = await _context.UserDeliveries
+                .Where(ud => ud.UserId == userId)
+                .ToListAsync();
+
+                if (!deliveries.Any())
+                {
+                    return Ok(false);
+                }
+                else
+                {
+                    return Ok(true);
+                }
+            } 
+            else
+            {
+                return BadRequest("User Claim is Invalid");
+            }
         }
     }
 }

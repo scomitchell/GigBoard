@@ -182,7 +182,11 @@ namespace GigBoardBackend.Controllers
 
                 if (result == null)
                 {
-                    return NotFound("No deliveries found for user");
+                    return Ok(new
+                    {
+                        restaurant = "N/A",
+                        avgTotalPay = 0
+                    });
                 }
 
                 return Ok(new
@@ -463,7 +467,11 @@ namespace GigBoardBackend.Controllers
 
                 if (result == null)
                 {
-                    return NotFound("No deliveries found");
+                    return Ok(new
+                    {
+                        restaurantWithMost = "N/A",
+                        orderCount = 0
+                    });
                 }
 
                 return Ok(new

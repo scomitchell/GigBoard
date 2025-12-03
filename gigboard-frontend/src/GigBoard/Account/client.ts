@@ -35,3 +35,15 @@ export const getUserByUsername = async (username: string) => {
     });
     return response.data;
 }
+
+export const getUserHasData = async () => {
+    const token = localStorage.getItem("token");
+
+    const response = await axiosWithCredentials.get(`${USERS_API}/has-data`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    return response.data;
+}

@@ -29,7 +29,6 @@ export default function PredictEarnings()
         };
 
         const earningsPrediction = await client.predictShift(data);
-
         setPredictedEarnings(earningsPrediction.predicted_earnings);
     }
 
@@ -49,11 +48,11 @@ export default function PredictEarnings()
     }, [])
 
     return (
-        <div id="da-predict-form" style={{padding: "1rem"}}>
+        <div id="da-predict-form" style={{ padding: "1rem" }}>
             <FormGroup as={Row} className="d-flex align-items-center mb-2">
                 <FormLabel column sm={2}>Start Time</FormLabel>
                 <Col sm={4}>
-                    <FormControl 
+                    <FormControl
                         type="time"
                         onChange={(e) => setStartTime(e.target.value)}
                     />
@@ -62,7 +61,7 @@ export default function PredictEarnings()
             <FormGroup as={Row} className="d-flex align-items-center mb-2">
                 <FormLabel column sm={2}>End Time</FormLabel>
                 <Col sm={4}>
-                    <FormControl 
+                    <FormControl
                         type="time"
                         onChange={(e) => setEndTime(e.target.value)}
                     />
@@ -74,7 +73,7 @@ export default function PredictEarnings()
                     <select onChange={(e) => setApp(e.target.value)}
                         className="form-control mb-2" id="da-app">
                         <option value="" key=""></option>
-                        {apps.map((app: any) => 
+                        {apps.map((app: any) =>
                             <option value={app} key={app}>{app}</option>
                         )}
                     </select>
@@ -86,16 +85,16 @@ export default function PredictEarnings()
                     <select onChange={(e) => setNeighborhood(e.target.value)}
                         className="form-control mb-2" id="da-neighborhood">
                         <option value="" key=""></option>
-                        {neighborhoods.map((neighborhood: any) => 
+                        {neighborhoods.map((neighborhood: any) =>
                             <option value={neighborhood} key={neighborhood}>{neighborhood}</option>
                         )}
                     </select>
                 </Col>
             </FormGroup>
-            <Button onClick={predictEarnings} className="btn btn-primary">
+            <Button onClick={predictEarnings} className="btn btn-primary mb-3">
                 Predict Earnings
             </Button>
-            
+
             <br />
             <br />
             <strong>Predicted Earnings: ${predictedEarnings?.toFixed(2)}</strong>
