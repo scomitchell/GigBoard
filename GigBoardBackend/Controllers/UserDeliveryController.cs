@@ -81,6 +81,10 @@ namespace GigBoardBackend.Controllers
                 var stats = await _statsService.CalculateDeliveryStatistics(userId);
                 await _hub.Clients.User(userId.ToString()).SendAsync("StatisticsUpdated", stats);
 
+                // Recalculate shift stats in case delivery added to shift
+                var shiftStats = await _statsService.CalculateShiftStatistics(userId);
+                await _hub.Clients.User(userId.ToString()).SendAsync("ShiftStatisticsUpdated", shiftStats);
+
                 return Ok(new DeliveryDto
                 {
                     Id = delivery.Id,
