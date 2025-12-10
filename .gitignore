@@ -369,6 +369,5 @@ FodyWeavers.xsd
 *.sln
 
 venv/
-.env/
-
+gigboard-frontend/.env
 *.pkl
