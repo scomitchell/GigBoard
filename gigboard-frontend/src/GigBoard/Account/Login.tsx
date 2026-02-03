@@ -10,6 +10,8 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -23,6 +25,7 @@ export default function Login() {
     }
 
     const handleLogin = async () => {
+        setLoading(true);
         try {
             const response = await client.loginUser({ username, password });
             localStorage.setItem("token", response.token);
@@ -31,12 +34,15 @@ export default function Login() {
             dispatch(setCurrentUser(response.user));
             window.dispatchEvent(new Event("login"));
             navigate("/");
+            setLoading(false);
         } catch (err: Error | unknown) {
             if (err instanceof Error) {
                 setError(err.message);
             } else {
                 setError("An unexpected error occurred");
             }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -63,6 +69,11 @@ export default function Login() {
                     Sign in
                 </Button>
                 {error.length > 0 ? <p>{error}</p> : null}
+                {loading ?
+                    <p>Loading, please allow up to 50s spinup time</p>
+                    :
+                    null
+                }
             </div>
         </div>
     );

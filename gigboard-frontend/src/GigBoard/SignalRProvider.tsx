@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import * as signalR from "@microsoft/signalr";
 import type { MonthlySpendingType } from "./Statistics";
@@ -41,19 +41,10 @@ export const SignalRProvider = ({ children, token }: SignalRProps) => {
     const [stats, setStats] = useState<StatsType | null>(null);
     const [shiftStats, setShiftStats] = useState<ShiftStatsType | null>(null);
     const [expenseStats, setExpenseStats] = useState<ExpenseStatsType | null>(null);
-    const [initialized, setInitialized] = useState(false);
     const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
 
     useEffect(() => {
         if (!token) {
-            if (connection) {
-                connection.stop();
-                console.log("Connection Stopped");
-                setConnection(null);
-                setStats(null);
-                setShiftStats(null);
-                setExpenseStats(null);
-            }
             return;
         }
 
@@ -85,13 +76,24 @@ export const SignalRProvider = ({ children, token }: SignalRProps) => {
         return () => {
             conn.stop();
           };
-    }, [token]);
+    }, [REMOTE_SERVER, token]);
 
     useEffect(() => {
-        if (initialized) {
+        if (!token && connection) {
+            connection.stop();
+            setConnection(null);
+            setStats(null);
+            setShiftStats(null);
+            setExpenseStats(null);
+        }
+    }, [connection, token])
+
+    const isInitialized = useRef(false);
+    useEffect(() => {
+        if (isInitialized.current) {
             clearStats();
         } else {
-            setInitialized(true);
+            isInitialized.current = true;
         }
     }, [token]);
 
