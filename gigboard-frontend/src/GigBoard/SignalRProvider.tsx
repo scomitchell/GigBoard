@@ -52,13 +52,14 @@ export const SignalRProvider = ({ children, token }: SignalRProps) => {
                 setConnection(null);
                 setStats(null);
                 setShiftStats(null);
+                setExpenseStats(null);
             }
             return;
         }
 
         const conn = new signalR.HubConnectionBuilder()
             .withUrl(`${REMOTE_SERVER}/hubs/statistics`, {
-                accessTokenFactory: () => localStorage.getItem("token") ?? ""
+                accessTokenFactory: () => token
             })
             .withAutomaticReconnect()
             .build();
