@@ -15,16 +15,17 @@ namespace GigBoardBackend.Migrations
                 name: "Deliveries",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    App = table.Column<int>(type: "INTEGER", nullable: false),
-                    DeliveryTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    BasePay = table.Column<double>(type: "REAL", nullable: false),
-                    TipPay = table.Column<double>(type: "REAL", nullable: false),
-                    TotalPay = table.Column<double>(type: "REAL", nullable: false),
-                    Restaurant = table.Column<string>(type: "TEXT", nullable: false),
-                    CustomerNeighborhood = table.Column<string>(type: "TEXT", nullable: false),
-                    Notes = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    App = table.Column<int>(type: "int", nullable: false),
+                    DeliveryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BasePay = table.Column<double>(type: "float", nullable: false),
+                    TipPay = table.Column<double>(type: "float", nullable: false),
+                    TotalPay = table.Column<double>(type: "float", nullable: false),
+                    Mileage = table.Column<double>(type: "float", nullable: false),
+                    Restaurant = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerNeighborhood = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,10 +36,12 @@ namespace GigBoardBackend.Migrations
                 name: "Expenses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Amount = table.Column<double>(type: "REAL", nullable: false),
-                    Notes = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -49,10 +52,11 @@ namespace GigBoardBackend.Migrations
                 name: "Shifts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    App = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,13 +67,13 @@ namespace GigBoardBackend.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
-                    LastName = table.Column<string>(type: "TEXT", nullable: false),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Username = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,12 +84,13 @@ namespace GigBoardBackend.Migrations
                 name: "ShiftDeliveries",
                 columns: table => new
                 {
-                    ShiftId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DeliveryId = table.Column<int>(type: "INTEGER", nullable: false)
+                    ShiftId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    DeliveryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShiftDeliveries", x => new { x.ShiftId, x.DeliveryId });
+                    table.PrimaryKey("PK_ShiftDeliveries", x => new { x.ShiftId, x.UserId, x.DeliveryId });
                     table.ForeignKey(
                         name: "FK_ShiftDeliveries_Deliveries_DeliveryId",
                         column: x => x.DeliveryId,
@@ -98,15 +103,21 @@ namespace GigBoardBackend.Migrations
                         principalTable: "Shifts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ShiftDeliveries_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserDeliveries",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DeliveryId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateAdded = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    DeliveryId = table.Column<int>(type: "int", nullable: false),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,9 +140,9 @@ namespace GigBoardBackend.Migrations
                 name: "UserExpenses",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ExpenseId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateAdded = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ExpenseId = table.Column<int>(type: "int", nullable: false),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -154,9 +165,9 @@ namespace GigBoardBackend.Migrations
                 name: "UserShifts",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ShiftId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateAdded = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ShiftId = table.Column<int>(type: "int", nullable: false),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -179,6 +190,11 @@ namespace GigBoardBackend.Migrations
                 name: "IX_ShiftDeliveries_DeliveryId",
                 table: "ShiftDeliveries",
                 column: "DeliveryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShiftDeliveries_UserId",
+                table: "ShiftDeliveries",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserDeliveries_DeliveryId",

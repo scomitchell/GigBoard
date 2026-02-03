@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using dotenv.net;
 using System.Text;
 using Hangfire;
-using Hangfire.Storage.SQLite;
 using GigBoardBackend.Data;
 using GigBoardBackend.Services;
 using System.Text.Json.Serialization;
@@ -36,7 +35,7 @@ builder.Services.AddCors(options =>
 
 // Add Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Authentication
 // Get secret key and encode
@@ -88,7 +87,7 @@ var hangfireConnection = builder.Configuration.GetConnectionString("DefaultConne
 builder.Services.AddHangfire(config =>
     config.UseSimpleAssemblyNameTypeSerializer()
         .UseRecommendedSerializerSettings()
-        .UseSQLiteStorage(hangfireConnection));
+        .UseSqlServerStorage(hangfireConnection));
 
 builder.Services.AddHangfireServer();
 builder.Services.AddTransient<ShiftTrainingJob>();
