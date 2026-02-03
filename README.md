@@ -1,4 +1,4 @@
-# GigBoard (Previously DelivAssist)
+# GigBoard
 
 **View Live App:** https://gigboard-app.netlify.app/
 
@@ -25,7 +25,7 @@ GigBoard is a Full-Stack web application that empowers gig delivery drivers (Doo
 
 ## Tech Stack
 - **Frontend** - TypeScript, React, HTML, CSS
-- **Backend** - C#, ASP.NET, Python, SQLite
+- **Backend** - C#, ASP.NET, Python, SQL Server
 
 ![Home Screen - Logged Out](./docs/images/GigBoard%20Landing%20Signed%20Out.png)
 ![Home Screen - New User/No Deliveries](./docs/images/GigBoard%20Landing%20New%20User%20No%20Data.png)
