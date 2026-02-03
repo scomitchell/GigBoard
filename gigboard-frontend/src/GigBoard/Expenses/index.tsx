@@ -4,14 +4,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MyExpenses from "./MyExpenses";
 import * as client from "./client";
+import type { Expense, FullExpense } from "../types";
 
 export default function Expenses() {
     // Modal control
     const [showForm, setShowForm] = useState(false);
 
     // State variable for new expense
-    const [expense, setExpense] = useState<any>({});
-    const [myExpenses, setMyExpenses] = useState<any[]>([]);
+    const [expense, setExpense] = useState<Expense>({});
+    const [myExpenses, setMyExpenses] = useState<FullExpense[]>([]);
 
     // Error handling
     const [error, setError] = useState("");
@@ -27,15 +28,15 @@ export default function Expenses() {
 
             const parsedExpense = {
                 ...expense,
-                amount: parseFloat(expense.amount)
+                amount: expense.amount
             }
 
             const newExpense = await client.addExpense(parsedExpense);
             setMyExpenses(prev => [newExpense, ...prev]);
             setShowForm(false);
             navigate("/GigBoard/Expenses");
-        } catch (err: any) {
-            setError(err);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "An error occurred");
         }
     }
 
@@ -67,7 +68,7 @@ export default function Expenses() {
                                         min="0.01"
                                         step="0.01"
                                         placeholder="Expense Amount"
-                                        onChange={(e) => setExpense({...expense, amount: e.target.value})}
+                                        onChange={(e) => setExpense({...expense, amount: parseFloat(e.target.value)})}
                                     />
                                 </Col>
                             </FormGroup>

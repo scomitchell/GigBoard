@@ -31,8 +31,12 @@ export default function Login() {
             dispatch(setCurrentUser(response.user));
             window.dispatchEvent(new Event("login"));
             navigate("/");
-        } catch (err: any) {
-            setError(err.response.data);
+        } catch (err: Error | unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unexpected error occurred");
+            }
         }
     };
 

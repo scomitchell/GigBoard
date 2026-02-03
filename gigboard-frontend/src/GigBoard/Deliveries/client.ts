@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { Delivery } from "../types";
 
 const axiosWithCredentials = axios.create({ withCredentials: true });
 export const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
@@ -52,7 +53,7 @@ export const findUserApps = async () => {
     return response.data;
 }
 
-export const addUserDelivery = async (userDelivery: any) => {
+export const addUserDelivery = async (userDelivery: Delivery) => {
     const token = localStorage.getItem("token");
 
     const response = await axiosWithCredentials.post(`${DELIVERIES_API}`, userDelivery, {
@@ -98,7 +99,7 @@ export const deleteUserDelivery = async (deliveryId: number) => {
     return response.data;
 }
 
-export const updateUserDelivery = async (delivery: any) => {
+export const updateUserDelivery = async (delivery: Delivery) => {
     const token = localStorage.getItem("token");
 
     const response = await axiosWithCredentials.put(`${DELIVERIES_API}`, delivery, {

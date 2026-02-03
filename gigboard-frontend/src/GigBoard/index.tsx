@@ -6,10 +6,11 @@ import { Card, CardContent, Typography, Button } from "@mui/material";
 import { FaHome } from "react-icons/fa";
 import Statistics from "./Statistics";
 import * as client from "./Account/client";
+import type { RootState } from "./store";
 export default function GigBoard() {
     const [hasData, setHasData] = useState(false);
     const [loading, setLoading] = useState(true);
-    const currentUser = useSelector((state: any) => state.accountReducer.currentUser);
+    const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser);
 
     const fetchHasData = async () => {
         try {
@@ -108,8 +109,8 @@ export default function GigBoard() {
                             )}
                             {!currentUser && (
                                 <Typography variant="body1" fontWeight="bold">
-                                    Note: Backend is currently deployed with free tier of Render,
-                                    please allow 50s spinup time on Signup.
+                                    Note: Backend is currently deployed with free tier of Azure,
+                                    please allow up to 50s spinup time on Signup.
                                 </Typography>
                             )}
                         </CardContent>

@@ -1,22 +1,12 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import * as signalR from "@microsoft/signalr";
 import type { MonthlySpendingType } from "./Statistics";
+import { SignalRContext } from "./SignalRContext";
 
 type SignalRProps = {
     children: ReactNode,
     token: string | null
-};
-
-type SignalRContextType = {
-    connection: signalR.HubConnection | null,
-    stats: StatsType | null,
-    shiftStats: ShiftStatsType | null,
-    expenseStats: ExpenseStatsType | null,
-    clearStats: () => void,
-    setDeliveryStats: (stats: StatsType) => void,
-    setShiftsStats: (stats: ShiftStatsType) => void,
-    setExpensesStats: (stats: ExpenseStatsType) => void
 };
 
 export type StatsType = {
@@ -45,8 +35,6 @@ export type ExpenseStatsType = {
     averageMonthlySpending: number,
     averageSpendingByType: MonthlySpendingType[]
 };
-
-const SignalRContext = createContext<SignalRContextType | null>(null);
 
 export const SignalRProvider = ({ children, token }: SignalRProps) => {
     const [connection, setConnection] = useState<signalR.HubConnection | null>(null)
@@ -130,13 +118,4 @@ export const SignalRProvider = ({ children, token }: SignalRProps) => {
             {children}
         </SignalRContext.Provider>
     );
-};
-
-export const useSignalR = () => {
-    const context = useContext(SignalRContext);
-    if (!context) {
-        throw new Error("useSignalR must be used inside a SignalRProvider")
-    }
-
-    return context;
 };

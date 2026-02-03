@@ -3,16 +3,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser } from "./reducer";
 import { Row, Col, FormLabel, FormGroup, FormControl, Button } from "react-bootstrap";
 import * as client from "./client";
+import type { User } from "../types";
+import type { RootState } from "../store";
 
 export default function Profile() {
-    const [user, setUser] = useState<any>({});
+    const [user, setUser] = useState<User>();
     const [password, setPassword] = useState("");
-    const { currentUser } = useSelector((state: any) => state.accountReducer);
+    const { currentUser } = useSelector((state: RootState) => state.accountReducer);
     const [loading, setLoading] = useState(true);
 
     const dispatch = useDispatch();
 
     const fetchProfile = async () => {
+        if (!currentUser) return;
+        if (!currentUser.username) return;
         const user = await client.getUserByUsername(currentUser.username);
         setUser(user);
         setLoading(false);
@@ -57,7 +61,7 @@ export default function Profile() {
                         <FormControl
                             placeholder="First Name"
                             id="da-firstname"
-                            defaultValue={user.firstName}
+                            defaultValue={user && user.firstName}
                             onChange={(e) => setUser({ ...user, firstName: e.target.value })}
                         />
                     </Col>
@@ -69,7 +73,7 @@ export default function Profile() {
                         <FormControl
                             placeholder="Last Name"
                             id="da-lastname"
-                            defaultValue={user.lastName}
+                            defaultValue={user && user.lastName}
                             onChange={(e) => setUser({ ...user, lastName: e.target.value })}
                         />
                     </Col>
@@ -82,7 +86,7 @@ export default function Profile() {
                             placeholder="Email"
                             type="email"
                             id="da-lastname"
-                            defaultValue={user.email}
+                            defaultValue={user && user.email}
                             onChange={(e) => setUser({ ...user, email: e.target.value })}
                         />
                     </Col>
@@ -94,7 +98,7 @@ export default function Profile() {
                         <FormControl
                             placeholder="Username"
                             id="da-username"
-                            defaultValue={user.username}
+                            defaultValue={user && user.username}
                             onChange={(e) => setUser({ ...user, username: e.target.value })}
                         />
                     </Col>

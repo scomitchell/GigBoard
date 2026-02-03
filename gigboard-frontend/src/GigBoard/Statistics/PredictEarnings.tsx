@@ -10,8 +10,8 @@ export default function PredictEarnings()
     const [app, setApp] = useState("");
     const [neighborhood, setNeighborhood] = useState("");
 
-    const [neighborhoods, setNeighborhoods] = useState<any>([]);
-    const [apps, setApps] = useState<any>([]);
+    const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
+    const [apps, setApps] = useState<string[]>([]);
 
     const [predictedEarnings, setPredictedEarnings] = useState<number | null>(null);
 
@@ -73,7 +73,7 @@ export default function PredictEarnings()
                     <select onChange={(e) => setApp(e.target.value)}
                         className="form-control mb-2" id="da-app">
                         <option value="" key=""></option>
-                        {apps.map((app: any) =>
+                        {apps.map((app: string) =>
                             <option value={app} key={app}>{app}</option>
                         )}
                     </select>
@@ -85,7 +85,7 @@ export default function PredictEarnings()
                     <select onChange={(e) => setNeighborhood(e.target.value)}
                         className="form-control mb-2" id="da-neighborhood">
                         <option value="" key=""></option>
-                        {neighborhoods.map((neighborhood: any) =>
+                        {neighborhoods.map((neighborhood: string) =>
                             <option value={neighborhood} key={neighborhood}>{neighborhood}</option>
                         )}
                     </select>

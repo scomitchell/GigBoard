@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import * as client from "./client";
 import type { ShiftFilters } from "./client";
+import type { FullShift } from "../types";
 
 export default function MyShifts({ myShifts, setMyShifts }: {
-    myShifts: any[],
-    setMyShifts: React.Dispatch<React.SetStateAction<any[]>>}) {
+    myShifts: FullShift[],
+    setMyShifts: React.Dispatch<React.SetStateAction<FullShift[]>>}) {
     // Modal control state
     const [showForm, setShowForm] = useState(false);
 
@@ -17,14 +18,14 @@ export default function MyShifts({ myShifts, setMyShifts }: {
     const [app, setApp] = useState<string | null>(null);
     
     // Select menu options
-    const [userApps, setUserApps] = useState<any>([]);
+    const [userApps, setUserApps] = useState<string[]>([]);
 
     // Control reset
     const [reset, setReset] = useState(false);
 
     // Delete
     const [shiftToDelete, setShiftToDelete] = useState(-1);
-    const [shiftToUpdate, setShiftToUpdate] = useState<any | null>(null);
+    const [shiftToUpdate, setShiftToUpdate] = useState<FullShift | null>(null);
     
     // Fetch all or fitered shifts
     const fetchShifts = async () => {
@@ -58,6 +59,8 @@ export default function MyShifts({ myShifts, setMyShifts }: {
 
     // Update shift in db
     const updateShift = async () => {
+        if (!shiftToUpdate) return;
+        
         await client.updateUserShift(shiftToUpdate);
         fetchShifts();
         setShiftToUpdate(null);
@@ -157,7 +160,7 @@ export default function MyShifts({ myShifts, setMyShifts }: {
                                 <select onChange={(e) => setApp(e.target.value)}
                                     className="form-control mb-2" id="da-app">
                                     <option value=""></option>
-                                    {userApps.map((app: any) =>
+                                    {userApps.map((app: string) =>
                                         <option value={app} key={app}>{app}</option>
                                     )}
                                 </select>
@@ -172,7 +175,7 @@ export default function MyShifts({ myShifts, setMyShifts }: {
             
             {/*Display Shift details on cards*/}
             <Row>
-                {myShifts.map((shift: any) =>
+                {myShifts.map((shift: FullShift) =>
                     <Col sm={6} key={shift.id}>
                         <Card sx={{
                             mb: 3,

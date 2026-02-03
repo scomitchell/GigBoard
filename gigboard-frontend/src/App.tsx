@@ -10,9 +10,9 @@ import { Provider, useDispatch } from "react-redux";
 import { useCallback, useEffect, useState } from "react";
 import { HashRouter, Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { setCurrentUser } from "./GigBoard/Account/reducer";
-import { SignalRProvider } from "./GigBoard/SignalRContext";
+import { SignalRProvider } from "./GigBoard/SignalRProvider.tsx";
 import {jwtDecode } from "jwt-decode";
-import { useSignalR } from "./GigBoard/SignalRContext";
+import { useSignalR } from "./GigBoard/SignalRContext.ts";
 import type { JwtPayload } from "jwt-decode";
 import './App.css'
 
@@ -70,7 +70,7 @@ function AuthTokenListener() {
         return () => {
             window.removeEventListener("storage", onStorageChange);
         }
-    }, [processToken]);
+    }, [navigate, processToken]);
 
     useEffect(() => {
         processToken(localStorage.getItem("token"));

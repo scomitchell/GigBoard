@@ -37,8 +37,12 @@ export default function Signup() {
             window.dispatchEvent(new Event("login"));
             navigate("/");
             setLoading(false);
-        } catch (err: any) {
-            setError(err.response.data);
+        } catch (err: Error | unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unexpected error occurred");
+            }
         } finally {
             setLoading(false);
         }
@@ -57,19 +61,19 @@ export default function Signup() {
             <div style={{width: "50%", height: "100%"}}>
                 <h1 style={{textAlign: "center"}}>Sign up</h1>
                 <FormControl defaultValue={firstName} type="text"
-                    onChange={(e: any) => setFirstName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)}
                     className="mb-2 mt-4" placeholder="First Name" id="da-firstname" />
                 <FormControl defaultValue={lastName} type="text"
-                    onChange={(e: any) => setLastName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)}
                     className="mb-2" placeholder="Last Name" id="da-lastname" />
                 <FormControl defaultValue={email} type="email"
-                    onChange={(e: any) => setEmail(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                     className="mb-2" placeholder="Email" id="da-email" />
                 <FormControl defaultValue={username} type="text"
-                    onChange={(e: any) => setUsername(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
                     className="mb-2" placeholder="Username" id="da-username" />
                 <FormControl defaultValue={password} type="password"
-                    onChange={(e: any) => setPassword(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                     className="mb-2" placeholder="Password" id="da-password" />
                 <Button onClick={signup} id="da-signin-button"
                     className="btn btn-primary w-100 mb-2">

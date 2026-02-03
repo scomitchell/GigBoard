@@ -4,14 +4,25 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MyDeliveries from "./MyDeliveries";
 import * as client from "./client";
+import type { Delivery } from "../types";
 
 export default function Deliveries() {
     //Controls modal
     const [showForm, setShowForm] = useState(false);
 
     /*Delivery state variable for newly created delivery*/
-    const [delivery, setDelivery] = useState<any>({});
-    const [myDeliveries, setMyDeliveries] = useState<any[]>([]);
+    const [delivery, setDelivery] = useState<Delivery>({ 
+        app: "", 
+        customerNeighborhood: "", 
+        notes: "", 
+        restaurant: "",
+        deliveryTime: "",
+        totalPay: 0,
+        basePay: 0,
+        tipPay: 0,
+        mileage: 0
+    });
+    const [myDeliveries, setMyDeliveries] = useState<Delivery[]>([]);
 
     /*Error handling*/
     const [error, setError] = useState("");
@@ -36,8 +47,8 @@ export default function Deliveries() {
             // parse delivery so pay gets passed as numerical value
             const parsedDelivery = {
                 ...delivery,
-                basePay: parseFloat(delivery.basePay),
-                tipPay: parseFloat(delivery.tipPay)
+                basePay: delivery.basePay,
+                tipPay: delivery.tipPay
             };
 
             // Call client, close modal, and go to delivery page.
@@ -45,7 +56,7 @@ export default function Deliveries() {
             setMyDeliveries(prev => [newDelivery, ...prev]);
             setShowForm(false);
             navigate("/GigBoard/MyDeliveries");
-        } catch (err: any) {
+        } catch {
             setError("Add delivery failed");
         }
     }
@@ -100,7 +111,7 @@ export default function Deliveries() {
                                         step="0.01"
                                         min="1.00"
                                         placeholder="Base Pay"
-                                        onChange={(e) => setDelivery({...delivery, basePay: e.target.value})}
+                                        onChange={(e) => setDelivery({...delivery, basePay: parseFloat(e.target.value)})}
                                     />
                                 </Col>
                             </FormGroup>
@@ -112,7 +123,7 @@ export default function Deliveries() {
                                         step="0.01"
                                         min="1.00"
                                         placeholder="Tip Pay"
-                                        onChange={(e) => setDelivery({...delivery, tipPay: e.target.value})}
+                                        onChange={(e) => setDelivery({...delivery, tipPay: parseFloat(e.target.value)})}
                                     />
                                 </Col>
                             </FormGroup>
@@ -124,7 +135,7 @@ export default function Deliveries() {
                                         step="0.01"
                                         min="0.01"
                                         placeholder="Mileage"
-                                        onChange={(e) => setDelivery({ ...delivery, mileage: e.target.value })}
+                                        onChange={(e) => setDelivery({ ...delivery, mileage: parseFloat(e.target.value)})}
                                     />
                                 </Col>
                             </FormGroup>

@@ -4,14 +4,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MyShifts from "./MyShifts";
 import * as client from "./client";
+import type { FullShift, Shift } from "../types";
 
 export default function Shifts() {
     // Controls Modal
     const [showForm, setShowForm] = useState(false);
 
     // Shift state variable for creating new shifts
-    const [shift, setShift] = useState<any>({});
-    const [myShifts, setMyShifts] = useState<any[]>([]);
+    const [shift, setShift] = useState<Shift>({app: '', startTime: '', endTime: ''});
+    const [myShifts, setMyShifts] = useState<FullShift[]>([]);
 
     // Error handling
     const [error, setError] = useState("");
@@ -40,8 +41,8 @@ export default function Shifts() {
             setMyShifts(prev => [newShift, ...prev]);
             setShowForm(false);
             navigate("/GigBoard/Shifts");
-        } catch (err: any) {
-            setError("Add shift failed");
+        } catch (err: unknown) {
+            setError(`Add shift failed ${err}`);
         }
     }
 

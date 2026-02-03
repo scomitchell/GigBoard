@@ -3,10 +3,11 @@ import { Button, Card, CardContent, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import type {ExpenseFilters} from "./client";
 import * as client from "./client";
+import type { FullExpense } from "../types";
 
 export default function MyExpenses({myExpenses, setMyExpenses} : {
-    myExpenses: any[], 
-    setMyExpenses: React.Dispatch<React.SetStateAction<any[]>>}) {
+    myExpenses: FullExpense[], 
+    setMyExpenses: React.Dispatch<React.SetStateAction<FullExpense[]>>}) {
     
     // Modal Control
     const [showForm, setShowForm] = useState(false);
@@ -20,10 +21,10 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
     const [reset, setReset] = useState(false);
 
     // Filter dropdowns
-    const [types, setTypes] = useState<any>([]);
+    const [types, setTypes] = useState<string[]>([]);
 
     const [expenseToDelete, setExpenseToDelete] = useState(-1);
-    const [expenseToUpdate, setExpenseToUpdate] = useState<any | null>(null);
+    const [expenseToUpdate, setExpenseToUpdate] = useState<FullExpense | null>(null);
 
     // Fetch filtered or all expenses from db
     const fetchExpenses = async () => {
@@ -61,6 +62,8 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
     }
 
     const updateExpense = async () => {
+        if (!expenseToUpdate) return;
+        
         await client.UpdateUserExpense(expenseToUpdate);
         fetchExpenses();
         setExpenseToUpdate(null);
@@ -157,7 +160,7 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
                                 <select onChange={(e) => setType(e.target.value)}
                                     className="form-control mb-2" id="da-app">
                                     <option value=""></option>
-                                    {types.map((type: any) =>
+                                    {types.map((type: string) =>
                                         <option value={type} key={type}>{type}</option>
                                     )}
                                 </select>
@@ -172,7 +175,7 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
 
             {/*Render individual delivery details on cards*/}
             <Row>
-                {myExpenses.map((expense: any) => 
+                {myExpenses.map((expense: FullExpense) => 
                     <Col sm={6} key={expense.id}>
                         <Card sx={{
                             mb: 3,
@@ -205,9 +208,9 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
                                     </Dropdown>
                                 </div>
 
-                                <Typography variant="h6" fontWeight="bold">Amount: ${expense.amount.toFixed(2)}</Typography>
+                                <Typography variant="h6" fontWeight="bold">Amount: ${(expense.amount ?? 0).toFixed(2)}</Typography>
                                 <Typography variant="body1">
-                                    <strong>Date:</strong> {formatTime(expense.date)} {" "} <br />
+                                    <strong>Date:</strong> {formatTime(expense.date ?? "")} {" "} <br />
                                     <strong>Type:</strong> {expense.type} {" "} <br />
                                     <strong>Notes:</strong> {expense.notes} {" "} <br />
                                 </Typography>
@@ -253,7 +256,7 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
                                                             step="0.01"
                                                             placeholder="Expense Amount"
                                                             defaultValue={expenseToUpdate.amount}
-                                                            onChange={(e) => setExpenseToUpdate({...expenseToUpdate, amount: e.target.value})}
+                                                            onChange={(e) => setExpenseToUpdate({...expenseToUpdate, amount: parseFloat(e.target.value)})}
                                                         />
                                                     </Col>
                                                 </FormGroup>

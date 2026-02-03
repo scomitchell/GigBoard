@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { Shift } from "../types";
 
 const axiosWithCredentials = axios.create({withCredentials: true});
 export const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
@@ -29,7 +30,7 @@ export const findShiftById = async (id: number) => {
     return response.data;
 }
 
-export const addShift = async (userShift: any) => {
+export const addShift = async (userShift: Shift) => {
     const token = localStorage.getItem("token");
 
     const response = await axiosWithCredentials.post(`${SHIFTS_API}`, userShift, {
@@ -108,7 +109,7 @@ export const findDeliveriesForShift = async (shiftId: number) => {
     return response.data;
 }
 
-export const updateUserShift = async (shift: any) => {
+export const updateUserShift = async (shift: Shift) => {
     const token = localStorage.getItem("token");
 
     const response = await axiosWithCredentials.put(`${SHIFTS_API}`, shift, {

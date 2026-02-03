@@ -1,15 +1,15 @@
 import axios from "axios";
+import type { Expense } from "../types";
 
 const axiosWithCredentials = axios.create({withCredentials: true});
 const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
 const EXPENSES_API = `${REMOTE_SERVER}/api/userexpense`;
 
-export const addExpense = async (userExpense: any) => {
+export const addExpense = async (userExpense: Expense) => {
     const token = localStorage.getItem("token");
-
     const response = await axiosWithCredentials.post(`${EXPENSES_API}`, userExpense, {
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
         }
     });
 
@@ -83,7 +83,7 @@ export const findExpenseTypes = async () => {
     return response.data;
 }
 
-export const UpdateUserExpense = async (expense: any) => {
+export const UpdateUserExpense = async (expense: Expense) => {
     const token = localStorage.getItem("token");
 
     const response = await axiosWithCredentials.put(`${EXPENSES_API}`, expense, {

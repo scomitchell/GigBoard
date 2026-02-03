@@ -4,12 +4,13 @@ import { setCurrentUser } from "./Account/reducer"
 import { FaHome } from "react-icons/fa";
 import { useSignalR } from "./SignalRContext";
 import { BsBagFill, BsPersonFillGear, BsCurrencyDollar, BsClockFill, BsArrowBarLeft, BsArrowBarUp } from "react-icons/bs";
+import type { RootState } from "./store";
 
 export default function Navigation() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { pathname } = useLocation();
-    const { currentUser } = useSelector((state: any) => state.accountReducer);
+    const { currentUser } = useSelector((state: RootState) => state.accountReducer);
     const { clearStats } = useSignalR();
 
     const handleLogout = () => {

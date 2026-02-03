@@ -15,7 +15,7 @@ import type { TipNeighborhoodsProps } from "./TipsByNeighborhoodChart";
 import type { BaseByAppProps } from "./BaseByAppsChart";
 import type { EarningsDonutProps } from "./EarningsDonutChart";
 import type { TipsByAppProps } from "./TipsByAppChart";
-import type { StatsType, ShiftStatsType, ExpenseStatsType } from "../SignalRContext";
+import type { StatsType, ShiftStatsType, ExpenseStatsType } from "../SignalRProvider";
 import { useSignalR } from "../SignalRContext";
 import "../../index.css";
 

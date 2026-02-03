@@ -4,14 +4,15 @@ import { Card, CardContent, Typography, Button } from "@mui/material";
 import { useParams } from "react-router-dom";
 import * as client from "./client";
 import * as deliveryClient from "../Deliveries/client";
+import type { Delivery, Shift } from "../types";
 
 export default function IndividualShift() {
     const { shiftId } = useParams();
 
-    const [shiftDeliveries, setShiftDeliveries] = useState<any[]>([]);
-    const [shift, setShift] = useState<any>({});
+    const [shiftDeliveries, setShiftDeliveries] = useState<Delivery[]>([]);
+    const [shift, setShift] = useState<Shift>({app: '', startTime: '', endTime: ''});
 
-    const [delivery, setDelivery] = useState<any | null>(null);
+    const [delivery, setDelivery] = useState<Delivery | null>(null);
     const [showForm, setShowForm] = useState(false);
 
     const fetchShift = async () => {
@@ -25,9 +26,14 @@ export default function IndividualShift() {
     }
 
     const addDeliveryToShift = async () => {
-        if (delivery.deliveryTime < shift.startTime
-            || delivery.deliveryTime > shift.endTime
-            || delivery.app != shift.app) {
+        if (!delivery) return;
+
+        const dTime = delivery.deliveryTime || "";
+        const dApp = delivery.app || "";
+
+        if (dTime < shift.startTime
+            || dTime > shift.endTime
+            || dApp != shift.app) {
             alert("Date and app must match shift");
             console.log(delivery.deliveryTime);
             console.log(shift.startTime);
@@ -70,9 +76,10 @@ export default function IndividualShift() {
                         setDelivery({
                             app: shift.app, // this ensures app is pre-populated
                             deliveryTime: shift.startTime,
-                            basePay: "",
-                            tipPay: "",
-                            mileage: "",
+                            basePay: 0,
+                            tipPay: 0,
+                            mileage: 0,
+                            totalPay: 0,
                             restaurant: "",
                             customerNeighborhood: "",
                             notes: "",
@@ -118,7 +125,7 @@ export default function IndividualShift() {
                                         step="0.01"
                                         min="1.00"
                                         placeholder="Base Pay"
-                                        onChange={(e) => setDelivery({...delivery, basePay: e.target.value})}
+                                        onChange={(e) => setDelivery({...delivery, basePay: parseFloat(e.target.value)})}
                                     />
                                 </Col>
                             </FormGroup>
@@ -130,7 +137,7 @@ export default function IndividualShift() {
                                         step="0.01"
                                         min="1.00"
                                         placeholder="Tip Pay"
-                                        onChange={(e) => setDelivery({...delivery, tipPay: e.target.value})}
+                                        onChange={(e) => setDelivery({...delivery, tipPay: parseFloat(e.target.value)})}
                                     />
                                 </Col>
                             </FormGroup>
@@ -142,7 +149,7 @@ export default function IndividualShift() {
                                         step="0.01"
                                         min="0.01"
                                         placeholder="Mileage"
-                                        onChange={(e) => setDelivery({ ...delivery, mileage: e.target.value })}
+                                        onChange={(e) => setDelivery({ ...delivery, mileage: parseFloat(e.target.value)})}
                                     />
                                 </Col>
                             </FormGroup>
@@ -184,7 +191,7 @@ export default function IndividualShift() {
                 </Modal>
             </div>
 
-            {shiftDeliveries.map((delivery: any) => 
+            {shiftDeliveries.map((delivery: Delivery) => 
                 <Col sm={6} key={delivery.id}>
                     <Card sx={{
                         mb: 3,
@@ -195,12 +202,12 @@ export default function IndividualShift() {
                         transition: "0.3s",
                     }}>
                         <CardContent sx={{ p: 2 }}>
-                            <Typography variant="h6" fontWeight="bold">Total Pay: ${delivery.totalPay.toFixed(2)}</Typography>
+                            <Typography variant="h6" fontWeight="bold">Total Pay: ${(delivery.totalPay ?? 0).toFixed(2)}</Typography>
                             <Typography sx={{ mt: 1 }}>
-                                <strong>Date Completed:</strong> {formatTime(delivery.deliveryTime)} {" "} <br />
-                                <strong>Base Pay:</strong> ${delivery.basePay.toFixed(2)} {" "} <br />
-                                <strong>Tip Pay:</strong> ${delivery.tipPay.toFixed(2)} {" "} <br />
-                                <strong>Mileage:</strong> {delivery.mileage.toFixed(2)} {" miles"} <br />
+                                <strong>Date Completed:</strong> {formatTime(delivery.deliveryTime ?? "")} {" "} <br />
+                                <strong>Base Pay:</strong> ${(delivery.basePay ?? 0).toFixed(2)} {" "} <br />
+                                <strong>Tip Pay:</strong> ${(delivery.tipPay ?? 0).toFixed(2)} {" "} <br />
+                                <strong>Mileage:</strong> {(delivery.mileage ?? 0).toFixed(2)} {" miles"} <br />
                                 <strong>App:</strong> {delivery.app} {" "} <br />
                                 <strong>Restaurant:</strong> {delivery.restaurant} {" "} <br />
                                 <strong>Customer Neighborhood:</strong> {delivery.customerNeighborhood} {" "} <br />
