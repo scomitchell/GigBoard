@@ -79,8 +79,26 @@ function AuthTokenListener() {
     return null;
 }
 
+function getValidToken() {
+    const raw = localStorage.getItem("token");
+    if (!raw) return null;
+
+    try {
+        const decoded = jwtDecode<GigBoardJwt>(raw);
+        const now = Math.floor(Date.now() / 1000);
+
+        if (decoded.exp && decoded.exp < now) {
+            localStorage.removeItem("token");
+            return null;
+        }
+        return raw;
+    } catch {
+        return null;
+    }
+}
+
 export default function App() {
-    const [token, setToken] = useState(localStorage.getItem("token"));
+    const [token, setToken] = useState(getValidToken());
 
     useEffect(() => {
         const handleLogout = () => {
