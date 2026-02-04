@@ -22,8 +22,8 @@ export default function PredictEarnings()
         }
 
         const data = {
-            startTime,
-            endTime,
+            startTime: startTime.length === 5 ? `${startTime}:00` : startTime,
+            endTime: endTime.length === 5 ? `${endTime}:00` : endTime,
             app,
             neighborhood
         };
