@@ -1,6 +1,6 @@
 import { Modal, FormGroup, FormControl, FormLabel, Row, Col, Dropdown } from "react-bootstrap";
 import { Card, CardContent, Typography, Button } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import * as client from "./client";
 import type { ShiftFilters } from "./client";
@@ -28,7 +28,7 @@ export default function MyShifts({ myShifts, setMyShifts }: {
     const [shiftToUpdate, setShiftToUpdate] = useState<FullShift | null>(null);
     
     // Fetch all or fitered shifts
-    const fetchShifts = async () => {
+    const fetchShifts = useCallback(async () => {
         // If any filters applied, call filteredShifts
         if (startTime || endTime || app) {
             const filters: ShiftFilters = {
@@ -48,7 +48,7 @@ export default function MyShifts({ myShifts, setMyShifts }: {
         setMyShifts(shifts);
         setShowForm(false);
         return;
-    }
+    }, [app, endTime, setMyShifts, startTime])
 
     // Delete shift from db
     const deleteShift = async (shiftId: number) => {
@@ -67,10 +67,10 @@ export default function MyShifts({ myShifts, setMyShifts }: {
     }
 
     // Fetch list of user used apps
-    const fetchApps = async () => {
+    const fetchApps = useCallback(async () => {
         const apps = await client.getUserApps();
         setUserApps(apps);
-    }
+    }, []);
 
     // Display time as date, time
     const formatTime = (date: string) => {
@@ -97,7 +97,7 @@ export default function MyShifts({ myShifts, setMyShifts }: {
     useEffect(() => {
         fetchShifts();
         fetchApps();
-    }, [])
+    }, [fetchApps, fetchShifts])
 
     // useEffect for reset filters
     useEffect(() => {
@@ -110,7 +110,7 @@ export default function MyShifts({ myShifts, setMyShifts }: {
             fetchShifts();
             setReset(false);
         }
-    }, [startTime, endTime, app, reset])
+    }, [startTime, endTime, app, reset, fetchShifts])
 
     return (
         <div id="da-my-shifts" className="mt-3 col-sm-8">

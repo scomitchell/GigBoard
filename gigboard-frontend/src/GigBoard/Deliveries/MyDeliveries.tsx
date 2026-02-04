@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   FormGroup,
   FormLabel,
@@ -46,7 +46,7 @@ export default function MyDeliveries({
   );
 
   // Initial fetch deliveries
-  const fetchDeliveries = async () => {
+  const fetchDeliveries = useCallback(async () => {
     // If filters applied, call getFilteredDeliveries, sort by date
     if (totalPay || basePay || tipPay || neighborhood || app || mileage) {
       const filters: DeliveryFilters = {
@@ -67,7 +67,7 @@ export default function MyDeliveries({
     // If no filters retrieve all deliveries, sort by date
     const deliveries = await client.findUserDeliveries();
     setMyDeliveries(deliveries);
-  };
+  }, [app, basePay, mileage, neighborhood, setMyDeliveries, tipPay, totalPay]);
 
   // Deletes delivery from the database
   const deleteDelivery = async (deliveryId: number) => {
@@ -84,16 +84,16 @@ export default function MyDeliveries({
   };
 
   // Retrieves list of user neighborhoods for dropdown
-  const fetchNeighborhoods = async () => {
+  const fetchNeighborhoods = useCallback(async () => {
     const userNeighborhoods = await client.findUserNeighborhoods();
     setNeighborhoods(userNeighborhoods);
-  };
+  }, []);
 
   // Retreieves list of user apps for dropdown
-  const fetchApps = async () => {
+  const fetchApps = useCallback(async () => {
     const userApps = await client.findUserApps();
     setApps(userApps);
-  };
+  }, []);
 
   // Converts datetime to readable format
   const formatTime = (date: string) => {
@@ -125,7 +125,7 @@ export default function MyDeliveries({
     fetchDeliveries();
     fetchNeighborhoods();
     fetchApps();
-  }, []);
+  }, [fetchApps, fetchDeliveries, fetchNeighborhoods]);
 
   // If reset intitiated and all cleared, re-fetch deliveries
   useEffect(() => {
@@ -141,7 +141,7 @@ export default function MyDeliveries({
       fetchDeliveries();
       setReset(false); // Reset the flag
     }
-  }, [totalPay, basePay, tipPay, neighborhood, app, reset]);
+  }, [totalPay, basePay, tipPay, neighborhood, app, reset, mileage, fetchDeliveries]);
 
   return (
     <div id="da-my-deliveries" className="mt-3 col-sm-8">

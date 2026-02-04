@@ -1,6 +1,6 @@
 import {Modal, FormGroup, FormControl, FormLabel, Row, Col, Dropdown} from "react-bootstrap";
 import { Button, Card, CardContent, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type {ExpenseFilters} from "./client";
 import * as client from "./client";
 import type { FullExpense } from "../types";
@@ -27,7 +27,7 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
     const [expenseToUpdate, setExpenseToUpdate] = useState<FullExpense | null>(null);
 
     // Fetch filtered or all expenses from db
-    const fetchExpenses = async () => {
+    const fetchExpenses = useCallback(async () => {
         // If any filter is applied, call API endpoint for filtered expenses
         if (amount || type || date) {
             const filters: ExpenseFilters = {
@@ -45,13 +45,13 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
 
         const expenses = await client.findMyExpenses();
         setMyExpenses(expenses);
-    }
+    }, [amount, date, setMyExpenses, type]);
 
     // Fetch all user expense types
-    const fetchTypes = async () => {
+    const fetchTypes = useCallback(async () => {
         const expenseTypes = await client.findExpenseTypes();
         setTypes(expenseTypes);
-    }
+    }, []);
 
 
     // Delete expense from db
@@ -94,7 +94,7 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
     useEffect(() => {
         fetchExpenses();
         fetchTypes();
-    }, [])
+    }, [fetchExpenses, fetchTypes])
 
     // UseEffect for resetting filters
     useEffect(() => {
@@ -107,7 +107,7 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
             fetchExpenses();
             setReset(false);
         }
-    }, [amount, type, date, reset])
+    }, [amount, type, date, reset, fetchExpenses])
 
     return (
         <div id="da-my-expenses" className="mt-3 col-sm-8">

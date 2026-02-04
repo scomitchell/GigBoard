@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser } from "./reducer";
 import { Row, Col, FormLabel, FormGroup, FormControl, Button } from "react-bootstrap";
@@ -14,13 +14,13 @@ export default function Profile() {
 
     const dispatch = useDispatch();
 
-    const fetchProfile = async () => {
+    const fetchProfile = useCallback(async () => {
         if (!currentUser) return;
         if (!currentUser.username) return;
         const user = await client.getUserByUsername(currentUser.username);
         setUser(user);
         setLoading(false);
-    }
+    }, [currentUser]);
 
     const updateProfile = async () => {
         const payload = { ...user };
@@ -35,7 +35,7 @@ export default function Profile() {
     useEffect(() => {
         setLoading(true);
         fetchProfile();
-    }, [currentUser]);
+    }, [currentUser, fetchProfile]);
 
     if (loading) {
         return (

@@ -1,4 +1,4 @@
-import { useEffect, useState} from "react";
+import { useCallback, useEffect, useState} from "react";
 import {Row, Col, Modal, FormGroup, FormControl, FormLabel} from "react-bootstrap";
 import { Card, CardContent, Typography, Button } from "@mui/material";
 import { useParams } from "react-router-dom";
@@ -15,15 +15,15 @@ export default function IndividualShift() {
     const [delivery, setDelivery] = useState<Delivery | null>(null);
     const [showForm, setShowForm] = useState(false);
 
-    const fetchShift = async () => {
+    const fetchShift = useCallback(async () => {
         const userShift = await client.findShiftById(Number(shiftId));
         setShift(userShift);
-    }
+    }, [shiftId]);
 
-    const fetchDeliveriesForShift = async () => {
+    const fetchDeliveriesForShift = useCallback(async () => {
         const userShiftDeliveries = await client.findDeliveriesForShift(Number(shiftId));
         setShiftDeliveries(userShiftDeliveries);
-    }
+    }, [shiftId]);
 
     const addDeliveryToShift = async () => {
         if (!delivery) return;
@@ -62,7 +62,7 @@ export default function IndividualShift() {
     useEffect(() => {
         fetchShift();
         fetchDeliveriesForShift();
-    }, [])
+    }, [fetchDeliveriesForShift, fetchShift])
 
     return (
         <div id="individiual-shifts">
