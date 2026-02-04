@@ -4,6 +4,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 import type { ReactNode } from "react";
 import { jwtDecode } from "jwt-decode";
@@ -31,24 +32,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(() =>
     localStorage.getItem("token"),
   );
-
-  function scheduleAutoLogout() {
-    setTimeout(
-      () => {
-        // Clear token and log out user
-        localStorage.removeItem("token");
-        dispatch(setCurrentUser(null));
-        navigate("/GigBoard/Account/Login");
-      },
-      60 * 60 * 1000,
-    );
-  }
+  const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const logout = useCallback(() => {
     console.log("Logging out");
     localStorage.removeItem("token");
     setToken(null);
     dispatch(setCurrentUser(null));
+
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+      logoutTimerRef.current = null;
+  }
   }, [dispatch]);
 
   const processToken = useCallback(
@@ -64,7 +59,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         setToken(rawToken);
         localStorage.setItem("token", rawToken);
-        scheduleAutoLogout();
+
+        const expirationTime = decoded.exp || (now + 3600);
+        const msRemaining = (expirationTime * 1000) - Date.now();
+
+        if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+
+        const timerId = setTimeout(() => {
+          console.log('Token expired');
+          logout();
+          navigate('/GigBoard/Account/Login');
+        }, msRemaining);
+
+        logoutTimerRef.current = timerId;
 
         const user = {
           id: decoded[
@@ -81,7 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout();
       }
     },
-    [dispatch, logout],
+    [dispatch, logout, navigate],
   );
 
   useEffect(() => {
@@ -94,12 +101,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === "token") {
-        // If another tab REMOVED the token (logout)
         if (event.newValue === null) {
           logout();
-        }
-        // If another tab UPDATED the token (login / refresh)
-        else {
+        } else {
           processToken(event.newValue);
         }
       }

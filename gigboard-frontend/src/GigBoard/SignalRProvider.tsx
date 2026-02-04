@@ -67,7 +67,6 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
         connection.stop().then(() => setConnection(null));
       }
       clearStats();
-      logout();
       return;
     }
 

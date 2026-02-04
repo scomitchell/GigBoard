@@ -1,5 +1,5 @@
 import * as client from "./client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { Card, CardContent, Typography } from "@mui/material";
 import PredictEarnings from "./PredictEarnings";
@@ -9,12 +9,6 @@ import BaseByAppsChart from "./BaseByAppsChart";
 import HourlyEarningsChart from "./HourlyEarningsChart";
 import EarningsDonutChart from "./EarningsDonutChart";
 import TipsByAppChart from "./TipsByAppChart";
-import type { HourlyEarningsProps } from "./HourlyEarningsChart";
-import type { EarningsChartProps } from "./EarningsChart";
-import type { TipNeighborhoodsProps } from "./TipsByNeighborhoodChart";
-import type { BaseByAppProps } from "./BaseByAppsChart";
-import type { EarningsDonutProps } from "./EarningsDonutChart";
-import type { TipsByAppProps } from "./TipsByAppChart";
 import type { StatsType, ShiftStatsType, ExpenseStatsType } from "../SignalRProvider";
 import { useSignalR } from "../Contexts/SignalRContext";
 import "../../index.css";
@@ -25,34 +19,6 @@ export type MonthlySpendingType = {
 };
 
 export default function Statistics() {
-    // Pay statistics
-    const [averagePay, setAveragePay] = useState(0);
-    const [averageBase, setAverageBase] = useState(0);
-    const [averageTip, setAverageTip] = useState(0);
-    const [avgDollarPerMile, setAvgDollarPerMile] = useState(0);
-    const [avgTipPerMile, setAvgTipPerMile] = useState(0);
-
-    // Location Statistics
-    const [restaurant, setRestaurant] = useState({ restaurant: "", avgTotalPay: 0 });
-    const [restaurantWithMost, setRestaurantWithMost] = useState({ restaurantWithMost: "", orderCount: 0 });
-
-    // Expense statistics
-    const [monthlySpending, setMonthlySpending] = useState(0);
-    const [monthlySpendingByType, setMonthlySpendingByType] = useState<MonthlySpendingType[]>([]);
-
-    // Shift statistics
-    const [averageShiftLength, setAverageShiftLength] = useState<number | null>(null);
-    const [appWithMostShifts, setAppWithMostShifts] = useState<string | null>(null);
-    const [avgDeliveriesPerShift, setAvgDeliveriesPerShift] = useState(0);
-
-    // Charts
-    const [plotlyEarningsData, setPlotlyEarningsData] = useState<EarningsChartProps["data"] | null>(null);
-    const [plotlyTipNeighborhoodsData, setPlotlyTipNeighborhoodsData] = useState<TipNeighborhoodsProps["data"] | null>(null);
-    const [plotlyBaseByAppData, setPlotlyBaseByAppData] = useState<BaseByAppProps["data"] | null>(null);
-    const [hourlyEarningsData, setHourlyEarningsData] = useState<HourlyEarningsProps["data"] | null>(null);
-    const [donutChartData, setDonutChartData] = useState<EarningsDonutProps["data"] | null>(null);
-    const [tipsByAppData, setTipsByAppData] = useState<TipsByAppProps["data"] | null>(null);
-
     // Loading
     const [loading, setLoading] = useState(true);
 
@@ -64,7 +30,7 @@ export default function Statistics() {
         setDeliveryStats, setShiftStats, setExpenseStats } = useSignalR();
 
     // Fetch Statistics
-    const fetchStatistics = async () => {
+    const fetchStatistics = useCallback(async () => {
         // Delivery Statistics
         // If stats does not exist, fetch from API and set, else pull its values
         if (!stats) {
@@ -101,49 +67,25 @@ export default function Statistics() {
                 };
 
                 setDeliveryStats(initialDeliveryStats);
-
-                setAveragePay(avgPay ?? 0);
-                setAverageBase(avgBase ?? 0);
-                setAverageTip(avgTip ?? 0);
-                setAvgDollarPerMile(dollarPerMile ?? 0);
-                setAvgTipPerMile(tipPerMile ?? 0);
-                setRestaurant(bestRestaurant ?? { restaurant: "N/A", avgTotalPay: 0 });
-                setRestaurantWithMost(restaurantWithMostOrders ?? { restaurantWithMost: "N/A", orderCount: 0 });
-                setPlotlyEarningsData(userPlotlyEarningsData);
-                setPlotlyTipNeighborhoodsData(userTipNeighborhoodsData);
-                setPlotlyBaseByAppData(userBaseByAppData);
-                setTipsByAppData(userTipsByAppData);
-                setHourlyEarningsData(userHourlyEarningsData);
-                setDonutChartData(userEarningsDonutData);
             } catch {
-                setAveragePay(0)
-                setAverageBase(0)
-                setAverageTip(0);
-                setAvgDollarPerMile(0);
-                setAvgTipPerMile(0);
-                setRestaurant({ restaurant: "N/A", avgTotalPay: 0 });
-                setRestaurantWithMost({ restaurantWithMost: "N/A", orderCount: 0 });
-                setPlotlyEarningsData(null);
-                setPlotlyTipNeighborhoodsData(null);
-                setPlotlyBaseByAppData(null);
-                setTipsByAppData(null);
-                setHourlyEarningsData(null);
-                setDonutChartData(null);
+                const initialDeliveryStats: StatsType = {
+                    avgPay: 0,
+                    avgBase: 0,
+                    avgTip: 0,
+                    dollarPerMile: 0,
+                    highestPayingRestaurant: { restaurant: "N/A", avgTotalPay: 0 },
+                    restaurantWithMost: { restaurantWithMost: "N/A", orderCount: 0 },
+                    tipPerMile: 0,
+                    plotlyEarningsData: null,
+                    plotlyNeighborhoodsData: null,
+                    appsByBaseData: null,
+                    tipsByAppData: null,
+                    hourlyEarningsData: null,
+                    donutChartData: null
+                };
+
+                setDeliveryStats(initialDeliveryStats);
             }
-        } else {
-            setAveragePay(stats.avgPay);
-            setAverageBase(stats.avgBase);
-            setAverageTip(stats.avgTip);
-            setAvgDollarPerMile(stats.dollarPerMile);
-            setRestaurant(stats.highestPayingRestaurant);
-            setRestaurantWithMost(stats.restaurantWithMost);
-            setAvgTipPerMile(stats.tipPerMile);
-            setPlotlyEarningsData(stats.plotlyEarningsData);
-            setPlotlyTipNeighborhoodsData(stats.plotlyNeighborhoodsData);
-            setPlotlyBaseByAppData(stats.appsByBaseData);
-            setTipsByAppData(stats.tipsByAppData);
-            setHourlyEarningsData(stats.hourlyEarningsData);
-            setDonutChartData(stats.donutChartData);
         }
 
         // Shift Statistics
@@ -161,19 +103,15 @@ export default function Statistics() {
                 };
 
                 setShiftStats(initialShiftStats);
-
-                setAverageShiftLength(averageUserShiftLength);
-                setAppWithMostShifts(appWithMostUserShifts);
-                setAvgDeliveriesPerShift(avgOrdersPerShift);
             } catch {
-                setAverageShiftLength(0);
-                setAppWithMostShifts("N/A");
-                setAvgDeliveriesPerShift(0);
+                const initialShiftStats: ShiftStatsType = {
+                    averageShiftLength: 0,
+                    appWithMostShifts: "N/A",
+                    averageDeliveriesForShift: 0
+                };
+
+                setShiftStats(initialShiftStats);
             }
-        } else {
-            setAverageShiftLength(shiftStats.averageShiftLength);
-            setAppWithMostShifts(shiftStats.appWithMostShifts);
-            setAvgDeliveriesPerShift(shiftStats.averageDeliveriesForShift);
         }
 
         if (!expenseStats) {
@@ -187,20 +125,18 @@ export default function Statistics() {
                 };
 
                 setExpenseStats(initialExpenseStats);
-
-                setMonthlySpending(averageMonthlyExpenses ?? 0);
-                setMonthlySpendingByType(avgMonthlySpendingByType ?? []);
             } catch {
-                setMonthlySpending(0);
-                setMonthlySpendingByType([]);
+                const initialExpenseStats: ExpenseStatsType = {
+                    averageMonthlySpending: 0,
+                    averageSpendingByType: []
+                };
+
+                setExpenseStats(initialExpenseStats);
             }
-        } else {
-            setMonthlySpending(expenseStats.averageMonthlySpending);
-            setMonthlySpendingByType(expenseStats.averageSpendingByType);
         }
 
         setLoading(false);
-    }
+    }, [expenseStats, setDeliveryStats, setExpenseStats, setShiftStats, shiftStats, stats]);
 
     const getContent = () => {
         if (page === "stats") {
@@ -219,8 +155,8 @@ export default function Statistics() {
                                 flexDirection: "column"
                             }}>
                                 <CardContent sx={{ p: 2, flex: 1 }}>
-                                    {donutChartData &&
-                                        <EarningsDonutChart data={donutChartData} />
+                                    {stats && stats.donutChartData &&
+                                        <EarningsDonutChart data={stats.donutChartData} />
                                     }
                                 </CardContent>
                             </Card>
@@ -253,11 +189,11 @@ export default function Statistics() {
                                             </div>
                                             :
                                             <div>
-                                                <strong>Average total pay:</strong> ${averagePay.toFixed(2)} <br />
-                                                <strong>Average base pay:</strong> ${averageBase.toFixed(2)} <br />
-                                                <strong>Average tip pay:</strong> ${averageTip.toFixed(2)} <br /> <br />
-                                                <strong>Average dollar/mile:</strong> ${avgDollarPerMile.toFixed(2)} <br />
-                                                <strong>Average tip/mile</strong> ${avgTipPerMile.toFixed(2)} <br />
+                                                <strong>Average total pay:</strong> ${stats && stats.avgPay.toFixed(2)} <br />
+                                                <strong>Average base pay:</strong> ${stats && stats.avgBase.toFixed(2)} <br />
+                                                <strong>Average tip pay:</strong> ${stats && stats.avgTip.toFixed(2)} <br /> <br />
+                                                <strong>Average dollar/mile:</strong> ${stats && stats.dollarPerMile.toFixed(2)} <br />
+                                                <strong>Average tip/mile</strong> ${stats && stats.tipPerMile.toFixed(2)} <br />
                                             </div>
                                         }
                                     </Typography>
@@ -279,8 +215,8 @@ export default function Statistics() {
                                     minWidth: 0
                                 }}>
                                     <CardContent sx={{ p: 2, flex: 1 }}>
-                                        {plotlyEarningsData &&
-                                            <EarningsChart data={plotlyEarningsData} />
+                                        {stats && stats.plotlyEarningsData &&
+                                            <EarningsChart data={stats.plotlyEarningsData} />
                                         }
                                     </CardContent>
                                 </Card>
@@ -301,8 +237,8 @@ export default function Statistics() {
                                     minWidth: 0
                                 }}>
                                     <CardContent sx={{ p: 2, flex: 1 }}>
-                                        {hourlyEarningsData &&
-                                            <HourlyEarningsChart data={hourlyEarningsData} />
+                                        {stats && stats.hourlyEarningsData &&
+                                            <HourlyEarningsChart data={stats.hourlyEarningsData} />
                                         }
                                     </CardContent>
                                 </Card>
@@ -336,13 +272,13 @@ export default function Statistics() {
                                             </div>
                                             :
                                             <div>
-                                                <strong>Best paying restaurant:</strong> {restaurant.restaurant} <br />
+                                                <strong>Best paying restaurant:</strong> {stats && stats.highestPayingRestaurant.restaurant} <br />
                                                 <span style={{ marginLeft: "1rem" }}>
-                                                    <strong>- Average Total:</strong> ${restaurant.avgTotalPay.toFixed(2)} <br />
+                                                    <strong>- Average Total:</strong> ${stats && stats.highestPayingRestaurant.avgTotalPay.toFixed(2)} <br />
                                                 </span>
-                                                <strong>Restaurant with most orders:</strong> {restaurantWithMost.restaurantWithMost} <br />
+                                                <strong>Restaurant with most orders:</strong> {stats && stats.restaurantWithMost.restaurantWithMost} <br />
                                                 <span style={{ marginLeft: "1rem" }}>
-                                                    <strong>- Number of Orders:</strong> {restaurantWithMost.orderCount}
+                                                    <strong>- Number of Orders:</strong> {stats && stats.restaurantWithMost.orderCount}
                                                 </span>
                                             </div>
                                         }
@@ -364,9 +300,9 @@ export default function Statistics() {
                                 <CardContent sx={{ p: 2 }}>
                                     <Typography variant="h6" fontWeight="bold">Shift Statistics</Typography>
                                     <Typography variant="body1" component="div" sx={{ mt: 1 }}>
-                                        <strong>Average shift length:</strong> {averageShiftLength?.toFixed(0)} minutes <br />
-                                        <strong>Average number of deliveries per shift:</strong> {Math.floor(avgDeliveriesPerShift)} <br />
-                                        <strong>App with most shifts:</strong> {appWithMostShifts} <br />
+                                        <strong>Average shift length:</strong> {shiftStats && shiftStats.averageShiftLength?.toFixed(0)} minutes <br />
+                                        <strong>Average number of deliveries per shift:</strong> {shiftStats && Math.floor(shiftStats.averageDeliveriesForShift)} <br />
+                                        <strong>App with most shifts:</strong> {shiftStats && shiftStats.appWithMostShifts} <br />
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -387,8 +323,8 @@ export default function Statistics() {
                                     minWidth: 0
                                 }}>
                                     <CardContent sx={{ p: 2, flex: 1 }}>
-                                        {plotlyTipNeighborhoodsData &&
-                                            <TipsByNeighborhoodChart data={plotlyTipNeighborhoodsData} />
+                                        {stats && stats.plotlyNeighborhoodsData &&
+                                            <TipsByNeighborhoodChart data={stats.plotlyNeighborhoodsData} />
                                         }
                                     </CardContent>
                                 </Card>
@@ -409,8 +345,8 @@ export default function Statistics() {
                                 minWidth: 0
                             }}>
                                 <CardContent sx={{ p: 2, flex: 1 }}>
-                                    {plotlyBaseByAppData &&
-                                        <BaseByAppsChart data={plotlyBaseByAppData} />
+                                    {stats && stats.appsByBaseData &&
+                                        <BaseByAppsChart data={stats.appsByBaseData} />
                                     }
                                 </CardContent>
                             </Card>
@@ -429,8 +365,8 @@ export default function Statistics() {
                                 minWidth: 0
                             }}>
                                 <CardContent sx={{ p: 2, flex: 1 }}>
-                                    {tipsByAppData &&
-                                        <TipsByAppChart data={tipsByAppData} />
+                                    {stats && stats.tipsByAppData &&
+                                        <TipsByAppChart data={stats.tipsByAppData} />
                                     }
                                 </CardContent>
                             </Card>
@@ -449,10 +385,10 @@ export default function Statistics() {
                                 <CardContent sx={{ p: 2 }}>
                                     <Typography variant="h6" fontWeight="bold">Expense Statistics</Typography>
                                     <Typography variant="body1" component="div" sx={{ mt: 1 }}>
-                                        <strong>Average monthly spending:</strong> ${monthlySpending.toFixed(2)} <br />
+                                        <strong>Average monthly spending:</strong> ${expenseStats?.averageMonthlySpending.toFixed(2)} <br />
                                         <strong>Monthly spending by type:</strong>
                                         <div style={{ marginLeft: "1rem" }}>
-                                            {monthlySpendingByType.map((average, idx) => (
+                                            {expenseStats?.averageSpendingByType.map((average, idx) => (
                                                 <div key={idx}>
                                                     <strong>- {average.type}:</strong> ${average.avgExpense.toFixed(2)}
                                                 </div>
@@ -476,7 +412,7 @@ export default function Statistics() {
 
     useEffect(() => {
         fetchStatistics()
-    }, [])
+    }, [fetchStatistics])
 
     return (
         <div id="da-statistics">

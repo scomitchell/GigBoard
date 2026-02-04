@@ -42,6 +42,7 @@ export default function HourlyPayChart({data}: HourlyEarningsProps) {
                         tickangle: -45,
                         showgrid: true,
                         zeroline: false,
+                        tickformat: '%H:%M:%S',
                         hoverformat: '%H:%M:%S'
                     },
                     yaxis: {
