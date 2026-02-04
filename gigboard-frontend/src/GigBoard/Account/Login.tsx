@@ -1,11 +1,11 @@
 import { FormControl, Button } from "react-bootstrap";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setCurrentUser } from "./reducer";
+import { useAuth } from "../Contexts/AuthContext";
 import * as client from "./client";
 
 export default function Login() {
+    const { login } = useAuth();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -13,28 +13,13 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-
-    function scheduleAutoLogout() {
-        setTimeout(() => {
-            // Clear token and log out user
-            localStorage.removeItem("token");
-            dispatch(setCurrentUser(null));
-            navigate("/GigBoard/Account/Login");
-        }, 60 * 60 * 1000);
-    }
 
     const handleLogin = async () => {
         setLoading(true);
         try {
             const response = await client.loginUser({ username, password });
-            localStorage.setItem("token", response.token);
-            scheduleAutoLogout();
-
-            dispatch(setCurrentUser(response.user));
-            window.dispatchEvent(new Event("login"));
+            login(response.token);
             navigate("/");
-            setLoading(false);
         } catch (err: Error | unknown) {
             if (err instanceof Error) {
                 setError(err.message);

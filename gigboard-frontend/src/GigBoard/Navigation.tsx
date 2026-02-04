@@ -1,25 +1,17 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { setCurrentUser } from "./Account/reducer"
+import { Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { FaHome } from "react-icons/fa";
-import { useSignalR } from "./SignalRContext";
+import { useAuth } from './Contexts/AuthContext';
 import { BsBagFill, BsPersonFillGear, BsCurrencyDollar, BsClockFill, BsArrowBarLeft, BsArrowBarUp } from "react-icons/bs";
 import type { RootState } from "./store";
 
 export default function Navigation() {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const { logout } = useAuth();
     const { pathname } = useLocation();
     const { currentUser } = useSelector((state: RootState) => state.accountReducer);
-    const { clearStats } = useSignalR();
 
     const handleLogout = () => {
-        clearStats();
-        localStorage.removeItem("token");
-
-        window.dispatchEvent(new Event("logout"));
-        dispatch(setCurrentUser(null));
-        navigate("/");
+        logout();
     };
 
     return (

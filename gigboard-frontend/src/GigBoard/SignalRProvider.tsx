@@ -1,124 +1,125 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import * as signalR from "@microsoft/signalr";
 import type { MonthlySpendingType } from "./Statistics";
-import { SignalRContext } from "./SignalRContext";
-
-type SignalRProps = {
-    children: ReactNode,
-    token: string | null
-};
+import { SignalRContext } from "./Contexts/SignalRContext";
+import { useAuth } from "./Contexts/AuthContext";
 
 export type StatsType = {
-    avgPay: number,
-    avgBase: number,
-    avgTip: number,
-    dollarPerMile: number,
-    highestPayingRestaurant: {restaurant: string, avgTotalPay: number},
-    restaurantWithMost: {restaurantWithMost: string, orderCount: number},
-    tipPerMile: number,
-    plotlyEarningsData: {dates: string[], earnings: number[]} | null,
-    plotlyNeighborhoodsData: {neighborhoods: string[], tipPays: number[]} | null,
-    appsByBaseData: {apps: string[], basePays: number[]} | null,
-    tipsByAppData: {tipApps: string[], appTipPays: number[]} | null,
-    hourlyEarningsData: {hours: string[], earnings: number[]} | null,
-    donutChartData: {totalPay: number, totalBasePay: number, totalTipPay: number} | null
+  avgPay: number;
+  avgBase: number;
+  avgTip: number;
+  dollarPerMile: number;
+  highestPayingRestaurant: { restaurant: string; avgTotalPay: number };
+  restaurantWithMost: { restaurantWithMost: string; orderCount: number };
+  tipPerMile: number;
+  plotlyEarningsData: { dates: string[]; earnings: number[] } | null;
+  plotlyNeighborhoodsData: {
+    neighborhoods: string[];
+    tipPays: number[];
+  } | null;
+  appsByBaseData: { apps: string[]; basePays: number[] } | null;
+  tipsByAppData: { tipApps: string[]; appTipPays: number[] } | null;
+  hourlyEarningsData: { hours: string[]; earnings: number[] } | null;
+  donutChartData: {
+    totalPay: number;
+    totalBasePay: number;
+    totalTipPay: number;
+  } | null;
 };
 
 export type ShiftStatsType = {
-    averageShiftLength: number,
-    appWithMostShifts: string,
-    averageDeliveriesForShift: number
+  averageShiftLength: number;
+  appWithMostShifts: string;
+  averageDeliveriesForShift: number;
 };
 
 export type ExpenseStatsType = {
-    averageMonthlySpending: number,
-    averageSpendingByType: MonthlySpendingType[]
+  averageMonthlySpending: number;
+  averageSpendingByType: MonthlySpendingType[];
 };
 
-export const SignalRProvider = ({ children, token }: SignalRProps) => {
-    const [connection, setConnection] = useState<signalR.HubConnection | null>(null)
-    const [stats, setStats] = useState<StatsType | null>(null);
-    const [shiftStats, setShiftStats] = useState<ShiftStatsType | null>(null);
-    const [expenseStats, setExpenseStats] = useState<ExpenseStatsType | null>(null);
-    const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
+export const SignalRProvider = ({ children }: { children: ReactNode }) => {
+  const { token, logout } = useAuth();
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(
+    null,
+  );
 
-    useEffect(() => {
-        if (!token) {
-            return;
-        }
+  // State holders
+  const [stats, setStats] = useState<StatsType | null>(null);
+  const [shiftStats, setShiftStats] = useState<ShiftStatsType | null>(null);
+  const [expenseStats, setExpenseStats] = useState<ExpenseStatsType | null>(
+    null,
+  );
 
-        const conn = new signalR.HubConnectionBuilder()
-            .withUrl(`${REMOTE_SERVER}/hubs/statistics`, {
-                accessTokenFactory: () => token
-            })
-            .withAutomaticReconnect()
-            .build();
+  // Remote Server
+  const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
 
-        conn.start()
-            .then(() => console.log("SignalR connected"))
-            .catch((err) => console.error("SignalR connection failed:", err));
+  const clearStats = () => {
+    setStats(null);
+    setShiftStats(null);
+    setExpenseStats(null);
+  };
 
-        conn.on("StatisticsUpdated", (updatedStats) => {
-            setStats(updatedStats);
-        });
+  useEffect(() => {
+    if (!token) {
+      if (connection) {
+        connection.stop().then(() => setConnection(null));
+      }
+      clearStats();
+      logout();
+      return;
+    }
 
-        conn.on("ShiftStatisticsUpdated", (updatedShiftStats) => {
-            setShiftStats(updatedShiftStats);
-        });
+    const conn = new signalR.HubConnectionBuilder()
+      .withUrl(`${REMOTE_SERVER}/hubs/statistics`, {
+        accessTokenFactory: () => token,
+        transport:
+          signalR.HttpTransportType.WebSockets |
+          signalR.HttpTransportType.LongPolling,
+      })
+      .withAutomaticReconnect([0, 2000, 10000, 30000])
+      .build();
 
-        conn.on("ExpenseStatisticsUpdated", (updatedExpenseStats) => {
-            setExpenseStats(updatedExpenseStats);
-        });
+    conn.on("StatisticsUpdated", setStats);
 
+    conn.on("ShiftStatisticsUpdated", setShiftStats);
+
+    conn.on("ExpenseStatisticsUpdated", setExpenseStats);
+
+    conn
+      .start()
+      .then(() => {
+        console.log("SignalR connected");
         setConnection(conn);
-
-        return () => {
-            conn.stop();
-          };
-    }, [REMOTE_SERVER, token]);
-
-    useEffect(() => {
-        if (!token && connection) {
-            connection.stop();
-            setConnection(null);
-            setStats(null);
-            setShiftStats(null);
-            setExpenseStats(null);
+      })
+      .catch((err) => {
+        console.error("SignalR connection failed:", err);
+        if (err.message && err.message.includes("401")) {
+          logout();
         }
-    }, [connection, token])
+      });
 
-    const isInitialized = useRef(false);
-    useEffect(() => {
-        if (isInitialized.current) {
-            clearStats();
-        } else {
-            isInitialized.current = true;
-        }
-    }, [token]);
-
-    const clearStats = () => {
-        setStats(null);
-        setShiftStats(null);
-        setExpenseStats(null);
+    return () => {
+      conn.stop();
+      setConnection(null);
     };
+  }, [REMOTE_SERVER, logout, token]);
 
-    const setDeliveryStats = (stats: StatsType) => {
-        setStats(stats);
-    }
-
-    const setShiftsStats = (stats: ShiftStatsType) => {
-        setShiftStats(stats);
-    }
-
-    const setExpensesStats = (stats: ExpenseStatsType) => {
-        setExpenseStats(stats);
-    }
-
-    return (
-        <SignalRContext.Provider value={{connection, stats, shiftStats, expenseStats,
-            setDeliveryStats, setShiftsStats, setExpensesStats, clearStats}}>
-            {children}
-        </SignalRContext.Provider>
-    );
+  return (
+    <SignalRContext.Provider
+      value={{
+        connection,
+        stats,
+        shiftStats,
+        expenseStats,
+        setDeliveryStats: setStats,
+        setShiftStats,
+        setExpenseStats,
+        clearStats,
+      }}
+    >
+      {children}
+    </SignalRContext.Provider>
+  );
 };

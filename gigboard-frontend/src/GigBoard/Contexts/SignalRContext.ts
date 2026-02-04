@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { ExpenseStatsType, ShiftStatsType, StatsType } from "./SignalRProvider";
+import type { ExpenseStatsType, ShiftStatsType, StatsType } from "../SignalRProvider";
 import * as signalR from "@microsoft/signalr";
 
 type SignalRContextType = {
@@ -9,8 +9,8 @@ type SignalRContextType = {
     expenseStats: ExpenseStatsType | null,
     clearStats: () => void,
     setDeliveryStats: (stats: StatsType) => void,
-    setShiftsStats: (stats: ShiftStatsType) => void,
-    setExpensesStats: (stats: ExpenseStatsType) => void
+    setShiftStats: (stats: ShiftStatsType) => void,
+    setExpenseStats: (stats: ExpenseStatsType) => void
 };
 
 export const SignalRContext = createContext<SignalRContextType | null>(null);

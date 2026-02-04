@@ -16,7 +16,7 @@ import type { BaseByAppProps } from "./BaseByAppsChart";
 import type { EarningsDonutProps } from "./EarningsDonutChart";
 import type { TipsByAppProps } from "./TipsByAppChart";
 import type { StatsType, ShiftStatsType, ExpenseStatsType } from "../SignalRProvider";
-import { useSignalR } from "../SignalRContext";
+import { useSignalR } from "../Contexts/SignalRContext";
 import "../../index.css";
 
 export type MonthlySpendingType = {
@@ -61,7 +61,7 @@ export default function Statistics() {
 
     // Remote server
     const { stats, shiftStats, expenseStats, 
-        setDeliveryStats, setShiftsStats, setExpensesStats } = useSignalR();
+        setDeliveryStats, setShiftStats, setExpenseStats } = useSignalR();
 
     // Fetch Statistics
     const fetchStatistics = async () => {
@@ -160,7 +160,7 @@ export default function Statistics() {
                     averageDeliveriesForShift: avgOrdersPerShift
                 };
 
-                setShiftsStats(initialShiftStats);
+                setShiftStats(initialShiftStats);
 
                 setAverageShiftLength(averageUserShiftLength);
                 setAppWithMostShifts(appWithMostUserShifts);
@@ -186,7 +186,7 @@ export default function Statistics() {
                     averageSpendingByType: avgMonthlySpendingByType
                 };
 
-                setExpensesStats(initialExpenseStats);
+                setExpenseStats(initialExpenseStats);
 
                 setMonthlySpending(averageMonthlyExpenses ?? 0);
                 setMonthlySpendingByType(avgMonthlySpendingByType ?? []);
