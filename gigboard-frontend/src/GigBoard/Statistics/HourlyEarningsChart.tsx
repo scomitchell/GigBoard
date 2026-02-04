@@ -42,14 +42,16 @@ export default function HourlyPayChart({data}: HourlyEarningsProps) {
                         tickangle: -45,
                         showgrid: true,
                         zeroline: false,
-                        tickformat: '%H:%M:%S',
-                        hoverformat: '%H:%M:%S'
+                        tickvals: data.hours,
+                        ticktext: data.hours.map(h => `${h.toString().padStart(2, '0')}:00`)
                     },
                     yaxis: {
-                        title: { text: "Earnings ($)", font: { size: 16 } },
+                        title: { text: "Earnings ($)", font: { size: 16 }, standoff: 20 },
                         showgrid: true,
                         zeroline: true,
-                        tickformat: ".1f"
+                        tickformat: ".1f",
+                        tickvals: data.earnings,
+                        ticktext: data.earnings.map(e => `$${e.toFixed(2).toString()}`)
                     },
                     plot_bgcolor: "white",
                     paper_bgcolor: "white",

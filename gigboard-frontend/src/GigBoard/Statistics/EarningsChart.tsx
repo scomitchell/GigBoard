@@ -34,13 +34,13 @@ export default function EarningsChart({ data }: EarningsChartProps)
                     title: { text: "Earnings Over Time", font: { size: 20, weight: "bold" } },
                     xaxis: {
                         title: { text: "Date", font: { size: 16 }, standoff: 30 },
+                        type: 'date',
                         tickangle: -30,
                         showgrid: true,
                         zeroline: false,
-                        tickformat: "%b %d, %Y"
                     },
                     yaxis: {
-                        title: { text: "Earnings ($)", font: { size: 16 } },
+                        title: { text: "Earnings ($)", font: { size: 16 }, standoff: 20 },
                         showgrid: true,
                         zeroline: false,
                         tickformat: ".1f",
