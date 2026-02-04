@@ -134,23 +134,23 @@ app.UseAuthorization();
 // Enable Hangfire dashboard
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
-    Authorization = new[]
-    {
+    Authorization =
+    [
         new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions
         {
             SslRedirect = false,
             RequireSsl = false,
             LoginCaseSensitive = true,
-            Users = new []
-            {
+            Users =
+            [
                 new BasicAuthAuthorizationUser
                 {
                     Login = builder.Configuration["HangfireSettings:Username"],
                     PasswordClear = builder.Configuration["HangfireSettings:Password"]
                 }
-            }
+            ]
         })
-    }
+    ]
 });
 
 
