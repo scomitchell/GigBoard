@@ -8,6 +8,7 @@ using GigBoardBackend.Data;
 using GigBoardBackend.Services;
 using System.Text.Json.Serialization;
 using GigBoard.Hubs;
+using Hangfire.Dashboard.BasicAuthorization;
 
 var builder = WebApplication.CreateBuilder(args);
 DotEnv.Load();
@@ -131,7 +132,26 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Enable Hangfire dashboard
-app.UseHangfireDashboard("/hangfire");
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[]
+    {
+        new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions
+        {
+            SslRedirect = false,
+            RequireSsl = false,
+            LoginCaseSensitive = true,
+            Users = new []
+            {
+                new BasicAuthAuthorizationUser
+                {
+                    Login = builder.Configuration["HangfireSettings:Username"],
+                    PasswordClear = builder.Configuration["HangfireSettings:Password"]
+                }
+            }
+        })
+    }
+});
 
 
 // Set hub to /hub/statistics
