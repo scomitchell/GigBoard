@@ -28,24 +28,21 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
 
     // Fetch filtered or all expenses from db
     const fetchExpenses = useCallback(async () => {
-        // If any filter is applied, call API endpoint for filtered expenses
-        if (amount || type || date) {
-            const filters: ExpenseFilters = {
-                amount: amount,
-                type: type,
-                date: date
-            }
-
-            const expenses = await client.findFilteredExpenses(filters);
-
-            setMyExpenses(expenses);
-            setShowForm(false);
-            return;
-        }
-
         const expenses = await client.findMyExpenses();
         setMyExpenses(expenses);
-    }, [amount, date, setMyExpenses, type]);
+    }, [setMyExpenses]);
+
+    const applyFilters = async () => {
+        const filters: ExpenseFilters = {
+            amount: amount,
+            type: type,
+            date: date
+        }
+
+        const expenses = await client.findFilteredExpenses(filters);
+        setMyExpenses(expenses);
+        setShowForm(false);
+    }
 
     // Fetch all user expense types
     const fetchTypes = useCallback(async () => {
@@ -166,7 +163,7 @@ export default function MyExpenses({myExpenses, setMyExpenses} : {
                                 </select>
                             </Col>
                         </FormGroup>
-                        <Button onClick={fetchExpenses} variant="contained" color="primary">
+                        <Button onClick={applyFilters} variant="contained" color="primary">
                             Filter Expenses
                         </Button>
                     </div>

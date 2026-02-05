@@ -47,27 +47,24 @@ export default function MyDeliveries({
 
   // Initial fetch deliveries
   const fetchDeliveries = useCallback(async () => {
-    // If filters applied, call getFilteredDeliveries, sort by date
-    if (totalPay || basePay || tipPay || neighborhood || app || mileage) {
-      const filters: DeliveryFilters = {
-        totalPay: totalPay,
-        basePay: basePay,
-        tipPay: tipPay,
-        mileage: mileage,
-        customerNeighborhood: neighborhood,
-        app: app,
-      };
-
-      const deliveries = await client.getFilteredDeliveries(filters);
-      setMyDeliveries(deliveries);
-      setShowForm(false);
-      return;
-    }
-
-    // If no filters retrieve all deliveries, sort by date
     const deliveries = await client.findUserDeliveries();
     setMyDeliveries(deliveries);
-  }, [app, basePay, mileage, neighborhood, setMyDeliveries, tipPay, totalPay]);
+  }, [setMyDeliveries]);
+
+  const applyFilters = async () => {
+    const filters: DeliveryFilters = {
+      totalPay,
+      basePay,
+      tipPay,
+      mileage,
+      customerNeighborhood: neighborhood,
+      app,
+    };
+  
+    const deliveries = await client.getFilteredDeliveries(filters);
+    setMyDeliveries(deliveries);
+    setShowForm(false);
+  };
 
   // Deletes delivery from the database
   const deleteDelivery = async (deliveryId: number) => {
@@ -285,7 +282,7 @@ export default function MyDeliveries({
               </Col>
             </FormGroup>
             <Button
-              onClick={fetchDeliveries}
+              onClick={applyFilters}
               variant="contained"
               color="primary"
             >

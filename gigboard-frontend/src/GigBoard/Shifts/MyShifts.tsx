@@ -29,26 +29,21 @@ export default function MyShifts({ myShifts, setMyShifts }: {
     
     // Fetch all or fitered shifts
     const fetchShifts = useCallback(async () => {
-        // If any filters applied, call filteredShifts
-        if (startTime || endTime || app) {
-            const filters: ShiftFilters = {
-                startTime: startTime,
-                endTime: endTime,
-                app: app
-            }
-
-            const shifts = await client.getFilteredShifts(filters);
-
-            setMyShifts(shifts);
-            setShowForm(false);
-            return;
-        }
-
         const shifts = await client.findUserShifts();
         setMyShifts(shifts);
+    }, [setMyShifts]);
+
+    const applyFilters = async () => {
+        const filters: ShiftFilters = {
+            startTime: startTime,
+            endTime: endTime,
+            app: app
+        }
+
+        const shifts = await client.getFilteredShifts(filters);
+        setMyShifts(shifts);
         setShowForm(false);
-        return;
-    }, [app, endTime, setMyShifts, startTime])
+    }
 
     // Delete shift from db
     const deleteShift = async (shiftId: number) => {
@@ -166,7 +161,7 @@ export default function MyShifts({ myShifts, setMyShifts }: {
                                 </select>
                             </Col>
                         </FormGroup>
-                        <Button onClick={fetchShifts} variant="contained" color="primary">
+                        <Button onClick={applyFilters} variant="contained" color="primary">
                             Apply Filters
                         </Button>
                     </div>
