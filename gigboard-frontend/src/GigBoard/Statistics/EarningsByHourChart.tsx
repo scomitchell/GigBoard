@@ -44,7 +44,7 @@ export default function EarningsByHourChart({ data }: HourlyEarningsProps) {
             ticktext: data.hours.map(h => `${h.toString().padStart(2, '0')}:00`)
           },
           yaxis: {
-            title: { text: "Total Pay", font: { size: 16 }, standoff: 10 },
+            title: { text: "Average Pay", font: { size: 16 }, standoff: 10 },
             showgrid: true,
             zeroline: false,
             tickprefix: "$",
