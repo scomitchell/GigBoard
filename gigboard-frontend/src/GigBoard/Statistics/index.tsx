@@ -6,12 +6,12 @@ import PredictEarnings from "./PredictEarnings";
 import EarningsChart from "./EarningsChart";
 import TipsByNeighborhoodChart from "./TipsByNeighborhoodChart";
 import BaseByAppsChart from "./BaseByAppsChart";
-import HourlyEarningsChart from "./HourlyEarningsChart";
 import EarningsDonutChart from "./EarningsDonutChart";
 import TipsByAppChart from "./TipsByAppChart";
 import type { StatsType, ShiftStatsType, ExpenseStatsType } from "../SignalRProvider";
 import { useSignalR } from "../Contexts/SignalRContext";
 import "../../index.css";
+import EarningsByHourChart from "./EarningsByHourChart";
 
 export type MonthlySpendingType = {
     type: string;
@@ -238,7 +238,7 @@ export default function Statistics() {
                                 }}>
                                     <CardContent sx={{ p: 2, flex: 1 }}>
                                         {stats && stats.hourlyEarningsData &&
-                                            <HourlyEarningsChart data={stats.hourlyEarningsData} />
+                                            <EarningsByHourChart data={stats.hourlyEarningsData} />
                                         }
                                     </CardContent>
                                 </Card>
