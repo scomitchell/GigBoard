@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using GigBoardBackend.Data;
 using GigBoardBackend.Models;
 using Microsoft.AspNetCore.SignalR;
-using GigBoard.Hubs;
+using GigBoardBackend.Hubs;
 using GigBoardBackend.Services;
 
 namespace GigBoardBackend.Controllers

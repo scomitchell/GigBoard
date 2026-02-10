@@ -7,7 +7,7 @@ using Hangfire;
 using GigBoardBackend.Data;
 using GigBoardBackend.Services;
 using System.Text.Json.Serialization;
-using GigBoard.Hubs;
+using GigBoardBackend.Hubs;
 using Hangfire.Dashboard.BasicAuthorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -84,7 +84,7 @@ builder.Services.AddAuthorization();
 
 // Add custom services
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<StatisticsService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 // Add HTTP Client
 builder.Services.AddHttpClient();

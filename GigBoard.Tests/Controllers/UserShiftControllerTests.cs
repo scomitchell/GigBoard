@@ -7,8 +7,8 @@ using GigBoardBackend.Models;
 using GigBoardBackend.Data;
 using Moq;
 using Microsoft.AspNetCore.SignalR;
-using GigBoard.Hubs;
 using GigBoardBackend.Services;
+using GigBoardBackend.Hubs;
 
 namespace GigBoard.Tests.Controllers
 {

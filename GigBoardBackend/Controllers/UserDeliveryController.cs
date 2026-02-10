@@ -6,7 +6,7 @@ using GigBoardBackend.Data;
 using GigBoardBackend.Models;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.SignalR;
-using GigBoard.Hubs;
+using GigBoardBackend.Hubs;
 using GigBoardBackend.Services;
 
 namespace GigBoardBackend.Controllers
@@ -14,19 +14,12 @@ namespace GigBoardBackend.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class UserDeliveryController : ControllerBase
+    public class UserDeliveryController(ApplicationDbContext context,
+        IHubContext<StatisticsHub> hub, IStatisticsService statsService) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IHubContext<StatisticsHub> _hub;
-        private readonly StatisticsService _statsService;
-
-        public UserDeliveryController(ApplicationDbContext context, 
-            IHubContext<StatisticsHub> hub, StatisticsService statsService)
-        {
-            _context = context;
-            _hub = hub;
-            _statsService = statsService;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly IHubContext<StatisticsHub> _hub = hub;
+        private readonly IStatisticsService _statsService = statsService;
 
         [HttpPost]
         public async Task<IActionResult> AddDelivery([FromBody] Delivery delivery)

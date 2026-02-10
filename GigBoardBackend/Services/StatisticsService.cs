@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GigBoardBackend.Services
 {
-    public class StatisticsService
+    public class StatisticsService : IStatisticsService
     {
         private readonly ApplicationDbContext _context;
 
@@ -173,16 +173,13 @@ namespace GigBoardBackend.Services
 
             // Donut chart data
             var totalPay = deliveries
-            .Select(d => d!.TotalPay)
-            .Sum();
+            .Sum(d => d!.TotalPay);
 
             var totalBasePay = deliveries
-            .Select(d => d!.BasePay)
-            .Sum();
+            .Sum(d => d!.BasePay);
 
             var totalTipPay = deliveries
-            .Select(d => d!.TipPay)
-            .Sum();
+            .Sum(d => d!.TipPay);
 
             var donutChartData = new {totalPay, totalBasePay, totalTipPay};
 
@@ -281,8 +278,7 @@ namespace GigBoardBackend.Services
             // Average Monthly Spending
             var averageMonthlySpending = expenses
             .GroupBy(e => new {e!.Date.Year, e!.Date.Month})
-            .Select(g => g.Sum(e => e!.Amount))
-            .Average();
+            .Average(g => g.Sum(e => e!.Amount));
 
             // Average Monthly Spending By Type
             var totalMonths = expenses
