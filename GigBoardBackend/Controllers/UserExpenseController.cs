@@ -17,10 +17,10 @@ namespace GigBoardBackend.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<StatisticsHub> _hub;
-        private readonly StatisticsService _statsService;
+        private readonly IStatisticsService _statsService;
 
         public UserExpenseController(ApplicationDbContext context,
-            IHubContext<StatisticsHub> hub, StatisticsService statsService)
+            IHubContext<StatisticsHub> hub, IStatisticsService statsService)
         {
             _context = context;
             _hub = hub;

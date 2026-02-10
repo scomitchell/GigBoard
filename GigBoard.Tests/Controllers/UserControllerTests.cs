@@ -12,7 +12,7 @@ namespace GigBoard.Tests.Controllers
     public class UserControllerTests : IDisposable
     {
         private readonly ApplicationDbContext _context;
-        private readonly AuthService _service;
+        private readonly IAuthService _service;
         private readonly UserController _controller;
 
         public UserControllerTests()
@@ -124,7 +124,7 @@ namespace GigBoard.Tests.Controllers
             Assert.Equal("jsmith", response.User.Username);
 
             var badResult = await _controller.Login(user2);
-            var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(badResult);
+            Assert.IsType<UnauthorizedObjectResult>(badResult);
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace GigBoard.Tests.Controllers
             Assert.Equal("example@example.com", user.Email);
 
             var badResult = await _controller.UpdateUser(user2);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(badResult);
+            Assert.IsType<BadRequestObjectResult>(badResult);
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace GigBoard.Tests.Controllers
             var okResult = Assert.IsType<OkObjectResult>(result);
             var user = Assert.IsAssignableFrom<UserDto>(okResult.Value);
 
-            var notFoundResult = Assert.IsType<NotFoundResult>(badResult);
+            Assert.IsType<NotFoundResult>(badResult);
 
             Assert.Equal(1, user.Id);
         }

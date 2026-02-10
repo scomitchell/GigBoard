@@ -6,7 +6,7 @@ using GigBoardBackend.Models;
 
 namespace GigBoardBackend.Services
 {
-	public class AuthService
+	public class AuthService : IAuthService
 	{
 		public AuthService()
 		{

@@ -13,9 +13,9 @@ namespace GigBoardBackend.Controllers
     public class UserController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly AuthService _service;
+        private readonly IAuthService _service;
 
-        public UserController(ApplicationDbContext context, AuthService service)
+        public UserController(ApplicationDbContext context, IAuthService service)
         {
             _context = context;
             _service = service;
