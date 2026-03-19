@@ -24,7 +24,7 @@ export default function EarningsByHourChart({ data }: HourlyEarningsProps) {
             x: data.hours,
             y: data.earnings,
             type: "bar",
-            marker: { color: "royalblue" },
+            marker: { color: "#6366F1" },
             name: "Earnings",
             hoverTemplate: `$%{y:.2f}<br>%{x}`,
           },
@@ -41,7 +41,9 @@ export default function EarningsByHourChart({ data }: HourlyEarningsProps) {
             showgrid: true,
             zeroline: false,
             tickvals: data.hours,
-            ticktext: data.hours.map(h => `${h.toString().padStart(2, '0')}:00`)
+            ticktext: data.hours.map(
+              (h) => `${h.toString().padStart(2, "0")}:00`,
+            ),
           },
           yaxis: {
             title: { text: "Average Pay", font: { size: 16 }, standoff: 10 },

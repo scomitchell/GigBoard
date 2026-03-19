@@ -12,21 +12,21 @@ export default function EarningsDonutChart({data}: EarningsDonutProps) {
     const { totalPay, totalBasePay, totalTipPay } = data;
 
     const chartData = [
-        {
-            values: [totalBasePay, totalTipPay],
-            labels: ["Base Pay", "Tip Pay"],
-            type: 'pie',
-            hole: 0.8,
-            texttemplate: `%{label}<br />%{percent}<br />$%{value:.2f}`,
-            textposition: "outside",
-            textfont: {
-                size: 14
-            },
-            marker: {
-                colors: ["#1484d4ff", "#22b900ff"]
-            },
-            hovertemplate: `%{label}<br />%{percent}<br />$%{value:.2f}<extra></extra>`,
+      {
+        values: [totalBasePay, totalTipPay],
+        labels: ["Base Pay", "Tip Pay"],
+        type: "pie",
+        hole: 0.8,
+        texttemplate: `%{label}<br />%{percent}<br />$%{value:.2f}`,
+        textposition: "outside",
+        textfont: {
+          size: 14,
         },
+        marker: {
+          colors: ["#6366F1", "#10B981"],
+        },
+        hovertemplate: `%{label}<br />%{percent}<br />$%{value:.2f}<extra></extra>`,
+      },
     ];
 
     const layout = {

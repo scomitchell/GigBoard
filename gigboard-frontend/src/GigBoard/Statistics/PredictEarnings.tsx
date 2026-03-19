@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { FormGroup, FormControl, FormLabel, Row, Col, Button } from "react-bootstrap";
+import { FormGroup, FormControl, FormLabel, Row, Col } from "react-bootstrap";
+import { Button } from "@mui/material"
 import * as deliveryClient from "../Deliveries/client";
 import * as client from "./client";
 
@@ -91,7 +92,7 @@ export default function PredictEarnings()
                     </select>
                 </Col>
             </FormGroup>
-            <Button onClick={predictEarnings} className="btn btn-primary mb-3">
+            <Button onClick={predictEarnings} variant="contained" className="profile-submit-btn">
                 Predict Earnings
             </Button>
 

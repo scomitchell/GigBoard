@@ -9,14 +9,14 @@ export type TipsByAppProps = {
 
 export default function TipsByAppChart({data}: TipsByAppProps) {
     const chartData = [
-        {
-            x: data.tipApps,
-            y: data.appTipPays,
-            type: "bar",
-            marker: { color: "royalblue" },
-            name: "Tips by app",
-            hoverTemplate: `$%{y:.2f}<br>%{x}`,
-        }
+      {
+        x: data.tipApps,
+        y: data.appTipPays,
+        type: "bar",
+        marker: { color: "#6366F1" },
+        name: "Tips by app",
+        hoverTemplate: `$%{y:.2f}<br>%{x}`,
+      },
     ];
 
     const layout = {
