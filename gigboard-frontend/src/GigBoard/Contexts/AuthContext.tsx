@@ -43,8 +43,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (logoutTimerRef.current) {
       clearTimeout(logoutTimerRef.current);
       logoutTimerRef.current = null;
-  }
-  }, [dispatch]);
+    }
+
+    navigate("/");
+  }, [dispatch, navigate]);
 
   const processToken = useCallback(
     (rawToken: string) => {
@@ -60,15 +62,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setToken(rawToken);
         localStorage.setItem("token", rawToken);
 
-        const expirationTime = decoded.exp || (now + 3600);
-        const msRemaining = (expirationTime * 1000) - Date.now();
+        const expirationTime = decoded.exp || now + 3600;
+        const msRemaining = expirationTime * 1000 - Date.now();
 
         if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
 
         const timerId = setTimeout(() => {
-          console.log('Token expired');
+          console.log("Token expired");
           logout();
-          navigate('/GigBoard/Account/Login');
+          navigate("/GigBoard/Account/Login");
         }, msRemaining);
 
         logoutTimerRef.current = timerId;

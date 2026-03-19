@@ -1,8 +1,10 @@
-import { FormControl, Button } from "react-bootstrap";
+import { FormControl, FormGroup, FormLabel } from "react-bootstrap";
+import { Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Contexts/AuthContext";
 import * as client from "./client";
+import axios from "axios";
 
 export default function Login() {
     const { login } = useAuth();
@@ -17,12 +19,13 @@ export default function Login() {
     const handleLogin = async () => {
         setLoading(true);
         try {
+            setError("");
             const response = await client.loginUser({ username, password });
             login(response.token);
             navigate("/");
-        } catch (err: Error | unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data);
             } else {
                 setError("An unexpected error occurred");
             }
@@ -32,34 +35,46 @@ export default function Login() {
     };
 
     return (
-        <div style={{
-            display: "flex",
-            justifyContent: "center", 
-            alignItems: "center",     
-            height: "100vh",          
-            paddingLeft: "100px", 
-            boxSizing: "border-box",
-            backgroundColor: "white"
-        }}>
-            <div id="da-signin-screen" style={{width: "50%", height: "100%"}}>
-                <h1 style={{textAlign: "center"}}>Sign in</h1>
-                <FormControl defaultValue={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="mb-2 mt-4" placeholder="Username" id="wd-username" />
-                <FormControl defaultValue={password} type="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="mb-2" placeholder="Password" id="wd-password" />
-                <Button onClick={handleLogin} id="da-signin-button"
-                    className="btn btn-primary w-100 mb-2">
-                    Sign in
-                </Button>
-                {error.length > 0 ? <p>{error}</p> : null}
-                {loading ?
-                    <p>Loading, please allow up to 50s spinup time</p>
-                    :
-                    null
-                }
-            </div>
+      <div className="profile-container">
+        <h1>Sign in</h1>
+        <div id="login-form" className="profile-card">
+          <FormGroup className="mb-4">
+            <FormLabel className="profile-form-label">Username</FormLabel>
+            <FormControl
+              defaultValue={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="profile-form-control"
+              placeholder="Username"
+              id="wd-username"
+            />
+          </FormGroup>
+
+          <FormGroup className="mb-4">
+            <FormLabel className="profile-form-label">Password</FormLabel>
+            <FormControl
+              defaultValue={password}
+              type="password"
+              onChange={(e) => setPassword(e.target.value)}
+              className="profile-form-control"
+              placeholder="Password"
+              id="wd-password"
+            />
+          </FormGroup>
+
+          {error.length > 0 ? <p>{error}</p> : null}
+          {loading ? <p>Loading, please allow up to 50s spinup time</p> : null}
+          <div className="profile-button-container">
+            <Button
+              onClick={handleLogin}
+              id="da-signin-button"
+              disableElevation
+              variant="contained"
+              className="profile-submit-btn"
+            >
+              Sign in
+            </Button>
+          </div>
         </div>
+      </div>
     );
 }

@@ -1,132 +1,144 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser } from "./reducer";
-import { Row, Col, FormLabel, FormGroup, FormControl, Button } from "react-bootstrap";
+import { Row, Col, FormLabel, FormGroup, FormControl } from "react-bootstrap";
+import { Button } from "@mui/material";
 import * as client from "./client";
 import type { User } from "../types";
 import type { RootState } from "../store";
+import "./account.css";
 
 export default function Profile() {
-    const [user, setUser] = useState<User>();
-    const [password, setPassword] = useState("");
-    const { currentUser } = useSelector((state: RootState) => state.accountReducer);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User>();
+  const [password, setPassword] = useState("");
+  const { currentUser } = useSelector(
+    (state: RootState) => state.accountReducer,
+  );
+  const [loading, setLoading] = useState(true);
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    const fetchProfile = useCallback(async () => {
-        if (!currentUser) return;
-        if (!currentUser.username) return;
-        const user = await client.getUserByUsername(currentUser.username);
-        setUser(user);
-        setLoading(false);
-    }, [currentUser]);
+  const fetchProfile = useCallback(async () => {
+    if (!currentUser) return;
+    if (!currentUser.username) return;
+    const user = await client.getUserByUsername(currentUser.username);
+    setUser(user);
+    setLoading(false);
+  }, [currentUser]);
 
-    const updateProfile = async () => {
-        const payload = { ...user };
-        if (password.length > 0) {
-            payload.password = password;
-        }
-
-        const updatedProfile = await client.updateUser(payload);
-        dispatch(setCurrentUser(updatedProfile));
-    };
-
-    useEffect(() => {
-        setLoading(true);
-        fetchProfile();
-    }, [currentUser, fetchProfile]);
-
-    if (loading) {
-        return (
-            <p>Loading...</p>
-        );
+  const updateProfile = async () => {
+    const payload = { ...user };
+    if (password.length > 0) {
+      payload.password = password;
     }
 
-    return (
-        <div style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            paddingLeft: "100px",
-            boxSizing: "border-box",
-            backgroundColor: "white"
-        }}>
-            <div id="da-profile" style={{ width: "75%", height: "100%" }}>
-                <h1 style={{ textAlign: "center" }}>Your Profile</h1>
-                <FormGroup as={Row} className="mb-3 mt-4 align-items-center d-flex">
-                    <FormLabel column sm={3} className="text-sm-end">First Name</FormLabel>
-                    <Col sm={9}>
-                        <FormControl
-                            placeholder="First Name"
-                            id="da-firstname"
-                            defaultValue={user && user.firstName}
-                            onChange={(e) => setUser({ ...user, firstName: e.target.value })}
-                        />
-                    </Col>
-                </FormGroup>
+    const updatedProfile = await client.updateUser(payload);
+    dispatch(setCurrentUser(updatedProfile));
+  };
 
-                <FormGroup as={Row} className="mb-3 align-items-center d-flex">
-                    <FormLabel column sm={3} className="text-sm-end">Last Name</FormLabel>
-                    <Col sm={9}>
-                        <FormControl
-                            placeholder="Last Name"
-                            id="da-lastname"
-                            defaultValue={user && user.lastName}
-                            onChange={(e) => setUser({ ...user, lastName: e.target.value })}
-                        />
-                    </Col>
-                </FormGroup>
+  useEffect(() => {
+    setLoading(true);
+    fetchProfile();
+  }, [currentUser, fetchProfile]);
 
-                <FormGroup as={Row} className="mb-3 align-items-center d-flex">
-                    <FormLabel column sm={3} className="text-sm-end">Email</FormLabel>
-                    <Col sm={9}>
-                        <FormControl
-                            placeholder="Email"
-                            type="email"
-                            id="da-lastname"
-                            defaultValue={user && user.email}
-                            onChange={(e) => setUser({ ...user, email: e.target.value })}
-                        />
-                    </Col>
-                </FormGroup>
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
-                <FormGroup as={Row} className="mb-3 align-items-center d-flex">
-                    <FormLabel column sm={3} className="text-sm-end">Username</FormLabel>
-                    <Col sm={9}>
-                        <FormControl
-                            placeholder="Username"
-                            id="da-username"
-                            defaultValue={user && user.username}
-                            onChange={(e) => setUser({ ...user, username: e.target.value })}
-                        />
-                    </Col>
-                </FormGroup>
+  return (
+    <div className="profile-container">
+      <h1>Your Profile</h1>
 
-                <FormGroup as={Row} className="mb-3 align-items-center d-flex">
-                    <FormLabel column sm={3} className="text-sm-end">Password</FormLabel>
-                    <Col sm={9}>
-                        <FormControl
-                            placeholder="Password"
-                            id="da-password"
-                            defaultValue=""
-                            type="password"
-                            className="mb-3"
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </Col>
-                </FormGroup>
+      <div className="profile-card">
+        <Row>
+          <Col md={6}>
+            <FormGroup className="mb-4">
+              <FormLabel className="profile-form-label">First Name</FormLabel>
+              <FormControl
+                placeholder="First Name"
+                id="da-firstname"
+                defaultValue={user?.firstName}
+                onChange={(e) =>
+                  setUser(
+                    user ? { ...user, firstName: e.target.value } : undefined,
+                  )
+                }
+                className="profile-form-control"
+              />
+            </FormGroup>
+          </Col>
 
-                <FormGroup as={Row} className="mb-3 d-flex" style={{alignItems: "end"}}>
-                    <Col sm={2} />
-                    <Col sm={10}>
-                        <Button onClick={updateProfile} id="da-update-profile-btn" className="btn btn-primary w-100">
-                            Update Profile
-                        </Button>
-                    </Col>
-                </FormGroup>
-            </div>
+          <Col md={6}>
+            <FormGroup className="mb-4">
+              <FormLabel className="profile-form-label">Last Name</FormLabel>
+              <FormControl
+                placeholder="Last Name"
+                id="da-lastname"
+                defaultValue={user?.lastName}
+                onChange={(e) =>
+                  setUser(
+                    user ? { ...user, lastName: e.target.value } : undefined,
+                  )
+                }
+                className="profile-form-control"
+              />
+            </FormGroup>
+          </Col>
+        </Row>
+
+        <FormGroup className="mb-4">
+          <FormLabel className="profile-form-label">Email Address</FormLabel>
+          <FormControl
+            placeholder="Email"
+            type="email"
+            id="da-email"
+            defaultValue={user?.email}
+            onChange={(e) =>
+              setUser(user ? { ...user, email: e.target.value } : undefined)
+            }
+            className="profile-form-control"
+          />
+        </FormGroup>
+
+        <FormGroup className="mb-4">
+          <FormLabel className="profile-form-label">Username</FormLabel>
+          <FormControl
+            placeholder="Username"
+            id="da-username"
+            defaultValue={user?.username}
+            onChange={(e) =>
+              setUser(user ? { ...user, username: e.target.value } : undefined)
+            }
+            className="profile-form-control"
+          />
+        </FormGroup>
+
+        <hr className="profile-divider" />
+
+        <FormGroup className="mb-4">
+          <FormLabel className="profile-form-label">New Password</FormLabel>
+          <FormControl
+            placeholder="Leave blank to keep current password"
+            id="da-password"
+            defaultValue=""
+            type="password"
+            onChange={(e) => setPassword(e.target.value)}
+            className="profile-form-control"
+          />
+        </FormGroup>
+
+        <div className="profile-button-container">
+          <Button
+            onClick={updateProfile}
+            id="da-update-profile-btn"
+            variant="contained"
+            disableElevation
+            className="profile-submit-btn"
+          >
+            Update Profile
+          </Button>
         </div>
-    );
+      </div>
+    </div>
+  );
 }

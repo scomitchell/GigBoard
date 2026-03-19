@@ -17,7 +17,14 @@ export default function TopBar() {
   return (
     <>
       <div className="top-bar-left">
-        <span className="page-title">Overview</span>
+        <span className="page-title">
+          {pathname.includes("MyDeliveries") ?
+            "Deliveries" :
+            pathname.includes("Signup") ?
+            "Sign up" :
+            pathname.substring(pathname.lastIndexOf("/") + 1)
+          }
+        </span>
       </div>
 
       <div
