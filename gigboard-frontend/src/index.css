@@ -67,11 +67,11 @@ button:focus-visible {
 }
 
 nav {
-    background-color: #000000;
+    background-color: #111827;
 }
 
 .active-link {
-    background-color: #3b3a3c;
+    background-color: #1E293B;
     color: #FFFFFF;
 }
 
@@ -104,4 +104,36 @@ nav {
 
 .mui-button:hover {
   outline: none;
+}
+
+.top-bar {
+  height: 64px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E5E7EB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin: 0;
+}
+
+.page-title {
+  font-weight: 600;
+  color: #4B5563;
+}
+
+.user-profile-placeholder {
+  background-color: #F3F4F6;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.main-content-wrapper {
+  padding: 2rem;
 }

@@ -1,7 +1,20 @@
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+
+  background-color: #F9FAFB !important;
+  color: #213547;
+}
+
 #root {
+  min-height: 100vh;
+}
+
+.main-content {
+  padding: 2rem;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
 .logo {
@@ -41,7 +54,7 @@
 }
 
 #da-main-app {
-    margin-left: 100px;
+  margin-left: 100px;
 }
 
 @media (min-width: 1400px) {

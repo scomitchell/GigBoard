@@ -11,6 +11,7 @@ import { HashRouter, Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import { AuthProvider } from "./GigBoard/Contexts/AuthContext.tsx";
 import { SignalRProvider } from "./GigBoard/SignalRProvider.tsx";
+import TopBar from "./TopBar.tsx";
 
 export default function App() {
   return (
@@ -20,21 +21,28 @@ export default function App() {
           <SignalRProvider>
             <div id="da-main-app">
               <Navigation />
-              <Routes>
-                <Route path="/" element={<Navigate to="GigBoard" />} />
-                <Route path="/GigBoard/*" element={<GigBoard />} />
-                <Route
-                  path="/GigBoard/MyDeliveries/*"
-                  element={<Deliveries />}
-                />
-                <Route path="/GigBoard/Shifts/*" element={<Shifts />} />
-                <Route
-                  path="/GigBoard/Shifts/:shiftId"
-                  element={<IndividualShift />}
-                />
-                <Route path="/GigBoard/Expenses/*" element={<Expenses />} />
-                <Route path="/GigBoard/Account/*" element={<Account />} />
-              </Routes>
+
+              <header className="top-bar">
+                <TopBar />
+              </header>
+
+              <main className="main-content">
+                <Routes>
+                  <Route path="/" element={<Navigate to="GigBoard" />} />
+                  <Route path="/GigBoard/*" element={<GigBoard />} />
+                  <Route
+                    path="/GigBoard/MyDeliveries/*"
+                    element={<Deliveries />}
+                  />
+                  <Route path="/GigBoard/Shifts/*" element={<Shifts />} />
+                  <Route
+                    path="/GigBoard/Shifts/:shiftId"
+                    element={<IndividualShift />}
+                  />
+                  <Route path="/GigBoard/Expenses/*" element={<Expenses />} />
+                  <Route path="/GigBoard/Account/*" element={<Account />} />
+                </Routes>
+              </main>
             </div>
           </SignalRProvider>
         </AuthProvider>

@@ -19,6 +19,7 @@
     "bootstrap": "^5.3.7",
     "jwt-decode": "^4.0.0",
     "plotly.js": "^3.1.2",
+    "prettier": "^3.8.1",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.0",

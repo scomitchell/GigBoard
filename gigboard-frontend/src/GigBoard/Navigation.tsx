@@ -1,18 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaHome } from "react-icons/fa";
-import { useAuth } from './Contexts/AuthContext';
-import { BsBagFill, BsPersonFillGear, BsCurrencyDollar, BsClockFill, BsArrowBarLeft, BsArrowBarUp } from "react-icons/bs";
+import { BsBagFill, BsCurrencyDollar, BsClockFill } from "react-icons/bs";
 import type { RootState } from "./store";
 
 export default function Navigation() {
-    const { logout } = useAuth();
     const { pathname } = useLocation();
     const { currentUser } = useSelector((state: RootState) => state.accountReducer);
-
-    const handleLogout = () => {
-        logout();
-    };
 
     return (
         <nav className="main-navbar d-flex flex-column position-fixed top-0 start-0 z-3 vh-100"
@@ -27,23 +21,6 @@ export default function Navigation() {
 
             {!currentUser ?
                 <>
-                    <Link to="/GigBoard/Account"
-                        className={`nav-link-hover d-flex flex-column align-items-center px-4 py-2 
-                            text-decoration-none border-0 ms-2 mt-2 me-2 mb-2 rounded
-                        ${pathname.includes("Login") ? "active-link" : "text-white"}`}>
-
-                        <BsPersonFillGear size={32} className="mb-1" />
-                        <span>Login</span>
-                    </Link>
-
-                    <Link to="/GigBoard/Account/Signup"
-                        className={`nav-link-hover d-flex flex-column align-items-center px-4 py-2 
-                            text-decoration-none border-0 ms-2 mt-2 me-2 mb-2 rounded
-                        ${pathname.includes("Signup") ? "active-link" : "text-white"}`}>
-
-                        <BsArrowBarUp size={32} className="mb-1" />
-                        <span>Signup</span>
-                    </Link>
                 </>
 
                 :
@@ -71,24 +48,6 @@ export default function Navigation() {
                     ${pathname.includes("Expenses") ? "active-link" : "text-white"}`}>
                         <BsCurrencyDollar size={32} className="mb-1" />
                         <span>Expenses</span>
-                    </Link>
-
-                    <Link to="/GigBoard/Account/Profile"
-                        className={`nav-link-hover d-flex flex-column align-items-center px-4 py-2 
-                            text-decoration-none border-0 ms-2 mt-2 me-2 mb-2 rounded
-                    ${pathname.includes("Profile") ? "active-link" : "text-white"}`}>
-                        <BsPersonFillGear size={32} className="mb-1" />
-                        <span>Profile</span>
-                    </Link>
-
-                    <Link to="/GigBoard"
-                        className="nav-link-hover d-flex flex-column align-items-center px-4 py-2 
-                            text-decoration-none border-0 text-white ms-2 mt-2 me-2 rounded mb-2"
-                        onClick={handleLogout}
-                        style={{ cursor: "pointer" }}>
-
-                        <BsArrowBarLeft size={32} className="mb-1" />
-                        <span>Logout</span>
                     </Link>
                 </>
             }
