@@ -712,7 +712,7 @@ export default function Statistics() {
 
     return (
         <div id="da-statistics">
-            <h1 className="ms-2 mb-3">Your Statistics</h1>
+            <h1 className="ms-2 mb-3 page-header">Your Statistics</h1>
             <Col sm={6}>
                 <select onChange={(e) => setPage(e.target.value)} className="form-control ms-2 mb-4">
                     <option value="stats">Overall Statistics</option>

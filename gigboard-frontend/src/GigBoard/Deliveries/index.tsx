@@ -82,7 +82,7 @@ export default function Deliveries() {
   return (
     <div id="da-my-deliveries">
       <div id="deliveries-header" className="d-flex align-items-center">
-        <h1 className="me-3">Your Deliveries</h1>
+        <h1 className="me-3 page-header">Your Deliveries</h1>
         <Button
           onClick={() => setShowForm(true)}
           variant="contained"

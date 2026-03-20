@@ -67,13 +67,13 @@ export default function IndividualShift() {
 
     return (
       <div id="individiual-shifts">
-        <h1>
+        <h1 className="page-header">
           {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
         </h1>
-        <h2 className="mb-3">App: {shift.app}</h2>
+        <h2 className="mb-3 page-secondary">App: {shift.app}</h2>
 
         <div id="add-deliveries" className="d-flex align-items-center mb-3">
-          <h3 className="me-2" style={{ margin: 0 }}>Deliveries:</h3>
+          <h3 className="me-2 page-h3" style={{ margin: 0 }}>Deliveries:</h3>
           <Button
             onClick={() => {
               setDelivery({
