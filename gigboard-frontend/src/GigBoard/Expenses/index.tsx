@@ -47,68 +47,110 @@ export default function Expenses() {
     }
 
     return (
-        <div id="da-expenses">
-            <div id="da-expenses-header" className="d-flex align-items-center">
-                <h1 className="me-2">Track Your Expenses</h1>
-                <Button onClick={() => setShowForm(true)} variant="contained" color="primary">
-                    Add Expense
-                </Button>
+      <div id="da-expenses">
+        <div id="da-expenses-header" className="d-flex align-items-center">
+          <h1 className="me-2">Track Your Expenses</h1>
+          <Button
+            onClick={() => setShowForm(true)}
+            variant="contained"
+            sx={{
+              color: "#FFFFFF",
+              backgroundColor: "#1E293B",
+              fontWeight: 600,
+              "&:hover": { bgcolor: "#0F172A" },
+            }}
+          >
+            Add Expense
+          </Button>
 
-                <Modal show={showForm} onHide={() => setShowForm(false)} centered size="lg">
-                    <Modal.Header closeButton>
-                        <Modal.Title>Add Expense</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div id="add-expense-details">
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Expense Amount</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl 
-                                        type="number"
-                                        min="0.01"
-                                        step="0.01"
-                                        placeholder="Expense Amount"
-                                        onChange={(e) => setExpense({...expense, amount: parseFloat(e.target.value)})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Expense Date</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl 
-                                        type="date"
-                                        onChange={(e) => setExpense({...expense, date: e.target.value})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Expense Type</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl 
-                                        type="text"
-                                        placeholder="Expense Type"
-                                        onChange={(e) => setExpense({...expense, type: e.target.value})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Expense Notes</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl 
-                                        type="text"
-                                        placeholder="Expense Notes"
-                                        onChange={(e) => setExpense({...expense, notes: e.target.value})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <Button onClick={addExpense} variant="contained" color="primary">
-                                Add Expense
-                            </Button>
-                        </div>
-                    </Modal.Body>
-                </Modal>
-            </div>
-            <MyExpenses myExpenses={myExpenses} setMyExpenses={setMyExpenses} />
+          <Modal
+            show={showForm}
+            onHide={() => setShowForm(false)}
+            centered
+            size="lg"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Add Expense</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div id="add-expense-details">
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Expense Amount
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      placeholder="Expense Amount"
+                      onChange={(e) =>
+                        setExpense({
+                          ...expense,
+                          amount: parseFloat(e.target.value),
+                        })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Expense Date
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="date"
+                      onChange={(e) =>
+                        setExpense({ ...expense, date: e.target.value })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Expense Type
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="text"
+                      placeholder="Expense Type"
+                      onChange={(e) =>
+                        setExpense({ ...expense, type: e.target.value })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Expense Notes
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="text"
+                      placeholder="Expense Notes"
+                      onChange={(e) =>
+                        setExpense({ ...expense, notes: e.target.value })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <Button
+                  onClick={addExpense}
+                  variant="contained"
+                  sx={{
+                    color: "#FFFFFF",
+                    backgroundColor: "#1E293B",
+                    fontWeight: 600,
+                    "&:hover": { bgcolor: "#0F172A" },
+                  }}
+                >
+                  Add Expense
+                </Button>
+              </div>
+            </Modal.Body>
+          </Modal>
         </div>
+        <MyExpenses myExpenses={myExpenses} setMyExpenses={setMyExpenses} />
+      </div>
     );
 }

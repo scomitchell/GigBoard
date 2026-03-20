@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState} from "react";
-import {Row, Col, Modal, FormGroup, FormControl, FormLabel} from "react-bootstrap";
+import {Row, Col, Modal, FormGroup, FormControl, FormLabel } from "react-bootstrap";
 import { Card, CardContent, Typography, Button } from "@mui/material";
 import { useParams } from "react-router-dom";
 import * as client from "./client";
 import * as deliveryClient from "../Deliveries/client";
 import type { Delivery, Shift } from "../types";
+import "../Deliveries/deliveries.css";
 
 export default function IndividualShift() {
     const { shiftId } = useParams();
@@ -65,158 +66,324 @@ export default function IndividualShift() {
     }, [fetchDeliveriesForShift, fetchShift])
 
     return (
-        <div id="individiual-shifts">
-            <h1>Time: {formatTime(shift.startTime)} - {formatTime(shift.endTime)}</h1>
-            <h2 className="mb-3">App: {shift.app}</h2>
+      <div id="individiual-shifts">
+        <h1>
+          {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
+        </h1>
+        <h2 className="mb-3">App: {shift.app}</h2>
 
-            <div id="add-deliveries" className="d-flex align-items-center mb-3">
-                <h3 className="me-2">Deliveries:</h3>
-                <Button
-                    onClick={() => {
+        <div id="add-deliveries" className="d-flex align-items-center mb-3">
+          <h3 className="me-2" style={{ margin: 0 }}>Deliveries:</h3>
+          <Button
+            onClick={() => {
+              setDelivery({
+                app: shift.app, // this ensures app is pre-populated
+                deliveryTime: shift.startTime,
+                basePay: 0,
+                tipPay: 0,
+                mileage: 0,
+                totalPay: 0,
+                restaurant: "",
+                customerNeighborhood: "",
+                notes: "",
+              });
+              setShowForm(true);
+            }}
+            variant="contained"
+            sx={{
+              color: "#FFFFFF",
+              backgroundColor: "#1E293B",
+              fontWeight: 600,
+              "&:hover": { bgcolor: "#0F172A" },
+            }}
+          >
+            Add Delivery
+          </Button>
+
+          {/*Modal form for creating new deliveries*/}
+          <Modal
+            show={showForm}
+            onHide={() => setShowForm(false)}
+            centered
+            size="lg"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Add New Delivery</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="add-delivery-details">
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    App
+                  </FormLabel>
+                  <Col sm={7}>
+                    <select
+                      onChange={(e) =>
+                        setDelivery({ ...delivery, app: e.target.value })
+                      }
+                      className="form-control mb-2"
+                      id="da-app"
+                    >
+                      <option value={shift.app}>{shift.app}</option>
+                    </select>
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Time
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="datetime-local"
+                      onChange={(e) =>
                         setDelivery({
-                            app: shift.app, // this ensures app is pre-populated
-                            deliveryTime: shift.startTime,
-                            basePay: 0,
-                            tipPay: 0,
-                            mileage: 0,
-                            totalPay: 0,
-                            restaurant: "",
-                            customerNeighborhood: "",
-                            notes: "",
-                        });
-                        setShowForm(true);
-                    }}
-                    variant="contained"
-                    color="primary"
+                          ...delivery,
+                          deliveryTime: e.target.value,
+                        })
+                      }
+                      defaultValue={shift.startTime}
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Base Pay
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="number"
+                      step="0.01"
+                      min="1.00"
+                      placeholder="Base Pay"
+                      onChange={(e) =>
+                        setDelivery({
+                          ...delivery,
+                          basePay: parseFloat(e.target.value),
+                        })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Tip Pay
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="number"
+                      step="0.01"
+                      min="1.00"
+                      placeholder="Tip Pay"
+                      onChange={(e) =>
+                        setDelivery({
+                          ...delivery,
+                          tipPay: parseFloat(e.target.value),
+                        })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Mileage
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      placeholder="Mileage"
+                      onChange={(e) =>
+                        setDelivery({
+                          ...delivery,
+                          mileage: parseFloat(e.target.value),
+                        })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Restaurant
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="text"
+                      placeholder="Restaurant"
+                      onChange={(e) =>
+                        setDelivery({ ...delivery, restaurant: e.target.value })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Customer Neighborhood
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="text"
+                      placeholder="Customer Neighborhood"
+                      onChange={(e) =>
+                        setDelivery({
+                          ...delivery,
+                          customerNeighborhood: e.target.value,
+                        })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                  <FormLabel column sm={4} className="me-3">
+                    Notes
+                  </FormLabel>
+                  <Col sm={7}>
+                    <FormControl
+                      type="text"
+                      placeholder="Notes"
+                      onChange={(e) =>
+                        setDelivery({ ...delivery, notes: e.target.value })
+                      }
+                    />
+                  </Col>
+                </FormGroup>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={addDeliveryToShift}
                 >
-                    Add Delivery
+                  Add Delivery
                 </Button>
-
-                {/*Modal form for creating new deliveries*/}
-                <Modal show={showForm} onHide={() => setShowForm(false)} centered size="lg">
-                    <Modal.Header closeButton>
-                        <Modal.Title>Add New Delivery</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div className="add-delivery-details">
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">App</FormLabel>
-                                <Col sm={7}>
-                                    <select onChange={(e) => setDelivery({...delivery, app: e.target.value})}
-                                        className="form-control mb-2" id="da-app">
-                                        <option value={shift.app}>{shift.app}</option>
-                                    </select>
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Time</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl type="datetime-local"
-                                        onChange={(e) => setDelivery({ ...delivery, deliveryTime: e.target.value })}
-                                        defaultValue={shift.startTime}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Base Pay</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl
-                                        type="number"
-                                        step="0.01"
-                                        min="1.00"
-                                        placeholder="Base Pay"
-                                        onChange={(e) => setDelivery({...delivery, basePay: parseFloat(e.target.value)})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Tip Pay</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl
-                                        type="number"
-                                        step="0.01"
-                                        min="1.00"
-                                        placeholder="Tip Pay"
-                                        onChange={(e) => setDelivery({...delivery, tipPay: parseFloat(e.target.value)})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Mileage</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl
-                                        type="number"
-                                        step="0.01"
-                                        min="0.01"
-                                        placeholder="Mileage"
-                                        onChange={(e) => setDelivery({ ...delivery, mileage: parseFloat(e.target.value)})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Restaurant</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl
-                                        type="text"
-                                        placeholder="Restaurant"
-                                        onChange={(e) => setDelivery({...delivery, restaurant: e.target.value})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Customer Neighborhood</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl
-                                        type="text"
-                                        placeholder="Customer Neighborhood"
-                                        onChange={(e) => setDelivery({...delivery, customerNeighborhood: e.target.value})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Notes</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl
-                                        type="text"
-                                        placeholder="Notes"
-                                        onChange={(e) => setDelivery({...delivery, notes: e.target.value})}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <Button variant="contained" color="primary" onClick={addDeliveryToShift}>
-                                Add Delivery
-                            </Button>
-                        </div>
-                    </Modal.Body>
-                </Modal>
-            </div>
-
-            {shiftDeliveries.map((delivery: Delivery) => 
-                <Col sm={6} key={delivery.id}>
-                    <Card sx={{
-                        mb: 3,
-                        textAlign: "start",
-                        borderRadius: 3,
-                        boxShadow: 3,
-                        position: "relative",
-                        transition: "0.3s",
-                    }}>
-                        <CardContent sx={{ p: 2 }}>
-                            <Typography variant="h6" fontWeight="bold">Total Pay: ${(delivery.totalPay ?? 0).toFixed(2)}</Typography>
-                            <Typography sx={{ mt: 1 }}>
-                                <strong>Date Completed:</strong> {formatTime(delivery.deliveryTime ?? "")} {" "} <br />
-                                <strong>Base Pay:</strong> ${(delivery.basePay ?? 0).toFixed(2)} {" "} <br />
-                                <strong>Tip Pay:</strong> ${(delivery.tipPay ?? 0).toFixed(2)} {" "} <br />
-                                <strong>Mileage:</strong> {(delivery.mileage ?? 0).toFixed(2)} {" miles"} <br />
-                                <strong>App:</strong> {delivery.app} {" "} <br />
-                                <strong>Restaurant:</strong> {delivery.restaurant} {" "} <br />
-                                <strong>Customer Neighborhood:</strong> {delivery.customerNeighborhood} {" "} <br />
-                                <strong>Notes:</strong> {delivery.notes} {" "}
-                            </Typography>
-                        </CardContent>
-                    </Card> 
-                </Col>
-            )}
+              </div>
+            </Modal.Body>
+          </Modal>
         </div>
+
+        <Row className="col-sm-8">
+          {shiftDeliveries.map((delivery: Delivery) => (
+            <Col md={6} xl={4} key={delivery.id} className="mb-4">
+              {" "}
+              <Card className="delivery-card">
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="overline" className="delivery-app-badge">
+                    {delivery.app}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                  >
+                    {formatTime(delivery.deliveryTime ?? "")}
+                  </Typography>
+
+                  {/* Total Pay */}
+                  <Typography
+                    variant="h3"
+                    fontWeight="bold"
+                    className="delivery-total-pay"
+                  >
+                    ${(delivery.totalPay ?? 0).toFixed(2)}
+                  </Typography>
+
+                  {/* Stat Grid */}
+                  <div className="delivery-stat-grid">
+                    <div>
+                      <Typography
+                        variant="caption"
+                        className="delivery-stat-label"
+                      >
+                        Base
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        fontWeight="600"
+                        className="delivery-stat-value"
+                      >
+                        ${(delivery.basePay ?? 0).toFixed(2)}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography
+                        variant="caption"
+                        className="delivery-stat-label"
+                      >
+                        Tip
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        fontWeight="600"
+                        className="delivery-stat-value success"
+                      >
+                        {" "}
+                        ${(delivery.tipPay ?? 0).toFixed(2)}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography
+                        variant="caption"
+                        className="delivery-stat-label"
+                      >
+                        Dist
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        fontWeight="600"
+                        className="delivery-stat-value"
+                      >
+                        {(delivery.mileage ?? 0).toFixed(1)} mi
+                      </Typography>
+                    </div>
+                  </div>
+
+                  {/* Location Details */}
+                  <div className="delivery-location-block">
+                    <div className="delivery-location-row">
+                      <Typography
+                        variant="body2"
+                        className="delivery-location-text"
+                      >
+                        <strong className="delivery-location-label">
+                          From:
+                        </strong>{" "}
+                        {delivery.restaurant}
+                      </Typography>
+                    </div>
+                    <div className="delivery-location-row">
+                      <Typography
+                        variant="body2"
+                        className="delivery-location-text"
+                      >
+                        <strong className="delivery-location-label">To:</strong>{" "}
+                        {delivery.customerNeighborhood}
+                      </Typography>
+                    </div>
+                  </div>
+
+                  {/* Notes */}
+                  {delivery.notes ? (
+                    <div className="delivery-notes-block">
+                      <Typography
+                        variant="body2"
+                        className="delivery-notes-text"
+                      >
+                        "{delivery.notes}"
+                      </Typography>
+                    </div>
+                  ) : (
+                    <div className="delivery-notes-empty-box">
+                      <Typography
+                        variant="body2"
+                        className="delivery-notes-text"
+                      >
+                        "No Notes Provided"
+                      </Typography>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
     );
 }

@@ -152,6 +152,7 @@ export default function MyShifts({
       <Button
         onClick={() => setShowForm(true)}
         variant="outlined"
+        disableElevation
         className="shift-filter-btn"
       >
         Filter Shifts
