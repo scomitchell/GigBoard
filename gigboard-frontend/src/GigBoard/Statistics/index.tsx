@@ -711,7 +711,7 @@ export default function Statistics() {
     }, [fetchStatistics])
 
     return (
-        <div id="da-statistics">
+        <div id="da-statistics" className="page-wrapper">
             <h1 className="ms-2 mb-3 page-header">Your Statistics</h1>
             <Col sm={6}>
                 <select onChange={(e) => setPage(e.target.value)} className="form-control ms-2 mb-4">
