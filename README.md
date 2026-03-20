@@ -28,11 +28,16 @@ GigBoard is a Full-Stack web application that empowers gig delivery drivers (Doo
 - **Backend** - C#, ASP.NET, Python, SQL Server
 
 ![Home Screen - Logged Out](./docs/images/GigBoard%20Landing%20Signed%20Out.png)
+![Sign Up](./docs/images/GigBoard%20Sign%20Up.png)
+![Login](./docs/images/GigBoard%20Login.png)
 ![Home Screen - New User/No Deliveries](./docs/images/GigBoard%20Landing%20New%20User%20No%20Data.png)
 ![Home Screen - Statistics Dash 1](./docs/images/GigBoard%20Statistics%20Dash%201.png)
 ![Home Screen - Statistics Dash 2](./docs/images/GigBoard%20Statistics%20Dash%202.png)
 ![Home Screen - Statistics Dash 3](./docs/images/GigBoard%20Statistics%20Dash%203.png)
 ![Home Screen - Statistics Dash 4](./docs/images/GigBoard%20Statistics%20Dash%204.png)
+![Home Screen - Statistics Dash 5](./docs/images/GigBoard%20Statistics%20Dash%205.png)
+![Home Screen - Statistics Dash 6](./docs/images/GigBoard%20Statistics%20Dash%206.png)
+![Home Screen - Statistics Dash 7](./docs/images/GigBoard%20Statistics%20Dash%207.png)
 ![Predict Earnings Screenshot](./docs/images/GigBoard%20Predict%20Earnings.png)
 ![Deliveries Screen](./docs/images/GigBoard%20Deliveries.png)
 ![Shifts Screen](./docs/images/GigBoard%20Shifts.png)

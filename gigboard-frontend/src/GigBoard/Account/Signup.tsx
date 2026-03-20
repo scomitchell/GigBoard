@@ -137,19 +137,25 @@ export default function Signup() {
           />
         </FormGroup>
 
-        <div className="profile-button-container">
+        <div className="login-footer">
+          <div className="login-message-area">
+            {error.length > 0 && <p className="login-error-msg">{error}</p>}
+            {loading && (
+              <p className="login-loading-msg">
+                Loading, please allow up to 50s spinup time
+              </p>
+            )}
+          </div>
+
           <Button
             onClick={signup}
-            id="da-signin-button"
             variant="contained"
-            disableElevation
             className="profile-submit-btn"
+            disableElevation
           >
             Sign Up
           </Button>
         </div>
-        {error.length > 0 ? <p>{error}</p> : null}
-        {loading ? <p>Loading, please allow up to 50s spinup time</p> : null}
       </div>
     </div>
   );

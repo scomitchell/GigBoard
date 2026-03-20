@@ -78,31 +78,17 @@ export default function GigBoard() {
                                         Once you've added your first delivery, return here by clicking <strong>Home</strong> (<FaHome fontSize="medium" />) in the navbar to see your personal statistics dashboard.
                                     </Typography>
                                     <Button variant="contained"
-                                        color="primary"
                                         component={Link}
                                         to="/GigBoard/Shifts"
-                                        sx={{
-                                            mr: 3,
-                                            textDecoration: 'none',
-                                            '&:hover': {
-                                                textDecoration: 'none',
-                                                color: 'white',
-                                            },
-                                        }}>
+                                        className="welcome-cta-button"
+                                        sx={{ backgroundColor: "#1E293B" }}>
                                         Add First Shift
                                     </Button>
                                     <Button variant="contained"
-                                        color="success"
                                         component={Link}
                                         to="/GigBoard/MyDeliveries"
-                                        sx={{
-                                            mr: 3,
-                                            textDecoration: 'none',
-                                            '&:hover': {
-                                                textDecoration: 'none',
-                                                color: 'white',
-                                            },
-                                        }}>
+                                        className="welcome-cta-button"
+                                        sx={{ backgroundColor: "#37513e" }}>
                                         Add First Delivery
                                     </Button>
                                 </div>

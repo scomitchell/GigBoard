@@ -54,3 +54,24 @@
 .profile-submit-btn:hover {
     background-color: #0f172a !important;
 }
+
+.login-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 1.5rem !important;
+    width: 100% !important;
+}
+
+.login-error-msg {
+    color: #ef4444 !important;
+    margin: 0 !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+}
+
+.login-loading-msg {
+    color: #6b7280 !important;
+    margin: 0 !important;
+    font-size: 0.85rem !important;
+}
