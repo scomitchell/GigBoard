@@ -63,9 +63,6 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!token) {
-      if (connection) {
-        connection.stop().then(() => setConnection(null));
-      }
       clearStats();
       return;
     }
@@ -81,16 +78,18 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
       .build();
 
     conn.on("StatisticsUpdated", setStats);
-
     conn.on("ShiftStatisticsUpdated", setShiftStats);
-
     conn.on("ExpenseStatisticsUpdated", setExpenseStats);
+
+    let isMounted = true;
 
     conn
       .start()
       .then(() => {
-        console.log("SignalR connected");
-        setConnection(conn);
+        if (isMounted) {
+          console.log("SignalR connected");
+          setConnection(conn);
+        }
       })
       .catch((err) => {
         console.error("SignalR connection failed:", err);
@@ -100,10 +99,12 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
       });
 
     return () => {
+      isMounted = false;
       conn.stop();
       setConnection(null);
     };
-  }, [REMOTE_SERVER, logout, token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   return (
     <SignalRContext.Provider
