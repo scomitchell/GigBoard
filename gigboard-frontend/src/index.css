@@ -75,6 +75,10 @@ nav {
     color: #FFFFFF;
 }
 
+.active-link:hover {
+  color: #FFFFFF
+}
+
 .user-delivery-card {
     border-width: 2px !important;
     border-color: #000000 !important;
