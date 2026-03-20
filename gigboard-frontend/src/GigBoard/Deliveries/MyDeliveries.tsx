@@ -357,13 +357,13 @@ export default function MyDeliveries({
                     <Dropdown.Menu>
                       <Dropdown.Item
                         onClick={() => setDeliveryToDelete(Number(delivery.id))}
-                        className="text-danger"
+                        style={{ color: "#EF4444" }}
                       >
                         Delete Delivery
                       </Dropdown.Item>
                       <Dropdown.Item
                         onClick={() => setDeliveryToUpdate(delivery)}
-                        className="text-warning"
+                        style={{ color: "#1E293B" }}
                       >
                         Update Delivery
                       </Dropdown.Item>

@@ -53,59 +53,97 @@ export default function Shifts() {
     }
 
     return (
-        <div id="da-shifts">
-            <div id="da-shifts-header" className="d-flex align-items-center">
-                <h1 className="me-3">Log Shifts</h1>
-                <Button onClick={() => setShowForm(true)} variant="contained" color="primary">
-                    Add Shift
-                </Button>
-
-                {/*Modal form for adding a new shift*/}
-                <Modal show={showForm} onHide={() => setShowForm(false)} centered size="lg">
-                    <Modal.Header closeButton>
-                        <Modal.Title>Add New Shift</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div id="add-shift-details">
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">Start Time</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl
-                                        type="datetime-local"
-                                        onChange={(e) => setShift({ ...shift, startTime: e.target.value })}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">End Time</FormLabel>
-                                <Col sm={7}>
-                                    <FormControl
-                                        type="datetime-local"
-                                        onChange={(e) => setShift({ ...shift, endTime: e.target.value })}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup as={Row} className="d-flex align-items-center mb-2">
-                                <FormLabel column sm={4} className="me-3">App</FormLabel>
-                                <Col sm={7}>
-                                    <select onChange={(e) => setShift({ ...shift, app: e.target.value })}
-                                        className="form-control mb-2" id="da-app">
-                                        <option value=""></option>
-                                        <option value="Doordash">Doordash</option>
-                                        <option value="UberEats">Uber Eats</option>
-                                        <option value="Grubhub">Grubhub</option>
-                                        <option value="Instacart">Instacart</option>
-                                    </select>
-                                </Col>
-                            </FormGroup>
-                            <Button onClick={addShift} variant="contained" color="primary">
-                                Add Shift
-                            </Button>
-                        </div>
-                    </Modal.Body>
-                </Modal>
-            </div>
-            <MyShifts myShifts={myShifts} setMyShifts={setMyShifts} />
+      <div id="da-shifts">
+        <div id="da-shifts-header" className="d-flex align-items-center">
+          <h1 className="me-3">Log Shifts</h1>
+          <Button
+            onClick={() => setShowForm(true)}
+            variant="contained"
+            sx={{
+              color: "#FFFFFF",
+              backgroundColor: "#1E293B",
+              fontWeight: 600,
+              "&:hover": { bgcolor: "#0F172A" },
+            }}
+          >
+            Add Shift
+          </Button>
         </div>
+
+        {/*Modal form for adding a new shift*/}
+        <Modal
+          show={showForm}
+          onHide={() => setShowForm(false)}
+          centered
+          size="lg"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Add New Shift</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div id="add-shift-details">
+              <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                <FormLabel column sm={4} className="me-3">
+                  Start Time
+                </FormLabel>
+                <Col sm={7}>
+                  <FormControl
+                    type="datetime-local"
+                    onChange={(e) =>
+                      setShift({ ...shift, startTime: e.target.value })
+                    }
+                  />
+                </Col>
+              </FormGroup>
+              <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                <FormLabel column sm={4} className="me-3">
+                  End Time
+                </FormLabel>
+                <Col sm={7}>
+                  <FormControl
+                    type="datetime-local"
+                    onChange={(e) =>
+                      setShift({ ...shift, endTime: e.target.value })
+                    }
+                  />
+                </Col>
+              </FormGroup>
+              <FormGroup as={Row} className="d-flex align-items-center mb-2">
+                <FormLabel column sm={4} className="me-3">
+                  App
+                </FormLabel>
+                <Col sm={7}>
+                  <select
+                    onChange={(e) =>
+                      setShift({ ...shift, app: e.target.value })
+                    }
+                    className="form-control mb-2"
+                    id="da-app"
+                  >
+                    <option value=""></option>
+                    <option value="Doordash">Doordash</option>
+                    <option value="UberEats">Uber Eats</option>
+                    <option value="Grubhub">Grubhub</option>
+                    <option value="Instacart">Instacart</option>
+                  </select>
+                </Col>
+              </FormGroup>
+              <Button
+                onClick={addShift}
+                variant="contained"
+                sx={{
+                  color: "#FFFFFF",
+                  backgroundColor: "#1E293B",
+                  fontWeight: 600,
+                  "&:hover": { bgcolor: "#0F172A" },
+                }}
+              >
+                Add Shift
+              </Button>
+            </div>
+          </Modal.Body>
+        </Modal>
+        <MyShifts myShifts={myShifts} setMyShifts={setMyShifts} />
+      </div>
     );
 }

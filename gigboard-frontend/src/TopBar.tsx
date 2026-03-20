@@ -22,6 +22,8 @@ export default function TopBar() {
             "Deliveries" :
             pathname.includes("Signup") ?
             "Sign up" :
+            Number.isInteger(Number(pathname.substring(pathname.lastIndexOf("/") + 1))) ?
+            "Individual Shift" :
             pathname.substring(pathname.lastIndexOf("/") + 1)
           }
         </span>

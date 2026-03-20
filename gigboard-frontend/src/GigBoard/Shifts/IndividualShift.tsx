@@ -66,7 +66,7 @@ export default function IndividualShift() {
 
     return (
         <div id="individiual-shifts">
-            <h1>Details for shift: {formatTime(shift.startTime)} - {formatTime(shift.endTime)}</h1>
+            <h1>Time: {formatTime(shift.startTime)} - {formatTime(shift.endTime)}</h1>
             <h2 className="mb-3">App: {shift.app}</h2>
 
             <div id="add-deliveries" className="d-flex align-items-center mb-3">
