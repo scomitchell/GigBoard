@@ -249,7 +249,7 @@ export default function IndividualShift() {
                 </FormGroup>
                 <Button
                   variant="contained"
-                  color="primary"
+                  className="delivery-submit-btn"
                   onClick={addDeliveryToShift}
                 >
                   Add Delivery

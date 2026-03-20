@@ -422,7 +422,7 @@ export default function MyExpenses({
               <Button
                 onClick={updateExpense}
                 variant="contained"
-                color="primary"
+                className="expense-submit-btn"
               >
                 Update Expense
               </Button>
