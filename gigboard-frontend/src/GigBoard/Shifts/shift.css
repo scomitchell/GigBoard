@@ -1,0 +1,116 @@
+/* Top Buttons */
+.shift-filter-btn {
+    color: #374151 !important;
+    border-color: #D1D5DB !important;
+    font-weight: 600 !important;
+    margin-right: 0.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.shift-filter-btn:hover {
+    background-color: #F9FAFB !important;
+    border-color: #D1D5DB !important;
+}
+
+.shift-reset-btn {
+    color: #EF4444 !important;
+    font-weight: 600 !important;
+    margin-right: 0.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.shift-reset-btn:hover {
+    background-color: #FEF2F2 !important;
+}
+
+.shift-submit-btn {
+    background-color: #1E293B !important;
+    color: white !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+}
+
+.shift-submit-btn:hover {
+    background-color: #0F172A !important;
+}
+
+.shift-cancel-btn {
+    background-color: #6B7280 !important;
+    margin-right: 1rem !important;
+}
+
+
+/* Card Base & Controls */
+.shift-card {
+    height: 100% !important;
+    display: flex !important;
+    text-align: left !important;
+    border-radius: 12px !important;
+    border: 1px solid #E5E7EB !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+    position: relative !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+}
+
+.shift-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-2px) !important;
+}
+
+.shift-card-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.shift-dropdown-toggle {
+    background-color: transparent !important;
+    border: none !important;
+    color: #6B7280 !important;
+}
+
+.shift-dropdown-toggle::after {
+    display: none !important;
+}
+
+
+/* Card Typography & Stats */
+.shift-app-badge {
+    color: #6366F1 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+}
+
+.shift-date-header {
+    color: #6B7280 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.shift-time-duration {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.shift-duration-badge {
+    background-color: #F3F4F6;
+    color: #4B5563;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Modal Forms */
+.shift-form-label {
+    font-weight: 500 !important;
+}
+
+.shift-form-actions {
+    display: flex;
+    justify-content: flex-end;
+}

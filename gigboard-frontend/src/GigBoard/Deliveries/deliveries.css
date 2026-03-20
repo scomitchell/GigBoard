@@ -1,0 +1,166 @@
+/* Top Buttons */
+.delivery-filter-btn {
+    color: #374151 !important;
+    border-color: #D1D5DB !important;
+    font-weight: 600 !important;
+    margin-right: 0.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.delivery-filter-btn:hover {
+    background-color: #F9FAFB !important;
+    border-color: #D1D5DB !important;
+}
+
+.delivery-reset-btn {
+    color: #EF4444 !important;
+    font-weight: 600 !important;
+    margin-right: 0.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.delivery-reset-btn:hover {
+    background-color: #FEF2F2 !important;
+}
+
+.delivery-submit-btn {
+    background-color: #1E293B !important;
+    color: white !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+}
+
+.delivery-submit-btn:hover {
+    background-color: #0F172A !important;
+}
+
+.delivery-cancel-btn {
+    background-color: #6B7280 !important;
+    margin-right: 1rem !important;
+}
+
+
+/* Card Base & Controls */
+.delivery-card {
+    height: 100% !important;
+    display: flex !important;
+    text-align: left !important;
+    border-radius: 12px !important;
+    border: 1px solid #E5E7EB !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+    position: relative !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+}
+
+.delivery-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-2px) !important;
+}
+
+.delivery-card-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.delivery-dropdown-toggle {
+    background-color: transparent !important;
+    border: none !important;
+    color: #6B7280 !important;
+}
+
+.delivery-dropdown-toggle::after {
+    display: none !important;
+}
+
+
+/* Card Typography & Stats */
+.delivery-app-badge {
+    color: #6366F1 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+}
+
+.delivery-total-pay {
+    color: #111827 !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.delivery-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.delivery-stat-label {
+    color: #6B7280 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+}
+
+.delivery-stat-value {
+    color: #111827 !important;
+    font-weight: 600 !important;
+}
+
+.delivery-stat-value.success {
+    color: #10B981 !important;
+}
+
+
+/* Location & Notes */
+.delivery-location-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.delivery-location-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.delivery-location-text {
+    color: #374151 !important;
+}
+
+.delivery-location-label {
+    color: #111827;
+    font-weight: bold;
+}
+
+.delivery-notes-block {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1rem;
+    background-color: #F9FAFB;
+    border-radius: 8px;
+    border-left: 3px solid #D1D5DB;
+}
+
+.delivery-notes-empty-box {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1rem;
+    background-color: #F9FAFB;
+    border-radius: 8px;
+    border: 1px dashed #D1D5DB;
+    text-align: center;
+}
+
+.delivery-notes-text {
+    color: #4B5563 !important;
+    font-style: italic !important;
+}
+
+
+/* Modal Forms */
+.delivery-form-label {
+    font-weight: 500 !important;
+}
+
+.delivery-form-actions {
+    display: flex;
+    justify-content: flex-end;
+}

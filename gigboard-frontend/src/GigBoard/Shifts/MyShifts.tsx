@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import * as client from "./client";
 import type { ShiftFilters } from "./client";
 import type { FullShift } from "../types";
+import './shift.css'
 
 export default function MyShifts({
   myShifts,
@@ -151,27 +152,14 @@ export default function MyShifts({
       <Button
         onClick={() => setShowForm(true)}
         variant="outlined"
-        sx={{
-          mr: 1,
-          mb: 2,
-          color: "#374151",
-          borderColor: "#D1D5DB",
-          fontWeight: 600,
-          "&:hover": { bgcolor: "#F9FAFB", borderColor: "#D1D5DB" },
-        }}
+        className="shift-filter-btn"
       >
         Filter Shifts
       </Button>
       <Button
         onClick={resetFilters}
         variant="text"
-        sx={{
-          mr: 1,
-          mb: 2,
-          color: "#EF4444",
-          fontWeight: 600,
-          "&:hover": { bgcolor: "#FEF2F2" },
-        }}
+        className="shift-reset-btn"
       >
         Reset filters
       </Button>
@@ -238,12 +226,7 @@ export default function MyShifts({
               onClick={applyFilters}
               variant="contained"
               disableElevation
-              sx={{
-                color: "#FFFFFF",
-                backgroundColor: "#1E293B",
-                fontWeight: 600,
-                "&:hover": { bgcolor: "#0F172A" },
-              }}
+              className="shift-submit-btn"
             >
               Apply Filters
             </Button>
@@ -258,42 +241,16 @@ export default function MyShifts({
             shift.endTime,
           );
           return (
-            <Col md={6} xl={6} key={shift.id}>
-              <Card
-                sx={{
-                  mb: 4,
-                  textAlign: "start",
-                  borderRadius: 3,
-                  border: "1px solid #E5E7EB",
-                  boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-                  position: "relative",
-                  transition: "transform 0.2s, box-shadow 0.2s",
-                  "&:hover": {
-                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-                    transform: "translateY(-2px)",
-                  },
-                  minHeight: 100,
-                }}
-              >
+            <Col md={6} xl={6} key={shift.id} className="mb-4">
+              <Card className="shift-card">
                 <CardContent sx={{ p: 3 }}>
                   {/* Card Controls */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "1rem",
-                      right: "1rem",
-                      zIndex: 10,
-                    }}
-                  >
+                  <div className="shift-card-controls">
                     <Dropdown>
                       <Dropdown.Toggle
                         variant="light"
                         size="sm"
-                        style={{
-                          backgroundColor: "transparent",
-                          border: "none",
-                          color: "#6B7280",
-                        }}
+                        className="shift-dropdown-toggle"
                       >
                         &#x22EE;
                       </Dropdown.Toggle>
@@ -323,38 +280,19 @@ export default function MyShifts({
                   >
                     <Typography
                       variant="overline"
-                      sx={{
-                        color: "#6366F1",
-                        fontWeight: 700,
-                        letterSpacing: "0.05em",
-                        display: "block",
-                        mb: 1,
-                      }}
+                      className="shift-app-badge"
                     >
                       {shift.app}
                     </Typography>
 
                     <Typography
                       variant="body2"
-                      sx={{
-                        color: "#6B7280",
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        mb: 0.5,
-                      }}
+                      className="shift-date-header"
                     >
                       {dateHeader}
                     </Typography>
 
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        gap: "0.75rem",
-                      }}
-                    >
+                    <div className="shift-time-duration">
                       <Typography
                         variant="h5"
                         fontWeight="bold"
@@ -363,16 +301,7 @@ export default function MyShifts({
                         {timeRange}
                       </Typography>
 
-                      <span
-                        style={{
-                          backgroundColor: "#F3F4F6",
-                          color: "#4B5563",
-                          padding: "2px 8px",
-                          borderRadius: "12px",
-                          fontSize: "0.75rem",
-                          fontWeight: 700,
-                        }}
-                      >
+                      <span className="shift-duration-badge">
                         {duration}
                       </span>
                     </div>
@@ -401,7 +330,7 @@ export default function MyShifts({
           <Button
             variant="contained"
             color="secondary"
-            sx={{ mr: 2, backgroundColor: "#6B7280" }}
+            className="shift-cancel-btn"
             onClick={() => setShiftToDelete(-1)}
             disableElevation
           >
@@ -436,8 +365,7 @@ export default function MyShifts({
                 <FormLabel
                   column
                   sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
+                  className="me-3 shift-form-label"
                 >
                   Start Time
                 </FormLabel>
@@ -459,8 +387,7 @@ export default function MyShifts({
                 <FormLabel
                   column
                   sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
+                  className="me-3 shift-form-label"
                 >
                   End Time
                 </FormLabel>
@@ -482,8 +409,7 @@ export default function MyShifts({
                 <FormLabel
                   column
                   sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
+                  className="me-3 shift-form-label"
                 >
                   App
                 </FormLabel>
@@ -513,12 +439,7 @@ export default function MyShifts({
                   onClick={updateShift}
                   variant="contained"
                   disableElevation
-                  style={{
-                    backgroundColor: "#1E293B",
-                    color: "white",
-                    textTransform: "none",
-                    fontWeight: 600,
-                  }}
+                  className="shift-submit-btn"
                 >
                   Update Shift
                 </Button>

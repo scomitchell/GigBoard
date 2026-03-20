@@ -12,6 +12,7 @@ import { Card, CardContent, Typography, Button } from "@mui/material";
 import * as client from "./client";
 import type { DeliveryFilters } from "./client";
 import "../../index.css";
+import "./deliveries.css";
 import type { Delivery } from "../types";
 
 export default function MyDeliveries({
@@ -304,12 +305,7 @@ export default function MyDeliveries({
             <Button
               onClick={applyFilters}
               variant="contained"
-              sx={{
-                color: "#FFFFFF",
-                backgroundColor: "#1E293B",
-                fontWeight: 600,
-                "&:hover": { bgcolor: "#0F172A" },
-              }}
+              className="delivery-submit-btn"
             >
               Apply Filters
             </Button>
@@ -320,37 +316,17 @@ export default function MyDeliveries({
       {/*Render individual delivery details on cards*/}
       <Row>
         {myDeliveries.map((delivery: Delivery) => (
-          <Col md={6} xl={4} key={delivery.id}>
+          <Col md={6} xl={4} key={delivery.id} className="mb-4">
             {" "}
-            <Card
-              sx={{
-                mb: 4,
-                textAlign: "start",
-                borderRadius: 3,
-                border: "1px solid #E5E7EB",
-                boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-                position: "relative",
-                transition: "transform 0.2s, box-shadow 0.2s",
-                "&:hover": {
-                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-                  transform: "translateY(-2px)",
-                },
-              }}
-            >
+            <Card className="delivery-card">
               <CardContent sx={{ p: 3 }}>
                 {/* Top Controls & Header */}
-                <div
-                  style={{ position: "absolute", top: "1rem", right: "1rem" }}
-                >
+                <div className="delivery-card-controls">
                   <Dropdown>
                     <Dropdown.Toggle
                       variant="light"
                       size="sm"
-                      style={{
-                        backgroundColor: "transparent",
-                        border: "none",
-                        color: "#6B7280",
-                      }}
+                      className="delivery-dropdown-toggle"
                     >
                       &#x22EE;
                     </Dropdown.Toggle>
@@ -371,14 +347,7 @@ export default function MyDeliveries({
                   </Dropdown>
                 </div>
 
-                <Typography
-                  variant="overline"
-                  sx={{
-                    color: "#6366F1",
-                    fontWeight: 700,
-                    letterSpacing: "0.05em",
-                  }}
-                >
+                <Typography variant="overline" className="delivery-app-badge">
                   {delivery.app}
                 </Typography>
                 <Typography
@@ -393,37 +362,24 @@ export default function MyDeliveries({
                 <Typography
                   variant="h3"
                   fontWeight="bold"
-                  sx={{ color: "#111827", mb: 3 }}
+                  className="delivery-total-pay"
                 >
                   ${(delivery.totalPay ?? 0).toFixed(2)}
                 </Typography>
 
                 {/* Stat Grid */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "1rem",
-                    marginBottom: "1.5rem",
-                    paddingBottom: "1.5rem",
-                    borderBottom: "1px solid #E5E7EB",
-                  }}
-                >
+                <div className="delivery-stat-grid">
                   <div>
                     <Typography
                       variant="caption"
-                      sx={{
-                        color: "#6B7280",
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                      }}
+                      className="delivery-stat-label"
                     >
                       Base
                     </Typography>
                     <Typography
                       variant="body1"
                       fontWeight="600"
-                      sx={{ color: "#111827" }}
+                      className="delivery-stat-value"
                     >
                       ${(delivery.basePay ?? 0).toFixed(2)}
                     </Typography>
@@ -431,18 +387,14 @@ export default function MyDeliveries({
                   <div>
                     <Typography
                       variant="caption"
-                      sx={{
-                        color: "#6B7280",
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                      }}
+                      className="delivery-stat-label"
                     >
                       Tip
                     </Typography>
                     <Typography
                       variant="body1"
                       fontWeight="600"
-                      sx={{ color: "#10B981" }}
+                      className="delivery-stat-value success"
                     >
                       {" "}
                       ${(delivery.tipPay ?? 0).toFixed(2)}
@@ -451,18 +403,14 @@ export default function MyDeliveries({
                   <div>
                     <Typography
                       variant="caption"
-                      sx={{
-                        color: "#6B7280",
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                      }}
+                      className="delivery-stat-label"
                     >
                       Dist
                     </Typography>
                     <Typography
                       variant="body1"
                       fontWeight="600"
-                      sx={{ color: "#111827" }}
+                      className="delivery-stat-value"
                     >
                       {(delivery.mileage ?? 0).toFixed(1)} mi
                     </Typography>
@@ -470,43 +418,38 @@ export default function MyDeliveries({
                 </div>
 
                 {/* Location Details */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.5rem",
-                  }}
-                >
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <Typography variant="body2" sx={{ color: "#374151" }}>
-                      <strong style={{ color: "#111827" }}>From:</strong>{" "}
+                <div className="delivery-location-block">
+                  <div className="delivery-location-row">
+                    <Typography
+                      variant="body2"
+                      className="delivery-location-text"
+                    >
+                      <strong className="delivery-location-label">From:</strong>{" "}
                       {delivery.restaurant}
                     </Typography>
                   </div>
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <Typography variant="body2" sx={{ color: "#374151" }}>
-                      <strong style={{ color: "#111827" }}>To:</strong>{" "}
+                  <div className="delivery-location-row">
+                    <Typography
+                      variant="body2"
+                      className="delivery-location-text"
+                    >
+                      <strong className="delivery-location-label">To:</strong>{" "}
                       {delivery.customerNeighborhood}
                     </Typography>
                   </div>
                 </div>
 
                 {/* Notes */}
-                {delivery.notes && (
-                  <div
-                    style={{
-                      marginTop: "1.5rem",
-                      padding: "0.75rem 1rem",
-                      backgroundColor: "#F9FAFB",
-                      borderRadius: "8px",
-                      borderLeft: "3px solid #D1D5DB",
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "#4B5563", fontStyle: "italic" }}
-                    >
+                {delivery.notes ? (
+                  <div className="delivery-notes-block">
+                    <Typography variant="body2" className="delivery-notes-text">
                       "{delivery.notes}"
+                    </Typography>
+                  </div>
+                ) : (
+                  <div className="delivery-notes-empty-box">
+                    <Typography variant="body2" className="delivery-notes-text">
+                      "No Notes Provided"
                     </Typography>
                   </div>
                 )}
@@ -534,7 +477,7 @@ export default function MyDeliveries({
           <Button
             variant="contained"
             color="secondary"
-            sx={{ mr: 2, backgroundColor: "#6B7280" }}
+            className="delivery-cancel-btn"
             onClick={() => setDeliveryToDelete(-1)}
             disableElevation
           >
@@ -565,12 +508,7 @@ export default function MyDeliveries({
           {deliveryToUpdate && (
             <div className="update-delivery-details">
               <FormGroup as={Row} className="d-flex align-items-center mb-3">
-                <FormLabel
-                  column
-                  sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
-                >
+                <FormLabel column sm={4} className="me-3 delivery-form-label">
                   App
                 </FormLabel>
                 <Col sm={7}>
@@ -595,12 +533,7 @@ export default function MyDeliveries({
               </FormGroup>
 
               <FormGroup as={Row} className="d-flex align-items-center mb-3">
-                <FormLabel
-                  column
-                  sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
-                >
+                <FormLabel column sm={4} className="me-3 delivery-form-label">
                   Time
                 </FormLabel>
                 <Col sm={7}>
@@ -618,12 +551,7 @@ export default function MyDeliveries({
               </FormGroup>
 
               <FormGroup as={Row} className="d-flex align-items-center mb-3">
-                <FormLabel
-                  column
-                  sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
-                >
+                <FormLabel column sm={4} className="me-3 delivery-form-label">
                   Base Pay
                 </FormLabel>
                 <Col sm={7}>
@@ -644,12 +572,7 @@ export default function MyDeliveries({
               </FormGroup>
 
               <FormGroup as={Row} className="d-flex align-items-center mb-3">
-                <FormLabel
-                  column
-                  sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
-                >
+                <FormLabel column sm={4} className="me-3 delivery-form-label">
                   Tip Pay
                 </FormLabel>
                 <Col sm={7}>
@@ -670,12 +593,7 @@ export default function MyDeliveries({
               </FormGroup>
 
               <FormGroup as={Row} className="d-flex align-items-center mb-3">
-                <FormLabel
-                  column
-                  sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
-                >
+                <FormLabel column sm={4} className="me-3 delivery-form-label">
                   Mileage
                 </FormLabel>
                 <Col sm={7}>
@@ -696,12 +614,7 @@ export default function MyDeliveries({
               </FormGroup>
 
               <FormGroup as={Row} className="d-flex align-items-center mb-3">
-                <FormLabel
-                  column
-                  sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
-                >
+                <FormLabel column sm={4} className="me-3 delivery-form-label">
                   Restaurant
                 </FormLabel>
                 <Col sm={7}>
@@ -720,12 +633,7 @@ export default function MyDeliveries({
               </FormGroup>
 
               <FormGroup as={Row} className="d-flex align-items-center mb-3">
-                <FormLabel
-                  column
-                  sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
-                >
+                <FormLabel column sm={4} className="me-3 delivery-form-label">
                   Customer Neighborhood
                 </FormLabel>
                 <Col sm={7}>
@@ -744,12 +652,7 @@ export default function MyDeliveries({
               </FormGroup>
 
               <FormGroup as={Row} className="d-flex align-items-center mb-4">
-                <FormLabel
-                  column
-                  sm={4}
-                  className="me-3"
-                  style={{ fontWeight: 500 }}
-                >
+                <FormLabel column sm={4} className="me-3 delivery-form-label">
                   Notes
                 </FormLabel>
                 <Col sm={7}>
@@ -773,12 +676,7 @@ export default function MyDeliveries({
                   onClick={updateDelivery}
                   variant="contained"
                   disableElevation
-                  style={{
-                    backgroundColor: "#1E293B",
-                    color: "white",
-                    textTransform: "none",
-                    fontWeight: 600,
-                  }}
+                  className="delivery-submit-btn"
                 >
                   Update Delivery
                 </Button>
