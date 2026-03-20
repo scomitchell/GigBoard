@@ -398,6 +398,37 @@ namespace GigBoardBackend.Controllers
                 targetDelivery.Notes = delivery.Notes;
 
                 _context.Deliveries.Update(targetDelivery);
+
+                var existingShiftDeliveries = await _context.ShiftDeliveries
+                    .Where(sd => sd.DeliveryId == targetDelivery.Id)
+                    .ToListAsync();
+
+                var validUserShift = await _context.UserShifts
+                    .Include(us => us.Shift)
+                    .FirstOrDefaultAsync(us => us.UserId == userId
+                        && us.Shift != null
+                        && us.Shift.StartTime <= delivery.DeliveryTime
+                        && us.Shift.EndTime >= delivery.DeliveryTime
+                        && us.Shift.App == delivery.App);
+
+                var validShiftId = validUserShift?.ShiftId;
+
+                var linksToRemove = existingShiftDeliveries
+                    .Where(sd => sd.ShiftId != validShiftId)
+                    .ToList();
+                _context.ShiftDeliveries.RemoveRange(linksToRemove);
+
+                if (validShiftId != null && !existingShiftDeliveries.Any(sd => sd.ShiftId == validShiftId))
+                {
+                    var newShiftDelivery = new ShiftDelivery
+                    {
+                        UserId = userId,
+                        DeliveryId = targetDelivery.Id,
+                        ShiftId = validShiftId.Value
+                    };
+                    _context.ShiftDeliveries.Add(newShiftDelivery);
+                }
+
                 await _context.SaveChangesAsync();
 
                 var stats = await _statsService.CalculateDeliveryStatistics(userId);

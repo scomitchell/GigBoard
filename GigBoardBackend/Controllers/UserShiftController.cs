@@ -58,7 +58,8 @@ namespace GigBoardBackend.Controllers
                     .Where(ud => ud.UserId == userId
                         && ud.Delivery != null
                         && ud.Delivery.DeliveryTime >= shift.StartTime
-                        && ud.Delivery.DeliveryTime <= shift.EndTime)
+                        && ud.Delivery.DeliveryTime <= shift.EndTime
+                        && ud.Delivery.App == shift.App)
                     .Include(ud => ud.Delivery)
                     .ToListAsync();
 
