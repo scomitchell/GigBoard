@@ -80,7 +80,7 @@ export default function Deliveries() {
   }
 
   return (
-    <div id="da-my-deliveries" className="page-wrapper">
+    <div id="da-my-deliveries" className="page-wrapper ms-2">
       <div id="deliveries-header" className="d-flex align-items-center">
         <h1 className="me-3 page-header">Your Deliveries</h1>
         <Button
