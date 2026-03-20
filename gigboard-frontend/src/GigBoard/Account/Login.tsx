@@ -24,11 +24,18 @@ export default function Login() {
             login(response.token);
             navigate("/");
         } catch (err: unknown) {
-            if (axios.isAxiosError(err)) {
-                setError(err.response?.data);
-            } else {
-                setError("An unexpected error occurred");
-            }
+          if (axios.isAxiosError(err)) {
+            const respData = err.response?.data;
+            setError(
+              typeof respData === "string"
+                ? respData
+                : respData != null
+                ? JSON.stringify(respData)
+                : "An unexpected error occurred"
+            );
+          } else {
+            setError("An unexpected error occurred");
+          }
         } finally {
             setLoading(false);
         }
@@ -63,7 +70,7 @@ export default function Login() {
 
           <div className="login-footer">
             <div className="login-message-area">
-              {error.length > 0 && <p className="login-error-msg">{error}</p>}
+              {error && error.length > 0 && <p className="login-error-msg">{error}</p>}
               {loading && (
                 <p className="login-loading-msg">
                   Loading, please allow up to 50s spinup time

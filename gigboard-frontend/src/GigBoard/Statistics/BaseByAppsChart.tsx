@@ -42,7 +42,7 @@ export default function BaseByAppsChart({data}: BaseByAppProps) {
             },
             yaxis: {
               title: {
-                text: "Average Base Pay",
+                text: "Average Base Pay ($)",
                 font: { size: 16 },
                 standoff: 10,
               },

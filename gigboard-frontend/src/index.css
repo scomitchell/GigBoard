@@ -139,6 +139,12 @@ nav {
   margin: 0;
 }
 
+@media (min-width: 1440px) {
+  .top-bar {
+    margin-left: 100px !important;
+  }
+}
+
 .page-title {
   font-weight: 600;
   color: #4B5563;

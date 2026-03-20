@@ -24,13 +24,17 @@ export default function TipsByAppChart({data}: TipsByAppProps) {
         automargin: true,
         title: { text: "Average Tip by App", font: { size: 20, weight: "bold" }},
         xaxis: {
-            title: {text: "App", font: { size: 16 }, standoff: 10},
+            title: {text: "App", font: { size: 16 }, standoff: 20 },
             tickangle: -30,
             zeroline: false,
             showgrid: true
         },
         yaxis: {
-            title: {text: "Average Tip ($)", font: {size: 20}, weight: "bold"},
+            title: {
+                text: "Average Tip ($)", 
+                font: { size: 16 }, 
+                standoff: 10
+            },
             showgrid: true,
             zeroline: false,
             tickprefix: "$",
@@ -52,7 +56,12 @@ export default function TipsByAppChart({data}: TipsByAppProps) {
             <Plot 
                 data={chartData}
                 layout={layout}
-                config={{displayModeBar: false}}
+                config={{
+                     responsive: true,
+                     displayModeBar: false,
+                     displaylogo: false,
+                     scrollZoom: false,
+                }}
                 style={{height: "100%", width: "100%"}}
             />
         </div>
