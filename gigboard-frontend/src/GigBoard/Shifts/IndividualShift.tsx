@@ -66,7 +66,7 @@ export default function IndividualShift() {
     }, [fetchDeliveriesForShift, fetchShift])
 
     return (
-      <div id="individiual-shifts">
+      <div id="individiual-shifts" className="page-wrapper ms-2">
         <h1 className="page-header">
           {formatTime(shift.startTime)} - {formatTime(shift.endTime)}
         </h1>
