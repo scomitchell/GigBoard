@@ -85,6 +85,10 @@ builder.Services.AddAuthorization();
 // Add custom services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<IDeliveryService, DeliveryService>();
+builder.Services.AddScoped<IShiftService, ShiftService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Add HTTP Client
 builder.Services.AddHttpClient();

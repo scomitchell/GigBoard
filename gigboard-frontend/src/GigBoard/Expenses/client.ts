@@ -3,7 +3,7 @@ import type { Expense } from "../types";
 
 const axiosWithCredentials = axios.create({withCredentials: true});
 const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
-const EXPENSES_API = `${REMOTE_SERVER}/api/userexpense`;
+const EXPENSES_API = `${REMOTE_SERVER}/api/expense`;
 
 export const addExpense = async (userExpense: Expense) => {
     const token = localStorage.getItem("token");

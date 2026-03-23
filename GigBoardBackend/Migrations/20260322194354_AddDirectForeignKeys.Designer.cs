@@ -4,6 +4,7 @@ using GigBoardBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GigBoardBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260322194354_AddDirectForeignKeys")]
+    partial class AddDirectForeignKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,6 +137,26 @@ namespace GigBoardBackend.Migrations
                     b.ToTable("Shifts");
                 });
 
+            modelBuilder.Entity("GigBoardBackend.Models.ShiftDelivery", b =>
+                {
+                    b.Property<int>("ShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeliveryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShiftId", "UserId", "DeliveryId");
+
+                    b.HasIndex("DeliveryId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShiftDeliveries");
+                });
+
             modelBuilder.Entity("GigBoardBackend.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -167,16 +190,70 @@ namespace GigBoardBackend.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("GigBoardBackend.Models.UserDelivery", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeliveryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId", "DeliveryId");
+
+                    b.HasIndex("DeliveryId");
+
+                    b.ToTable("UserDeliveries");
+                });
+
+            modelBuilder.Entity("GigBoardBackend.Models.UserExpense", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExpenseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId", "ExpenseId");
+
+                    b.HasIndex("ExpenseId");
+
+                    b.ToTable("UserExpenses");
+                });
+
+            modelBuilder.Entity("GigBoardBackend.Models.UserShift", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId", "ShiftId");
+
+                    b.HasIndex("ShiftId");
+
+                    b.ToTable("UserShifts");
+                });
+
             modelBuilder.Entity("GigBoardBackend.Models.Delivery", b =>
                 {
                     b.HasOne("GigBoardBackend.Models.Shift", "Shift")
-                        .WithMany("Deliveries")
+                        .WithMany()
                         .HasForeignKey("ShiftId");
 
                     b.HasOne("GigBoardBackend.Models.User", "User")
                         .WithMany("Deliveries")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Shift");
@@ -189,7 +266,7 @@ namespace GigBoardBackend.Migrations
                     b.HasOne("GigBoardBackend.Models.User", "User")
                         .WithMany("Expenses")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -200,15 +277,113 @@ namespace GigBoardBackend.Migrations
                     b.HasOne("GigBoardBackend.Models.User", "User")
                         .WithMany("Shifts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("GigBoardBackend.Models.ShiftDelivery", b =>
+                {
+                    b.HasOne("GigBoardBackend.Models.Delivery", "Delivery")
+                        .WithMany("ShiftDeliveries")
+                        .HasForeignKey("DeliveryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GigBoardBackend.Models.Shift", "Shift")
+                        .WithMany("ShiftDeliveries")
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GigBoardBackend.Models.User", "User")
+                        .WithMany("ShiftDeliveries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Delivery");
+
+                    b.Navigation("Shift");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GigBoardBackend.Models.UserDelivery", b =>
+                {
+                    b.HasOne("GigBoardBackend.Models.Delivery", "Delivery")
+                        .WithMany("UserDeliveries")
+                        .HasForeignKey("DeliveryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GigBoardBackend.Models.User", "User")
+                        .WithMany("UserDeliveries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Delivery");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GigBoardBackend.Models.UserExpense", b =>
+                {
+                    b.HasOne("GigBoardBackend.Models.Expense", "Expense")
+                        .WithMany("UserExpenses")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GigBoardBackend.Models.User", "User")
+                        .WithMany("UserExpenses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Expense");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GigBoardBackend.Models.UserShift", b =>
+                {
+                    b.HasOne("GigBoardBackend.Models.Shift", "Shift")
+                        .WithMany("UserShifts")
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GigBoardBackend.Models.User", "User")
+                        .WithMany("UserShifts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shift");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GigBoardBackend.Models.Delivery", b =>
+                {
+                    b.Navigation("ShiftDeliveries");
+
+                    b.Navigation("UserDeliveries");
+                });
+
+            modelBuilder.Entity("GigBoardBackend.Models.Expense", b =>
+                {
+                    b.Navigation("UserExpenses");
+                });
+
             modelBuilder.Entity("GigBoardBackend.Models.Shift", b =>
                 {
-                    b.Navigation("Deliveries");
+                    b.Navigation("ShiftDeliveries");
+
+                    b.Navigation("UserShifts");
                 });
 
             modelBuilder.Entity("GigBoardBackend.Models.User", b =>
@@ -217,7 +392,15 @@ namespace GigBoardBackend.Migrations
 
                     b.Navigation("Expenses");
 
+                    b.Navigation("ShiftDeliveries");
+
                     b.Navigation("Shifts");
+
+                    b.Navigation("UserDeliveries");
+
+                    b.Navigation("UserExpenses");
+
+                    b.Navigation("UserShifts");
                 });
 #pragma warning restore 612, 618
         }

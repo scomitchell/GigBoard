@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace GigBoardBackend.Models
 {
     public enum DeliveryApp
@@ -9,8 +11,18 @@ namespace GigBoardBackend.Models
     }
     public class Delivery
     {
+        // Primary Key
         public int Id { get; set; }
 
+        // Foreign Keys
+        public int UserId { get; set; }
+        [JsonIgnore]
+        public User? User { get; set; }
+
+        public int? ShiftId { get; set; }
+        public Shift? Shift { get; set; }
+
+        // Data
         public DeliveryApp App { get; set; }
 
         public DateTime DeliveryTime { get; set; }
@@ -28,9 +40,5 @@ namespace GigBoardBackend.Models
         public string CustomerNeighborhood { get; set; } = string.Empty;
 
         public string Notes { get; set; } = string.Empty;
-
-        public List<UserDelivery> UserDeliveries { get; set; } = new();
-
-        public List<ShiftDelivery> ShiftDeliveries { get; set; } = new();
     }
 }

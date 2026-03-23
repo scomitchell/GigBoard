@@ -4,6 +4,10 @@ namespace GigBoardBackend.Models
     {
         public int Id { get; set; }
 
+        public ICollection<Delivery> Deliveries { get; set; } = new HashSet<Delivery>();
+        public ICollection<Shift> Shifts { get; set; } = new HashSet<Shift>();
+        public ICollection<Expense> Expenses { get; set; } = new HashSet<Expense>();
+
         public string FirstName { get; set; } = string.Empty;
 
         public string LastName { get; set; } = string.Empty;
@@ -13,13 +17,5 @@ namespace GigBoardBackend.Models
         public string Username { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
-
-        public List<UserDelivery> UserDeliveries { get; set; } = new();
-
-        public List<UserExpense> UserExpenses { get; set; } = new();
-
-        public List<UserShift> UserShifts { get; set; } = new();
-
-        public List<ShiftDelivery> ShiftDeliveries { get; set; } = new();
     }
 }

@@ -13,69 +13,26 @@ namespace GigBoardBackend.Data
         public DbSet<Delivery> Deliveries { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<Shift> Shifts { get; set; }
-        public DbSet<UserDelivery> UserDeliveries { get; set; }
-        public DbSet<UserExpense> UserExpenses { get; set; }
-        public DbSet<UserShift> UserShifts { get; set; }
-        public DbSet<ShiftDelivery> ShiftDeliveries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserDelivery>()
-                .HasKey(ud => new { ud.UserId, ud.DeliveryId });
+            modelBuilder.Entity<Delivery>()
+                .HasOne(d => d.User)
+                .WithMany(u => u.Deliveries)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<UserDelivery>()
-                .HasOne(ud => ud.User)
-                .WithMany(ud => ud.UserDeliveries)
-                .HasForeignKey(ud => ud.UserId);
+            modelBuilder.Entity<Shift>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.Shifts)
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<UserDelivery>()
-                .HasOne(ud => ud.Delivery)
-                .WithMany(ud => ud.UserDeliveries)
-                .HasForeignKey(ud => ud.DeliveryId);
-
-            modelBuilder.Entity<UserExpense>()
-                .HasKey(ue => new { ue.UserId, ue.ExpenseId });
-
-            modelBuilder.Entity<UserExpense>()
-                .HasOne(ue => ue.User)
-                .WithMany(ue => ue.UserExpenses)
-                .HasForeignKey(ue => ue.UserId);
-
-            modelBuilder.Entity<UserExpense>()
-                .HasOne(ue => ue.Expense)
-                .WithMany(ue => ue.UserExpenses)
-                .HasForeignKey(ue => ue.ExpenseId);
-
-            modelBuilder.Entity<UserShift>()
-                .HasKey(us => new { us.UserId, us.ShiftId });
-
-            modelBuilder.Entity<UserShift>()
-                .HasOne(us => us.User)
-                .WithMany(us => us.UserShifts)
-                .HasForeignKey(us => us.UserId);
-
-            modelBuilder.Entity<UserShift>()
-                .HasOne(us => us.Shift)
-                .WithMany(us => us.UserShifts)
-                .HasForeignKey(us => us.ShiftId);
-
-            modelBuilder.Entity<ShiftDelivery>()
-                .HasKey(sd => new { sd.ShiftId, sd.UserId, sd.DeliveryId });
-
-            modelBuilder.Entity<ShiftDelivery>()
-                .HasOne(sd => sd.Shift)
-                .WithMany(sd => sd.ShiftDeliveries)
-                .HasForeignKey(sd => sd.ShiftId);
-
-            modelBuilder.Entity<ShiftDelivery>()
-                .HasOne(sd => sd.Delivery)
-                .WithMany(sd => sd.ShiftDeliveries)
-                .HasForeignKey(sd => sd.DeliveryId);
-
-            modelBuilder.Entity<ShiftDelivery>()
-                .HasOne(sd => sd.User)
-                .WithMany(sd => sd.ShiftDeliveries)
-                .HasForeignKey(sd => sd.UserId);
+            modelBuilder.Entity<Expense>()
+                .HasOne(e => e.User)
+                .WithMany(u => u.Expenses)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

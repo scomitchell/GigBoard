@@ -3,7 +3,7 @@ import Plot from "react-plotly.js";
 export type TipsByAppProps = {
     data: {
         tipApps: string[],
-        appTipPays: number[]
+        tipPays: number[]
     }
 };
 
@@ -11,10 +11,11 @@ export default function TipsByAppChart({data}: TipsByAppProps) {
     const chartData = [
       {
         x: data.tipApps,
-        y: data.appTipPays,
+        y: data.tipPays,
         type: "bar",
         marker: { color: "#6366F1" },
         name: "Tips by app",
+        orientation: "v",
         hoverTemplate: `$%{y:.2f}<br>%{x}`,
       },
     ];

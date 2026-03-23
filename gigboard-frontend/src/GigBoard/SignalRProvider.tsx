@@ -19,7 +19,7 @@ export type StatsType = {
     tipPays: number[];
   } | null;
   appsByBaseData: { apps: string[]; basePays: number[] } | null;
-  tipsByAppData: { tipApps: string[]; appTipPays: number[] } | null;
+  tipsByAppData: { tipApps: string[]; tipPays: number[] } | null;
   hourlyEarningsData: { hours: string[]; earnings: number[] } | null;
   donutChartData: {
     totalPay: number;

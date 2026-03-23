@@ -3,7 +3,7 @@ import type { Delivery } from "../types";
 
 const axiosWithCredentials = axios.create({ withCredentials: true });
 export const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
-export const DELIVERIES_API = `${REMOTE_SERVER}/api/userdelivery`;
+export const DELIVERIES_API = `${REMOTE_SERVER}/api/delivery`;
 
 export const findUserDeliveries = async () => {
     const token = localStorage.getItem("token");

@@ -3,8 +3,7 @@ import type { Shift } from "../types";
 
 const axiosWithCredentials = axios.create({withCredentials: true});
 export const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
-export const SHIFTS_API = `${REMOTE_SERVER}/api/usershift`;
-export const SHIFTDELIVERIES_API = `${REMOTE_SERVER}/api/shiftdelivery`;
+export const SHIFTS_API = `${REMOTE_SERVER}/api/shift`;
 
 export const findUserShifts = async () => {
     const token = localStorage.getItem("token");
@@ -85,22 +84,10 @@ export const deleteUserShift = async (shiftId: number) => {
     return response.data;
 }
 
-export const AddShiftDelivery = async (shiftId: number, deliveryId: number) => {
-    const token = localStorage.getItem("token");
-
-    const response = await axiosWithCredentials.post(`${SHIFTDELIVERIES_API}/${shiftId}?deliveryId=${deliveryId}`, {}, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-
-    return response.data;
-}
-
 export const findDeliveriesForShift = async (shiftId: number) => {
     const token = localStorage.getItem("token");
 
-    const response = await axiosWithCredentials.get(`${SHIFTDELIVERIES_API}/${shiftId}`, {
+    const response = await axiosWithCredentials.get(`${SHIFTS_API}/${shiftId}/deliveries`, {
         headers: {
             Authorization: `Bearer ${token}`
         }

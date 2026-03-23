@@ -12,160 +12,58 @@ namespace GigBoardBackend.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IAuthService _service;
+        private readonly IUserService _userService;
 
-        public UserController(ApplicationDbContext context, IAuthService service)
+        public UserController(IUserService userService)
         {
-            _context = context;
-            _service = service;
+            _userService = userService;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> CreateUser([FromBody] User user)
-        {   
-            if (await _context.Users.AnyAsync(u => u.Username == user.Username))
+        {
+            try
             {
-                return BadRequest("Username is already taken");
+                var response = await _userService.CreateUserAsync(user);
+                return Ok(response);
             }
-
-            if (await _context.Users.AnyAsync(u => u.Email == user.Email))
-            {
-                return BadRequest("Email is already taken");
-            }
-
-            // Hash password
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-
-            // Add user to db
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            // Issue token
-            var token = _service.GenerateToken(user);
-
-            var userDto = new UserDto
-            {
-                Id = user.Id,
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email
-            };
-
-            var response = new TokenResponse { 
-                Token = token,
-                User = userDto
-            };
-
-            return Ok(response);
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] User user)
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
-
-            if (existingUser == null || !BCrypt.Net.BCrypt.Verify(user.Password, existingUser.Password))
+            try
             {
-                return Unauthorized("Wrong username or password");
+                var response = await _userService.LoginUserAsync(user);
+                return Ok(response);
             }
-
-            var token = _service.GenerateToken(existingUser);
-
-            var userDto = new UserDto
-            {
-                Id = existingUser.Id,
-                Username = existingUser.Username,
-                FirstName = existingUser.FirstName,
-                LastName = existingUser.LastName,
-                Email = existingUser.Email
-            };
-
-            var response = new TokenResponse { 
-                Token = token,
-                User = userDto
-            };
-
-            return Ok(response);
+            catch (UnauthorizedAccessException ex) { return Unauthorized(ex.Message); }
         }
 
         [Authorize]
         [HttpPut]
         public async Task<IActionResult> UpdateUser([FromBody] User user)
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-
-            if (existingUser == null)
+            try
             {
-                return NotFound("User not found");
+                var result = await _userService.UpdateUserAsync(user);
+                return Ok(result);
             }
-
-            // If user is changing their username, check to see if new username is already taken
-            if (existingUser.Username != user.Username)
-            {
-                bool usernameExists = await _context.Users.AnyAsync(u => u.Username == user.Username);
-                if (usernameExists)
-                {
-                    return BadRequest("Username is taken");
-                }
-            }
-
-            if (existingUser.Email != user.Email)
-            {
-                bool emailExists = await _context.Users.AnyAsync(u => u.Email == user.Email);
-                if (emailExists)
-                {
-                    return BadRequest("Email is taken");
-                }
-            }
-
-            // Update user details
-            existingUser.Username = user.Username;
-            existingUser.FirstName = user.FirstName;
-            existingUser.LastName = user.LastName;
-            existingUser.Email = user.Email;
-
-            // Update password
-            if (!string.IsNullOrEmpty(user.Password))
-            {
-                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            }
-
-            _context.Users.Update(existingUser);
-            await _context.SaveChangesAsync();
-
-            var responseUser = new UserDto
-            {
-                Id = existingUser.Id,
-                FirstName = existingUser.FirstName,
-                LastName = existingUser.LastName,
-                Email = existingUser.Email,
-                Username = existingUser.Username
-            };
-
-            return Ok(responseUser);
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
         }
 
         [Authorize]
         [HttpGet("{username}")]
         public async Task<IActionResult> GetUserByUsername(string username)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            
-            if (user == null)
+            try
             {
-                return NotFound();
+                var result = await _userService.GetUserByUsernameAsync(username);
+                return Ok(result);
             }
-
-            return Ok(new UserDto
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                Username = user.Username
-            });
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
         }
 
         [Authorize]
@@ -173,26 +71,13 @@ namespace GigBoardBackend.Controllers
         public async Task<IActionResult> GetUserHasData()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (int.TryParse(userIdClaim, out int userId))
+            if (!int.TryParse(userIdClaim, out int userId))
             {
-                var deliveries = await _context.UserDeliveries
-                .Where(ud => ud.UserId == userId)
-                .ToListAsync();
-
-                if (!deliveries.Any())
-                {
-                    return Ok(false);
-                }
-                else
-                {
-                    return Ok(true);
-                }
-            } 
-            else
-            {
-                return BadRequest("User Claim is Invalid");
+                return BadRequest("User claim is invalid");
             }
+
+            var hasData = await _userService.GetUserHasDataAsync(userId);
+            return Ok(hasData);
         }
     }
 }

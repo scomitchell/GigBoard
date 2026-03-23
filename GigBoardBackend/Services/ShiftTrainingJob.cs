@@ -18,38 +18,27 @@ namespace GigBoardBackend.Services
 
         public async Task TrainShiftModelJob()
         {
-            Console.WriteLine("Starting shift model training job...");
-
             try
             {
-                // Retrieve all shift/delivery data
-                var shiftData = _context.ShiftDeliveries
-                    .Where(sd => sd.Shift != null && sd.Delivery != null)
-                    .Include(sd => sd.Shift)
-                    .Include(sd => sd.Delivery)
-                    .AsEnumerable()
-                    .GroupBy(sd => new
+                var shiftData = await _context.Shifts
+                    .Where(s => _context.Deliveries.Any(d => d.ShiftId == s.Id))
+                    .Select(s => new
                     {
-                        sd.Shift!.Id,
-                        sd.Shift.StartTime,
-                        sd.Shift.EndTime,
-                        sd.Shift.App,
+                        s.StartTime,
+                        s.EndTime,
+                        s.App,
+                        Neighborhoods = _context.Deliveries
+                            .Where(d => d.ShiftId == s.Id && d.CustomerNeighborhood != null)
+                            .Select(d => d.CustomerNeighborhood)
+                            .Distinct()
+                            .ToList(),
+                        TotalEarnings = _context.Deliveries
+                            .Where(d => d.ShiftId == s.Id)
+                            .Sum(d => d.TotalPay)
                     })
-                    .Select(g => new
-                    {
-                        g.Key.StartTime,
-                        g.Key.EndTime,
-                        g.Key.App,
-                        Neighborhoods = g.Select(x => x.Delivery!.CustomerNeighborhood).Distinct().ToList(),
-                        TotalEarnings = g.Sum(x => x.Delivery!.TotalPay),
-                    })
-                    .ToList();
+                    .ToListAsync();
 
-                if (!shiftData.Any())
-                {
-                    Console.WriteLine("No shift data found to train on");
-                    return;
-                }
+                if (!shiftData.Any()) return;
 
                 var samples = shiftData.Select(d => new
                 {
@@ -61,23 +50,13 @@ namespace GigBoardBackend.Services
                 });
 
                 var payload = new { samples };
-
-                // Python service URL
                 var pythonServiceUrl = _config["PYTHON_SERVICE_URL"] ?? "http://localhost:8001";
-                var response = await _httpClient.PostAsJsonAsync($"{pythonServiceUrl}/train/shift-model", payload);
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine($"Training API error: {response.StatusCode}");
-                    return;
-                }
-
-                var result = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Shift model training complete: {result}");
+                await _httpClient.PostAsJsonAsync($"{pythonServiceUrl}/train/shift-model", payload);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error during shift model training: {ex.Message}");
+                throw;
             }
         }
     }
