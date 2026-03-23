@@ -521,7 +521,7 @@ export default function MyDeliveries({
                     }
                     className="form-control"
                     id="da-app"
-                    defaultValue={deliveryToUpdate.app}
+                    defaultValue={deliveryToUpdate.app ?? ""}
                   >
                     <option value=""></option>
                     <option value="Doordash">Doordash</option>
@@ -539,7 +539,7 @@ export default function MyDeliveries({
                 <Col sm={7}>
                   <FormControl
                     type="datetime-local"
-                    defaultValue={deliveryToUpdate.deliveryTime}
+                    defaultValue={deliveryToUpdate.deliveryTime ?? ""}
                     onChange={(e) =>
                       setDeliveryToUpdate({
                         ...deliveryToUpdate,
@@ -560,7 +560,7 @@ export default function MyDeliveries({
                     step="0.01"
                     min="1.00"
                     placeholder="Base Pay"
-                    defaultValue={deliveryToUpdate.basePay}
+                    defaultValue={deliveryToUpdate.basePay ?? ""}
                     onChange={(e) =>
                       setDeliveryToUpdate({
                         ...deliveryToUpdate,
@@ -581,7 +581,7 @@ export default function MyDeliveries({
                     step="0.01"
                     min="1.00"
                     placeholder="Tip Pay"
-                    defaultValue={deliveryToUpdate.tipPay}
+                    defaultValue={deliveryToUpdate.tipPay ?? ""}
                     onChange={(e) =>
                       setDeliveryToUpdate({
                         ...deliveryToUpdate,
@@ -602,7 +602,7 @@ export default function MyDeliveries({
                     step="0.01"
                     min="0.01"
                     placeholder="Mileage"
-                    defaultValue={deliveryToUpdate.mileage}
+                    defaultValue={deliveryToUpdate.mileage ?? ""}
                     onChange={(e) =>
                       setDeliveryToUpdate({
                         ...deliveryToUpdate,
@@ -621,7 +621,7 @@ export default function MyDeliveries({
                   <FormControl
                     type="text"
                     placeholder="Restaurant"
-                    defaultValue={deliveryToUpdate.restaurant}
+                    defaultValue={deliveryToUpdate.restaurant ?? ""}
                     onChange={(e) =>
                       setDeliveryToUpdate({
                         ...deliveryToUpdate,
@@ -640,7 +640,7 @@ export default function MyDeliveries({
                   <FormControl
                     type="text"
                     placeholder="Customer Neighborhood"
-                    defaultValue={deliveryToUpdate.customerNeighborhood}
+                    defaultValue={deliveryToUpdate.customerNeighborhood ?? ""}
                     onChange={(e) =>
                       setDeliveryToUpdate({
                         ...deliveryToUpdate,
@@ -660,7 +660,7 @@ export default function MyDeliveries({
                     as="textarea"
                     rows={3}
                     placeholder="Notes"
-                    defaultValue={deliveryToUpdate.notes}
+                    defaultValue={deliveryToUpdate.notes ?? ""}
                     onChange={(e) =>
                       setDeliveryToUpdate({
                         ...deliveryToUpdate,
