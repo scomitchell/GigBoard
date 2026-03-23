@@ -527,7 +527,7 @@ export default function MyDeliveries({
                     <option value="Doordash">Doordash</option>
                     <option value="UberEats">Uber Eats</option>
                     <option value="Grubhub">Grubhub</option>
-                    <option value="Instacart">Instacart</option>
+                    <option value="InstaCart">Instacart</option>
                   </select>
                 </Col>
               </FormGroup>
