@@ -1,6 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAuth } from "./GigBoard/Contexts/AuthContext";
+import { useState } from "react";
+import { FaHome, FaBars, FaTimes } from "react-icons/fa";
+import { BsBagFill, BsCurrencyDollar, BsClockFill } from "react-icons/bs";
 import type { RootState } from "./GigBoard/store";
 
 export default function TopBar() {
@@ -9,14 +12,40 @@ export default function TopBar() {
   const { currentUser } = useSelector(
     (state: RootState) => state.accountReducer,
   );
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
   };
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   return (
     <>
       <div className="top-bar-left">
+        <button
+          className="mobile-menu-btn d-lg-none"
+          onClick={toggleMenu}
+          aria-label="Toggle navigation menu"
+          style={{
+            background: "none",
+            border: "none",
+            color: "#4B5563",
+            cursor: "pointer",
+            padding: "0.5rem",
+            display: "flex",
+            alignItems: "center",
+            marginRight: "1rem",
+          }}
+        >
+          {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+        </button>
         <span className="page-title">
           {pathname.includes("MyDeliveries") ?
             "Deliveries" :
@@ -90,6 +119,47 @@ export default function TopBar() {
           </>
         )}
       </div>
+
+      {/* Mobile Dropdown Menu */}
+      {menuOpen && currentUser && (
+        <div className="mobile-nav-dropdown">
+          <Link
+            to="/GigBoard"
+            onClick={closeMenu}
+            className={`mobile-nav-item ${pathname === "/GigBoard" ? "active" : ""}`}
+          >
+            <FaHome size={20} />
+            <span>Home</span>
+          </Link>
+
+          <Link
+            to="/GigBoard/MyDeliveries"
+            onClick={closeMenu}
+            className={`mobile-nav-item ${pathname.includes("MyDeliveries") ? "active" : ""}`}
+          >
+            <BsBagFill size={20} />
+            <span>Deliveries</span>
+          </Link>
+
+          <Link
+            to="/GigBoard/Shifts"
+            onClick={closeMenu}
+            className={`mobile-nav-item ${pathname.includes("Shifts") ? "active" : ""}`}
+          >
+            <BsClockFill size={20} />
+            <span>Shifts</span>
+          </Link>
+
+          <Link
+            to="/GigBoard/Expenses"
+            onClick={closeMenu}
+            className={`mobile-nav-item ${pathname.includes("Expenses") ? "active" : ""}`}
+          >
+            <BsCurrencyDollar size={20} />
+            <span>Expenses</span>
+          </Link>
+        </div>
+      )}
     </>
   );
 }

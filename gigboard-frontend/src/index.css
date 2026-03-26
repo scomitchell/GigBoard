@@ -18,12 +18,12 @@
   max-width: 1200px !important;
 }
 
-@media (min-wdith: 1440px) {
+/* @media (min-wdith: 1440px) {
   .page-wrapper {
     padding-left: 1rem !important;
     padding-right: 3rem !important;
   }
-}
+} */
 
 a {
   font-weight: 500;
@@ -151,11 +151,17 @@ nav {
   margin: 0;
 }
 
-@media (min-width: 1440px) {
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* @media (min-width: 992px) {
   .top-bar {
     margin-left: 100px !important;
   }
-}
+} */
 
 .page-title {
   font-weight: 600;

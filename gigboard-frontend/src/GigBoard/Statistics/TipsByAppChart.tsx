@@ -1,4 +1,5 @@
 import Plot from "react-plotly.js";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 export type TipsByAppProps = {
     data: {
@@ -7,7 +8,29 @@ export type TipsByAppProps = {
     }
 };
 
+const getResponsiveConfig = (isMobile: boolean) => {
+    if (isMobile) {
+        return {
+            margins: { l: 50, r: 20, t: 80, b: 110 },
+            titleFontSize: 14,
+            axisLabelFontSize: 12,
+            tickAngle: -45,
+            tickFontSize: 10,
+        };
+    }
+    return {
+        margins: { l: 70, r: 30, t: 80, b: 90 },
+        titleFontSize: 20,
+        axisLabelFontSize: 16,
+        tickAngle: -30,
+        tickFontSize: 12,
+    };
+};
+
 export default function TipsByAppChart({data}: TipsByAppProps) {
+    const isMobile = useIsMobile();
+    const config = getResponsiveConfig(isMobile);
+
     const chartData = [
       {
         x: data.tipApps,
@@ -23,24 +46,27 @@ export default function TipsByAppChart({data}: TipsByAppProps) {
     const layout = {
         autosize: true,
         automargin: true,
-        title: { text: "Average Tip by App", font: { size: 20, weight: "bold" }},
+        title: { text: isMobile ? "Tip by App" : "Average Tip by App", font: { size: config.titleFontSize, weight: "bold" }},
         xaxis: {
-            title: {text: "App", font: { size: 16 }, standoff: 20 },
-            tickangle: -30,
+            title: {text: "App", font: { size: config.axisLabelFontSize }, standoff: 20 },
+            tickangle: config.tickAngle,
             zeroline: false,
-            showgrid: true
+            showgrid: true,
+            tickfont: { size: config.tickFontSize }
         },
         yaxis: {
             title: {
-                text: "Average Tip ($)", 
-                font: { size: 16 }, 
-                standoff: 10
+                text: isMobile ? "Tip ($)" : "Average Tip ($)", 
+                font: { size: config.axisLabelFontSize }, 
+                standoff: 20
             },
             showgrid: true,
             zeroline: false,
             tickprefix: "$",
-            tickformat: ".2f"
+            tickformat: ".2f",
+            tickfont: { size: config.tickFontSize }
         },
+        margin: config.margins,
         plot_bgcolor: "white",
         paper_bgcolor: "white",
         dragmode: false
@@ -48,7 +74,7 @@ export default function TipsByAppChart({data}: TipsByAppProps) {
 
     return (
         <div style={{
-            minHeight: 450,
+            minHeight: isMobile ? 350 : 450,
             minWidth: 0,
             width: "100%",
             position: "relative",

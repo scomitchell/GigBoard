@@ -9,7 +9,7 @@ export default function Navigation() {
     const { currentUser } = useSelector((state: RootState) => state.accountReducer);
 
     return (
-        <nav className="main-navbar d-flex flex-column position-fixed top-0 start-0 z-3 vh-100"
+        <nav className="main-navbar d-none d-lg-flex d-flex flex-column position-fixed top-0 start-0 z-3 vh-100"
             style={{width: "100px"}}>
             <Link to="/GigBoard"
                 className={`nav-link-hover d-flex flex-column align-items-center px-4 py-2 

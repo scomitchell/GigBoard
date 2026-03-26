@@ -701,7 +701,7 @@ export default function Statistics() {
   }, [fetchStatistics]);
 
   return (
-    <div id="da-statistics" className="page-wrapper">
+    <div id="da-statistics">
       <h1 className="ms-2 mb-3 page-header">Your Statistics</h1>
       <Col sm={6}>
         <select

@@ -1,4 +1,5 @@
 import Plot from "react-plotly.js";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 export type EarningsDonutProps = {
     data: {
@@ -9,6 +10,7 @@ export type EarningsDonutProps = {
 };
 
 export default function EarningsDonutChart({data}: EarningsDonutProps) {
+    const isMobile = useIsMobile();
     const { totalPay, totalBasePay, totalTipPay } = data;
 
     const chartData = [
@@ -17,10 +19,10 @@ export default function EarningsDonutChart({data}: EarningsDonutProps) {
         labels: ["Base Pay", "Tip Pay"],
         type: "pie",
         hole: 0.8,
-        texttemplate: `%{label}<br />%{percent}<br />$%{value:.2f}`,
+        texttemplate: isMobile ? `%{label}<br />%{percent}` : `%{label}<br />%{percent}<br />$%{value:.2f}`,
         textposition: "outside",
         textfont: {
-          size: 14,
+          size: isMobile ? 11 : 14,
         },
         marker: {
           colors: ["#6366F1", "#10B981"],
@@ -39,7 +41,7 @@ export default function EarningsDonutChart({data}: EarningsDonutProps) {
                 x: 0.5,
                 y: 0.5,
                 font: {
-                    size: 24,
+                    size: isMobile ? 18 : 24,
                     color: "black",
                     weight: "bold"
                 },
@@ -51,7 +53,7 @@ export default function EarningsDonutChart({data}: EarningsDonutProps) {
     return (
         <div style={{width: "100%",
             height: "100%",
-            minHeight: 250,
+            minHeight: isMobile ? 300 : 250,
             display: "flex",
             justifyContent: "center",
             alignItems: "center"

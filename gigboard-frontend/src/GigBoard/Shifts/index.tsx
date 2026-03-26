@@ -53,7 +53,7 @@ export default function Shifts() {
     }
 
     return (
-      <div id="da-shifts" className="page-wrapper ms-2">
+      <div id="da-shifts">
         <div id="da-shifts-header" className="d-flex align-items-center">
           <h1 className="me-3 page-header">Log Shifts</h1>
           <Button

@@ -1,4 +1,5 @@
 import Plot from "react-plotly.js";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 export type HourlyEarningsProps = {
     data: {
@@ -7,11 +8,33 @@ export type HourlyEarningsProps = {
     };
 };
 
+const getResponsiveConfig = (isMobile: boolean) => {
+  if (isMobile) {
+    return {
+      margins: { l: 50, r: 20, t: 80, b: 110 },
+      titleFontSize: 14,
+      axisLabelFontSize: 12,
+      tickAngle: -45,
+      tickFontSize: 10,
+    };
+  }
+  return {
+    margins: { l: 70, r: 30, t: 80, b: 90 },
+    titleFontSize: 20,
+    axisLabelFontSize: 16,
+    tickAngle: -30,
+    tickFontSize: 12,
+  };
+};
+
 export default function EarningsByHourChart({ data }: HourlyEarningsProps) {
+  const isMobile = useIsMobile();
+  const config = getResponsiveConfig(isMobile);
+
   return (
     <div
       style={{
-        minHeight: 450,
+        minHeight: isMobile ? 350 : 450,
         minWidth: 0,
         width: "100%",
         position: "relative",
@@ -32,26 +55,29 @@ export default function EarningsByHourChart({ data }: HourlyEarningsProps) {
         layout={{
           autosize: true,
           title: {
-            text: "Pay by Hour of Day (Past 7 Days)",
-            font: { size: 20, weight: "bold" },
+            text: isMobile ? "Earnings by Hour" : "Pay by Hour of Day (Past 7 Days)",
+            font: { size: config.titleFontSize, weight: "bold" },
           },
           xaxis: {
-            title: { text: "Hour", font: { size: 16 }, standoff: 10 },
-            tickangle: -30,
+            title: { text: "Hour", font: { size: config.axisLabelFontSize }, standoff: 20 },
+            tickangle: config.tickAngle,
             showgrid: true,
             zeroline: false,
             tickvals: data.hours,
+            tickfont: { size: config.tickFontSize },
             ticktext: data.hours.map(
               (h) => `${h.toString().padStart(2, "0")}:00`,
             ),
           },
           yaxis: {
-            title: { text: "Average Pay", font: { size: 16 }, standoff: 10 },
+            title: { text: "Average Pay", font: { size: config.axisLabelFontSize }, standoff: 20 },
             showgrid: true,
             zeroline: false,
             tickprefix: "$",
             tickformat: ".2f",
+            tickfont: { size: config.tickFontSize },
           },
+          margin: config.margins,
           plot_bgcolor: "white",
           paper_bgcolor: "white",
           automargin: true,

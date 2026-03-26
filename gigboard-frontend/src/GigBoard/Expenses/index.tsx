@@ -47,7 +47,7 @@ export default function Expenses() {
     }
 
     return (
-      <div id="da-expenses" className="page-wrapper ms-2">
+      <div id="da-expenses">
         <div id="da-expenses-header" className="d-flex align-items-center">
           <h1 className="me-3 page-header">Track Your Expenses</h1>
           <Button
