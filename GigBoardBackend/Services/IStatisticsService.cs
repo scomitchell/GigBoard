@@ -1,9 +1,11 @@
+using GigBoardBackend.Models;
+
 namespace GigBoardBackend.Services
 {
     public interface IStatisticsService
     {
-        Task<object> CalculateDeliveryStatistics(int userId);
-        Task<object> CalculateShiftStatistics(int userId);
-        Task<object> CalculateExpenseStatistics(int userId);
+        Task<DeliveryStatisticsDto> CalculateDeliveryStatistics(int userId);
+        Task<ShiftStatisticsDto> CalculateShiftStatistics(int userId);
+        Task<ExpenseStatisticsDto> CalculateExpenseStatistics(int userId);
     }
 }

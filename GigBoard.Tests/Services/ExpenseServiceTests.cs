@@ -1,28 +1,25 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using GigBoardBackend.Controllers;
+using GigBoardBackend.Services;
 using GigBoardBackend.Models;
 using GigBoardBackend.Data;
 using Moq;
 using Microsoft.AspNetCore.SignalR;
-using GigBoardBackend.Services;
 using GigBoardBackend.Hubs;
 
-namespace GigBoard.Tests.Controllers 
+namespace GigBoard.Tests.Services
 {
-    public class UserExpenseControllerTests : IDisposable
+    public class ExpenseServiceTests : IDisposable
     {
-        private readonly UserExpenseController _controller;
+        private readonly ExpenseService _service;
         private readonly ApplicationDbContext _context;
 
-        public UserExpenseControllerTests()
+        public ExpenseServiceTests()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
-            
+
             _context = new ApplicationDbContext(options);
 
             SeedDatabase();
@@ -40,17 +37,7 @@ namespace GigBoard.Tests.Controllers
 
             var mockStatsService = new Mock<StatisticsService>(_context);
 
-            _controller = new UserExpenseController(_context, mockHubContext.Object, mockStatsService.Object);
-
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "1")
-            }, "mock"));
-
-            _controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext {User = user}
-            };
+            _service = new ExpenseService(_context, mockStatsService.Object, mockHubContext.Object);
         }
 
         private void SeedDatabase()
@@ -75,6 +62,7 @@ namespace GigBoard.Tests.Controllers
                 var expense1 = new Expense
                 {
                     Id = 1,
+                    UserId = 1,
                     Amount = 30,
                     Date = DateTime.Now,
                     Type = "Gas",
@@ -82,14 +70,6 @@ namespace GigBoard.Tests.Controllers
                 };
 
                 _context.Expenses.Add(expense1);
-                _context.SaveChanges();
-
-                _context.UserExpenses.Add(new UserExpense
-                {
-                    UserId = 1,
-                    ExpenseId = 1
-                });
-
                 _context.SaveChanges();
             }
         }
@@ -102,11 +82,10 @@ namespace GigBoard.Tests.Controllers
         [Fact]
         public async Task GetExpenses_ReturnsExpenses()
         {
-            var result = await _controller.GetExpenses();
+            var result = await _service.GetExpensesAsync(1);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var userExpenses = Assert.IsAssignableFrom<IEnumerable<ExpenseDto>>(okResult.Value);
-            
+            var userExpenses = result.ToList();
+
             var userExpense = Assert.Single(userExpenses);
             Assert.Equal(30, userExpense.Amount);
         }
@@ -115,56 +94,45 @@ namespace GigBoard.Tests.Controllers
         public async Task DeleteExpense_RemovesExpense()
         {
             Assert.True(_context.Expenses.Any(e => e.Id == 1));
-            var result = await _controller.DeleteExpense(1);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            await _service.DeleteExpenseAsync(1, 1);
             Assert.False(_context.Expenses.Any());
         }
 
         [Fact]
         public async Task GetExpenseById_ReturnsExpense()
         {
-            var result = await _controller.GetExpenseById(1);
+            var result = await _service.GetExpenseByIdAsync(1, 1);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var userExpense = Assert.IsAssignableFrom<UserExpense>(okResult.Value);
-            Assert.NotNull(userExpense.Expense);
-            Assert.Equal(30, userExpense.Expense.Amount);
+            Assert.NotNull(result);
+            Assert.Equal(30, result.Amount);
 
-            var result2 = await _controller.GetExpenseById(2);
-            Assert.IsType<NotFoundObjectResult>(result2);
+            var result2 = await _service.GetExpenseByIdAsync(1, 2);
+            Assert.Null(result2);
         }
 
         [Fact]
         public async Task GetFilteredExpenses_FiltersExpenses()
         {
-            Assert.Contains(_context.UserExpenses, ue => ue.ExpenseId == 1);
+            Assert.Contains(_context.Expenses, e => e.Id == 1);
 
             var expense2 = new Expense
             {
                 Id = 2,
+                UserId = 1,
                 Amount = 20.50,
                 Date = DateTime.Now,
                 Type = "Car Maintenance",
                 Notes = "Test 2"
             };
             _context.Expenses.Add(expense2);
-            
-            var userExpense = new UserExpense
-            {
-                UserId = 1,
-                ExpenseId = expense2.Id
-            };
-            _context.UserExpenses.Add(userExpense);
-
             await _context.SaveChangesAsync();
 
-            var result = await _controller.GetFilteredExpenses(amount: null,
+            var result = await _service.GetFilteredExpensesAsync(1, amount: null,
                 date: null,
                 type: "Car Maintenance");
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var expenses = Assert.IsAssignableFrom<IEnumerable<ExpenseDto>>(okResult.Value);
+            var expenses = result.ToList();
 
             Assert.Contains(expenses, e => e.Id == 2);
             Assert.DoesNotContain(expenses, e => e.Id == 1);
@@ -176,17 +144,18 @@ namespace GigBoard.Tests.Controllers
             var expense3 = new Expense
             {
                 Id = 3,
+                UserId = 1,
                 Amount = 25,
                 Date = DateTime.Now,
                 Type = "Gas",
                 Notes = "Test 3"
             };
 
-            var result = await _controller.AddExpense(expense3);
+            var result = await _service.AddExpenseAsync(1, expense3);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var userExpense = await _context.UserExpenses
-                .FirstOrDefaultAsync(ue => ue.UserId == 1 && ue.ExpenseId == expense3.Id);
+            Assert.IsType<ExpenseDto>(result);
+            var userExpense = await _context.Expenses
+                .FirstOrDefaultAsync(e => e.UserId == 1 && e.Id == expense3.Id);
 
             Assert.NotNull(userExpense);
         }
@@ -197,26 +166,18 @@ namespace GigBoard.Tests.Controllers
             var expense4 = new Expense
             {
                 Id = 4,
+                UserId = 1,
                 Amount = 34,
                 Date = DateTime.Now,
                 Type = "Car Maintenance",
                 Notes = "Test 4"
             };
             _context.Expenses.Add(expense4);
-
-            var userExpense = new UserExpense
-            {
-                UserId = 1,
-                ExpenseId = expense4.Id
-            };
-            _context.UserExpenses.Add(userExpense);
-
             await _context.SaveChangesAsync();
 
-            var result = await _controller.GetExpenseTypes();
+            var result = await _service.GetExpenseTypesAsync(1);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var types = Assert.IsAssignableFrom<IEnumerable<string>>(okResult.Value);
+            var types = result.ToList();
 
             Assert.Contains("Car Maintenance", types);
             Assert.Contains("Gas", types);
@@ -228,18 +189,17 @@ namespace GigBoard.Tests.Controllers
             var expense1 = new Expense
             {
                 Id = 1,
+                UserId = 1,
                 Amount = 33,
                 Date = DateTime.Now,
                 Type = "Gas",
                 Notes = "Test1"
             };
 
-            var result = await _controller.UpdateExpense(expense1);
+            var result = await _service.UpdateExpenseAsync(1, expense1);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var expense = Assert.IsAssignableFrom<ExpenseDto>(okResult.Value);
-
-            Assert.Equal(33, expense.Amount);
+            Assert.IsType<ExpenseDto>(result);
+            Assert.Equal(33, result.Amount);
         }
     }
 }

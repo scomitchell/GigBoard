@@ -1,8 +1,5 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using GigBoardBackend.Controllers;
 using GigBoardBackend.Models;
 using GigBoardBackend.Data;
 using Moq;
@@ -10,14 +7,14 @@ using Microsoft.AspNetCore.SignalR;
 using GigBoardBackend.Services;
 using GigBoardBackend.Hubs;
 
-namespace GigBoard.Tests.Controllers 
+namespace GigBoard.Tests.Services
 {
-    public class UserDeliveryControllerTests : IDisposable
+    public class DeliveryServiceTests : IDisposable
     {
-        private readonly UserDeliveryController _controller;
+        private readonly DeliveryService _service;
         private readonly ApplicationDbContext _context;
 
-        public UserDeliveryControllerTests() 
+        public DeliveryServiceTests()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -41,39 +38,32 @@ namespace GigBoard.Tests.Controllers
             var mockStatsService = new Mock<StatisticsService>(_context);
 
             // Controller
-            _controller = new UserDeliveryController(_context, mockHubContext.Object, mockStatsService.Object);
-
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] 
-            {
-                new Claim(ClaimTypes.NameIdentifier, "1")
-            }, "mock"));
-
-            _controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() {User = user}
-            };
+            _service = new DeliveryService(_context, mockStatsService.Object, mockHubContext.Object);
         }
 
-        private void SeedDatabase() 
+        private void SeedDatabase()
         {
             if (!_context.Users.Any())
             {
-                _context.Users.Add(new User { 
-                    Id = 1, 
-                    FirstName="John",
-                    LastName="Smith",
+                _context.Users.Add(new User
+                {
+                    Id = 1,
+                    FirstName = "John",
+                    LastName = "Smith",
                     Email = "test@example.com",
-                    Username="jsmith",
-                    Password="password123"});
+                    Username = "jsmith",
+                    Password = "password123"
+                });
 
                 _context.SaveChanges();
             }
 
             if (!_context.Deliveries.Any())
             {
-                var delivery1 = new Delivery 
+                var delivery1 = new Delivery
                 {
                     Id = 1,
+                    UserId = 1,
                     App = DeliveryApp.UberEats,
                     DeliveryTime = DateTime.Now,
                     BasePay = 3.0,
@@ -81,19 +71,11 @@ namespace GigBoard.Tests.Controllers
                     TotalPay = 5.50,
                     Mileage = 1.2,
                     Restaurant = "Love Art Sushi",
-                    CustomerNeighborhood= "Back Bay",
+                    CustomerNeighborhood = "Back Bay",
                     Notes = "test 1"
                 };
 
                 _context.Deliveries.Add(delivery1);
-                _context.SaveChanges();
-
-                _context.UserDeliveries.Add(new UserDelivery 
-                {
-                    UserId = 1,
-                    DeliveryId = 1
-                });
-
                 _context.SaveChanges();
             }
         }
@@ -106,9 +88,8 @@ namespace GigBoard.Tests.Controllers
         [Fact]
         public async Task GetDeliveries_ReturnsUserDeliveries()
         {
-            var results = await _controller.GetDeliveries();
-            var okResult = Assert.IsType<OkObjectResult>(results);
-            var userDeliveries = Assert.IsAssignableFrom<IEnumerable<DeliveryDto>>(okResult.Value);
+            var results = await _service.GetDeliveriesAsync(1);
+            var userDeliveries = Assert.IsAssignableFrom<IEnumerable<DeliveryDto>>(results);
 
             var userDelivery = Assert.Single(userDeliveries);
             Assert.Equal("Love Art Sushi", userDelivery.Restaurant);
@@ -120,8 +101,9 @@ namespace GigBoard.Tests.Controllers
             var delivery2 = new Delivery
             {
                 Id = 2,
+                UserId = 1,
                 App = DeliveryApp.Doordash,
-                DeliveryTime = DateTime.Now,
+                DeliveryTime = DateTime.Now.AddHours(-1),
                 BasePay = 2.43,
                 TipPay = 2.00,
                 TotalPay = 4.43,
@@ -131,17 +113,18 @@ namespace GigBoard.Tests.Controllers
                 Notes = "test2"
             };
 
-            var result = await _controller.AddDelivery(delivery2);
+            var result = await _service.AddDeliveryAsync(1, delivery2);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var userDelivery = await _context.UserDeliveries
-                .FirstOrDefaultAsync(ud => ud.UserId == 1 && ud.DeliveryId == delivery2.Id);
+            Assert.IsType<DeliveryDto>(result);
+            var userDelivery = await _context.Deliveries
+                .FirstOrDefaultAsync(d => d.UserId == 1 && d.Id == delivery2.Id);
 
             Assert.NotNull(userDelivery);
 
             var badDelivery = new Delivery
             {
                 Id = 3,
+                UserId = 1,
                 App = DeliveryApp.UberEats,
                 DeliveryTime = DateTime.Now.AddHours(1),
                 BasePay = 3.0,
@@ -152,10 +135,8 @@ namespace GigBoard.Tests.Controllers
                 Notes = "Test 3"
             };
 
-            var response = await _controller.AddDelivery(badDelivery);
-
-            var badResult = Assert.IsType<BadRequestObjectResult>(response);
-            Assert.Equal("Delivery time cannot be in the future", badResult.Value);
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _service.AddDeliveryAsync(1, badDelivery));
+            Assert.Equal("Delivery time cannot be in the future", exception.Message);
         }
 
         [Fact]
@@ -164,6 +145,7 @@ namespace GigBoard.Tests.Controllers
             var delivery3 = new Delivery
             {
                 Id = 3,
+                UserId = 1,
                 App = DeliveryApp.Grubhub,
                 DeliveryTime = DateTime.Now,
                 BasePay = 3.50,
@@ -171,19 +153,14 @@ namespace GigBoard.Tests.Controllers
                 TotalPay = 6.00,
                 Mileage = 0.9,
                 Restaurant = "YGF Malatang",
-                CustomerNeighborhood= "Mission Hill",
+                CustomerNeighborhood = "Mission Hill",
                 Notes = "test 13"
             };
 
             _context.Deliveries.Add(delivery3);
-            _context.UserDeliveries.Add(new UserDelivery
-            {
-                UserId = 1,
-                DeliveryId = delivery3.Id
-            });
             await _context.SaveChangesAsync();
 
-            var result = await _controller.GetDeliveriesByApp(app: DeliveryApp.Grubhub,
+            var result = await _service.GetFilteredDeliveriesAsync(1, app: DeliveryApp.Grubhub,
                 basePay: null,
                 tipPay: null,
                 totalPay: null,
@@ -191,33 +168,30 @@ namespace GigBoard.Tests.Controllers
                 restaurant: null,
                 customerNeighborhood: null);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var deliveries = Assert.IsAssignableFrom<IEnumerable<dynamic>>(okResult.Value);
-            Assert.Contains(deliveries, d => (string)d.Restaurant == "YGF Malatang");
+            var deliveries = Assert.IsAssignableFrom<IEnumerable<DeliveryDto>>(result);
+            Assert.Contains(deliveries, d => d.Restaurant == "YGF Malatang");
             Assert.DoesNotContain(deliveries, d => d.Id == 1);
-            Assert.DoesNotContain(deliveries, d => (string)d.Restaurant == "Love Art Sushi");
+            Assert.DoesNotContain(deliveries, d => d.Restaurant == "Love Art Sushi");
         }
 
         [Fact]
-        public async Task GetDeliveryById_ReturnsDelivery() {
-            var result = await _controller.GetDeliveryById(1);
+        public async Task GetDeliveryById_ReturnsDelivery()
+        {
+            var result = await _service.GetDeliveryByIdAsync(1, 1);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var userDelivery = Assert.IsAssignableFrom<UserDelivery>(okResult.Value);
-            Assert.NotNull(userDelivery.Delivery);
-            Assert.Equal("Love Art Sushi", userDelivery.Delivery.Restaurant);
+            var userDelivery = Assert.IsAssignableFrom<Delivery>(result);
+            Assert.Equal("Love Art Sushi", userDelivery.Restaurant);
 
-            var result2 = await _controller.GetDeliveryById(4);
-            Assert.IsType<NotFoundObjectResult>(result2);
+            var result2 = await _service.GetDeliveryByIdAsync(1, 4);
+            Assert.Null(result2);
         }
 
         [Fact]
         public async Task DeleteDelivery_DeletesDelivery()
         {
             Assert.True(_context.Deliveries.Any(d => d.Id == 1));
-            var result = await _controller.DeleteDelivery(1);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            await _service.DeleteDeliveryAsync(1, 1);
             Assert.False(_context.Deliveries.Any());
         }
 
@@ -227,6 +201,7 @@ namespace GigBoard.Tests.Controllers
             var delivery3 = new Delivery
             {
                 Id = 3,
+                UserId = 1,
                 App = DeliveryApp.Grubhub,
                 DeliveryTime = DateTime.Now,
                 BasePay = 2.43,
@@ -237,21 +212,12 @@ namespace GigBoard.Tests.Controllers
                 CustomerNeighborhood = "Mission Hill",
                 Notes = "test3"
             };
+
             _context.Deliveries.Add(delivery3);
-
-            var userDelivery = new UserDelivery
-            {
-                UserId = 1,
-                DeliveryId = delivery3.Id
-            };
-            _context.UserDeliveries.Add(userDelivery);
-
             await _context.SaveChangesAsync();
 
-            var result = await _controller.GetUserDeliveryNeighborhoods();
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var neighborhoods = Assert.IsAssignableFrom<IEnumerable<string>>(okResult.Value);
+            var result = await _service.GetUserDeliveryNeighborhoodsAsync(1);
+            var neighborhoods = Assert.IsAssignableFrom<IEnumerable<string>>(result);
 
             Assert.Contains("Mission Hill", neighborhoods);
             Assert.Contains("Back Bay", neighborhoods);
@@ -263,6 +229,7 @@ namespace GigBoard.Tests.Controllers
             var delivery4 = new Delivery
             {
                 Id = 4,
+                UserId = 1,
                 App = DeliveryApp.Doordash,
                 DeliveryTime = DateTime.Now,
                 BasePay = 2.43,
@@ -274,20 +241,10 @@ namespace GigBoard.Tests.Controllers
                 Notes = "test4"
             };
             _context.Deliveries.Add(delivery4);
-
-            var userDelivery = new UserDelivery
-            {
-                UserId = 1,
-                DeliveryId = delivery4.Id
-            };
-            _context.UserDeliveries.Add(userDelivery);
-
             await _context.SaveChangesAsync();
 
-            var result = await _controller.GetUserDeliveryApps();
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var apps = Assert.IsAssignableFrom<IEnumerable<DeliveryApp>>(okResult.Value);
+            var result = await _service.GetUserDeliveryAppsAsync(1);
+            var apps = Assert.IsAssignableFrom<IEnumerable<DeliveryApp>>(result);
 
             Assert.Contains(DeliveryApp.UberEats, apps);
             Assert.Contains(DeliveryApp.Doordash, apps);
@@ -296,9 +253,10 @@ namespace GigBoard.Tests.Controllers
         [Fact]
         public async Task UpdateDelivery_PutsDelivery()
         {
-            var delivery1 = new Delivery 
+            var delivery1 = new Delivery
             {
                 Id = 1,
+                UserId = 1,
                 App = DeliveryApp.UberEats,
                 DeliveryTime = DateTime.Now,
                 BasePay = 5.0,
@@ -306,21 +264,19 @@ namespace GigBoard.Tests.Controllers
                 TotalPay = 7.50,
                 Mileage = 1.2,
                 Restaurant = "Love Art Sushi",
-                CustomerNeighborhood= "Back Bay",
+                CustomerNeighborhood = "Back Bay",
                 Notes = "test 1"
             };
 
-            var result = await _controller.UpdateDelivery(delivery1);
+            var result = await _service.UpdateDeliveryAsync(1, delivery1);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var delivery = Assert.IsAssignableFrom<DeliveryDto>(okResult.Value);
-
-            Assert.Equal(5.0, delivery.BasePay);
-            Assert.Equal(7.50, delivery.TotalPay);
+            Assert.Equal(5.0, result.BasePay);
+            Assert.Equal(7.50, result.TotalPay);
 
             var badDelivery1 = new Delivery
             {
                 Id = 1,
+                UserId = 1,
                 App = DeliveryApp.UberEats,
                 DeliveryTime = DateTime.Now.AddHours(1),
                 BasePay = 5.0,
@@ -332,10 +288,8 @@ namespace GigBoard.Tests.Controllers
                 Notes = "test 1"
             };
 
-            var response = await _controller.UpdateDelivery(badDelivery1);
-
-            var badResult = Assert.IsType<BadRequestObjectResult>(response);
-            Assert.Equal("Delivery time cannot be in the future", badResult.Value);
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _service.UpdateDeliveryAsync(1, badDelivery1));
+            Assert.Equal("Delivery time cannot be in the future", exception.Message);
         }
     }
 }

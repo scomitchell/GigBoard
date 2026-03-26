@@ -1,4 +1,5 @@
 using GigBoardBackend.Data;
+using GigBoardBackend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GigBoardBackend.Services
@@ -12,7 +13,7 @@ namespace GigBoardBackend.Services
             _context = context;
         }
 
-        public async Task<object> CalculateDeliveryStatistics(int userId)
+        public async Task<DeliveryStatisticsDto> CalculateDeliveryStatistics(int userId)
         {
             var query = _context.Deliveries.Where(d => d.UserId == userId);
 
@@ -86,64 +87,69 @@ namespace GigBoardBackend.Services
                 Avg = hourlyRaw.Where(x => x.Hour == h).Select(x => x.TotalPay).DefaultIfEmpty(0).Average()
             }).ToList();
 
-            return new
+            return new DeliveryStatisticsDto
             {
-                avgPay = totals?.AvgPay ?? 0,
-                avgBase = totals?.AvgBase ?? 0,
-                avgTip = totals?.AvgTip ?? 0,
-                dollarPerMile = totals?.SumMiles > 0 ? totals.SumTotal / totals.SumMiles : 0,
-                tipPerMile = totals?.SumMiles > 0 ? totals.SumTip / totals.SumMiles : 0,
-                highestPayingRestaurant = new
+                AvgPay = totals?.AvgPay ?? 0,
+                AvgBase = totals?.AvgBase ?? 0,
+                AvgTip = totals?.AvgTip ?? 0,
+                DollarPerMile = totals?.SumMiles > 0 ? totals.SumTotal / totals.SumMiles : 0,
+                TipPerMile = totals?.SumMiles > 0 ? totals.SumTip / totals.SumMiles : 0,
+                HighestPayingRestaurant = new HighestPayingRestaurantDto
                 {
-                    restaurant = highestRestaurant?.Name ?? "N/A",
-                    avgTotalPay = highestRestaurant?.Avg ?? 0
+                    Restaurant = highestRestaurant?.Name ?? "N/A",
+                    AvgTotalPay = highestRestaurant?.Avg ?? 0
                 },
-                restaurantWithMost = new
+                RestaurantWithMost = new RestaurantWithMostDto
                 {
-                    restaurantWithMost = mostRestaurant?.Name ?? "N/A",
-                    orderCount = mostRestaurant?.Count ?? 0
+                    RestaurantWithMost = mostRestaurant?.Name ?? "N/A",
+                    OrderCount = mostRestaurant?.Count ?? 0
                 },
-                plotlyEarningsData = new
+                PlotlyEarningsData = new PlotlyEarningsDataDto
                 {
-                    dates = plotlyEarnings.Select(x => x.Date.ToString("yyyy-MM-dd")),
-                    earnings = plotlyEarnings.Select(x => x.Total)
+                    Dates = plotlyEarnings.Select(x => x.Date.ToString("yyyy-MM-dd")).ToList(),
+                    Earnings = plotlyEarnings.Select(x => x.Total).ToList()
                 },
-                plotlyNeighborhoodsData = new
+                PlotlyNeighborhoodsData = new PlotlyNeighborhoodsDataDto
                 {
-                    neighborhoods = neighborhoodData.Select(x => x.Name),
-                    tipPays = neighborhoodData.Select(x => x.AvgTip)
+                    Neighborhoods = neighborhoodData.Select(x => x.Name).ToList(),
+                    TipPays = neighborhoodData.Select(x => x.AvgTip).ToList()
                 },
-                appsByBaseData = new
+                AppsByBaseData = new AppsByBaseDataDto
                 {
-                    apps = appData.Select(x => x.App),
-                    basePays = appData.Select(x => x.AvgBase)
+                    Apps = appData.Select(x => x.App).ToList(),
+                    BasePays = appData.Select(x => x.AvgBase).ToList()
                 },
-                tipsByAppData = new
+                TipsByAppData = new TipsByAppDataDto
                 {
-                    tipApps = appData.Select(x => x.App),
-                    tipPays = appData.Select(x => x.AvgTip)
+                    TipApps = appData.Select(x => x.App).ToList(),
+                    TipPays = appData.Select(x => x.AvgTip).ToList()
                 },
-                hourlyEarningsData = new
+                HourlyEarningsData = new PlotlyHourlyDataDto
                 {
-                    hours = hourlyProcessed.Select(x => x.Hour),
-                    earnings = hourlyProcessed.Select(x => x.Avg)
+                    Hours = hourlyProcessed.Select(x => x.Hour).ToList(),
+                    Earnings = hourlyProcessed.Select(x => x.Avg).ToList()
                 },
-                donutChartData = new
+                DonutChartData = new DonutChartDataDto
                 {
-                    totalPay = totals?.SumTotal ?? 0,
-                    totalBasePay = totals?.SumBase ?? 0,
-                    totalTipPay = totals?.SumTip ?? 0
+                    TotalPay = totals?.SumTotal ?? 0,
+                    TotalBasePay = totals?.SumBase ?? 0,
+                    TotalTipPay = totals?.SumTip ?? 0
                 }
             };
         }
 
-        public async Task<object> CalculateShiftStatistics(int userId)
+        public async Task<ShiftStatisticsDto> CalculateShiftStatistics(int userId)
         {
             var shiftsQuery = _context.Shifts.Where(s => s.UserId == userId);
 
             if (!await shiftsQuery.AnyAsync())
             {
-                return new { averageShiftLength = 0, appWithMostShifts = "N/A", averageDeliveriesForShift = 0 };
+                return new ShiftStatisticsDto
+                {
+                    AverageShiftLength = 0,
+                    AppWithMostShifts = "N/A",
+                    AverageDeliveriesForShift = 0
+                };
             }
 
             var shifts = await shiftsQuery.ToListAsync();
@@ -157,21 +163,25 @@ namespace GigBoardBackend.Services
                 .Select(g => g.Key.ToString())
                 .FirstOrDefault() ?? "N/A";
 
-            return new
+            return new ShiftStatisticsDto
             {
-                averageShiftLength = avgLength,
-                appWithMostShifts = appWithMost,
-                averageDeliveriesForShift = (double)deliveryCount / shifts.Count
+                AverageShiftLength = avgLength,
+                AppWithMostShifts = appWithMost,
+                AverageDeliveriesForShift = (double)deliveryCount / shifts.Count
             };
         }
 
-        public async Task<object> CalculateExpenseStatistics(int userId)
+        public async Task<ExpenseStatisticsDto> CalculateExpenseStatistics(int userId)
         {
             var expenseQuery = _context.Expenses.Where(e => e.UserId == userId);
 
             if (!await expenseQuery.AnyAsync())
             {
-                return new { averageMonthlySpending = 0, averageSpendingByType = new List<object>() };
+                return new ExpenseStatisticsDto
+                {
+                    AverageMonthlySpending = 0.0,
+                    AverageSpendingByType = new List<SpendingByTypeDto>()
+                };
             }
 
             var expenses = await expenseQuery.ToListAsync();
@@ -184,32 +194,36 @@ namespace GigBoardBackend.Services
 
             var spendingByType = expenses
                 .GroupBy(e => e.Type)
-                .Select(g => new
+                .Select(g => new SpendingByTypeDto
                 {
                     Type = g.Key,
                     AvgExpense = totalMonths > 0 ? g.Sum(x => x.Amount) / totalMonths : 0
                 }).ToList();
 
-            return new { averageMonthlySpending = monthlyAvg, averageSpendingByType = spendingByType };
+            return new ExpenseStatisticsDto
+            {
+                AverageMonthlySpending = monthlyAvg,
+                AverageSpendingByType = spendingByType
+            };
         }
 
-        private object GetDefaultDeliveryStats()
+        private DeliveryStatisticsDto GetDefaultDeliveryStats()
         {
-            return new
+            return new DeliveryStatisticsDto
             {
-                avgPay = 0,
-                avgBase = 0,
-                avgTip = 0,
-                dollarPerMile = 0,
-                tipPerMile = 0,
-                highestPayingRestaurant = new { restaurant = "N/A", avgTotalPay = 0 },
-                restaurantWithMost = new { restaurantWithMost = "N/A", orderCount = 0 },
-                plotlyEarningsData = new { dates = new List<string>(), earnings = new List<double>() },
-                plotlyNeighborhoodsData = new { neighborhoods = new List<string>(), tipPays = new List<double>() },
-                appsByBaseData = new { apps = new List<string>(), basePays = new List<double>() },
-                tipsByAppData = new { tipApps = new List<string>(), tipPays = new List<double>() },
-                hourlyEarningsData = new { hours = new List<string>(), earnings = new List<double>() },
-                donutChartData = new { totalPay = 0, totalBasePay = 0, totalTipPay = 0 }
+                AvgPay = 0.0,
+                AvgBase = 0.0,
+                AvgTip = 0.0,
+                DollarPerMile = 0.0,
+                TipPerMile = 0.0,
+                HighestPayingRestaurant = new HighestPayingRestaurantDto { Restaurant = "N/A", AvgTotalPay = 0.0 },
+                RestaurantWithMost = new RestaurantWithMostDto { RestaurantWithMost = "N/A", OrderCount = 0 },
+                PlotlyEarningsData = new PlotlyEarningsDataDto { Dates = new List<string>(), Earnings = new List<double>() },
+                PlotlyNeighborhoodsData = new PlotlyNeighborhoodsDataDto { Neighborhoods = new List<string>(), TipPays = new List<double>() },
+                AppsByBaseData = new AppsByBaseDataDto { Apps = new List<string>(), BasePays = new List<double>() },
+                TipsByAppData = new TipsByAppDataDto { TipApps = new List<string>(), TipPays = new List<double>() },
+                HourlyEarningsData = new PlotlyHourlyDataDto { Hours = new List<string>(), Earnings = new List<double>() },
+                DonutChartData = new DonutChartDataDto { TotalPay = 0.0, TotalBasePay = 0.0, TotalTipPay = 0.0 }
             };
         }
     }
